@@ -33,9 +33,10 @@ class MCPBridgeInputError(ValueError):
 
 
 class MCPBridge:
-    def __init__(self, vault: Path, timeout: float = 30):
+    def __init__(self, vault: Path, timeout: float = 30, law_dir: Path | None = None):
         self.vault = Path(vault).resolve()
         self.timeout = timeout
+        self.law_dir = Path(law_dir).resolve() if law_dir is not None else None
         self.last_verified_at: str | None = None
         self.last_server: dict[str, str] | None = None
         self.last_failed = False
@@ -57,6 +58,8 @@ class MCPBridge:
     def _parameters(self) -> StdioServerParameters:
         environment = dict(os.environ)
         environment["RULECRAFT_VAULT"] = str(self.vault)
+        if self.law_dir is not None:
+            environment["RULECRAFT_LAW_DIR"] = str(self.law_dir)
         return StdioServerParameters(
             command=sys.executable, args=["-m", "rulecraft.mcp_server"],
             env=environment, cwd=Path(__file__).resolve().parents[2],

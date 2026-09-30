@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from datetime import date
 import os
 from typing import Any, Literal
 
@@ -11,11 +12,14 @@ from mcp.server.fastmcp import FastMCP
 from . import adapters
 from .delta import analyze
 from .documents import generate_statutory_diff as render_statutory_diff
-from .graph import GraphStore
+from .graph import GraphStore, normalize_article
+from .law_graph import default_law_store, query_official_graph
+from .legal_grounding import add_text_impact
 
 
 mcp = FastMCP("RuleCraft", instructions=(
     "로컬 Markdown 법령 지식그래프의 조회·변경 영향 분석과 검토용 문서 도구입니다. "
+    "query_markdown_graph의 source_scope=official은 수집한 공식 원문과 수집 범위를 조회합니다. "
     "로컬 문서는 최신 법적 효력을 보증하지 않습니다. 이미지 분석은 설정된 Vision 모델이 필요합니다."
 ))
 
@@ -26,12 +30,22 @@ def _store() -> GraphStore:
 
 
 @mcp.tool()
-def query_markdown_graph(agency_name: str, rule_name: str, article_no: int,
-                         traverse_direction: Literal["UPWARD_PARENT", "DOWNWARD_DELEGATION", "BACKLINKS", "ALL"] = "ALL") -> dict[str, Any]:
-    """특정 조문과 연결된 상위법, 하위 지침, 서식 및 역링크를 탐색합니다."""
-    if article_no < 1:
-        raise ValueError("article_no는 양의 정수여야 합니다.")
-    return _store().query(agency_name, rule_name, str(article_no), traverse_direction)
+def query_markdown_graph(agency_name: str, rule_name: str, article_no: int | str,
+                         traverse_direction: Literal["UPWARD_PARENT", "DOWNWARD_DELEGATION", "BACKLINKS", "ALL"] = "ALL",
+                         source_scope: Literal["local", "official"] = "local",
+                         as_of: str | None = None) -> dict[str, Any]:
+    """로컬 관계 탐색 또는 source_scope=official로 수집한 공식 조문과 원문 출처를 조회합니다."""
+    anchor = normalize_article(article_no)
+    if not anchor:
+        raise ValueError("article_no는 양의 조 번호 또는 제7조의2 같은 조 번호여야 합니다.")
+    if source_scope == "official":
+        if as_of is not None:
+            try:
+                as_of = date.fromisoformat(as_of).isoformat()
+            except ValueError:
+                raise ValueError("as_of는 YYYY-MM-DD 형식이어야 합니다.") from None
+        return query_official_graph(default_law_store(), rule_name, anchor, as_of)
+    return _store().query(agency_name, rule_name, anchor, traverse_direction)
 
 
 @mcp.tool()
@@ -39,7 +53,14 @@ def analyze_git_delta_impact(target_file_path: str, proposed_diff: str) -> dict[
     """Markdown 텍스트 또는 Unified Diff의 변경 파급도와 인용 정비 후보를 분석합니다."""
     if len(proposed_diff) > 200_000:
         raise ValueError("변경안은 200KB 이하여야 합니다.")
-    return analyze(_store(), target_file_path, proposed_diff)
+    store = _store()
+    result = analyze(store, target_file_path, proposed_diff)
+    try:
+        path = store.relative_path(target_file_path)
+    except ValueError:
+        return result
+    node = next((item for item in store.graph()["nodes"] if item["path"] == path), None)
+    return add_text_impact(store, node, result) if node else result
 
 
 @mcp.tool()

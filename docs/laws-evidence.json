@@ -1,0 +1,103 @@
+{
+  "mode": "live_api_empty_corpus",
+  "actual_provider_ingestion_verified": false,
+  "recorded_at": "2026-09-30T11:34:16.380245+00:00",
+  "official_items": 0,
+  "coverage_complete": false,
+  "official_changes": 0,
+  "historical_complete": false,
+  "annexes_verified": false,
+  "source_states": {
+    "law": "blocked",
+    "administrative": "blocked",
+    "ordinance": "blocked"
+  },
+  "missing_requirements": [
+    "RULECRAFT_LAW_OC"
+  ],
+  "live_search_requests": [
+    {
+      "q": "개인정보",
+      "limit": "20",
+      "offset": "0"
+    },
+    {
+      "q": "개인정보",
+      "limit": "20",
+      "offset": "0",
+      "as_of": "2026-09-30"
+    },
+    {
+      "q": "개인정보",
+      "limit": "20",
+      "offset": "0",
+      "source": "law",
+      "as_of": "2026-09-30"
+    },
+    {
+      "q": "개인정보",
+      "limit": "20",
+      "offset": "0",
+      "source": "administrative",
+      "as_of": "2026-09-30"
+    },
+    {
+      "q": "개인정보",
+      "limit": "20",
+      "offset": "0",
+      "source": "ordinance",
+      "as_of": "2026-09-30"
+    },
+    {
+      "q": "개인정보",
+      "limit": "20",
+      "offset": "0",
+      "as_of": "2026-09-30"
+    },
+    {
+      "q": "",
+      "limit": "20",
+      "offset": "0",
+      "source": "administrative"
+    },
+    {
+      "q": "",
+      "limit": "20",
+      "offset": "0",
+      "source": "administrative",
+      "as_of": "2026-09-30"
+    }
+  ],
+  "browser_sync_attempted": false,
+  "mocked_official_documents": false,
+  "demo_rows_verified": 12,
+  "mobile_width": 390,
+  "mcp": {
+    "tool_count": 4,
+    "transport": "stdio",
+    "graph_node_ids": [
+      "KIPA-RULE-DAT-007",
+      "LAW-DATA-012",
+      "LAW-PRIV-015"
+    ]
+  },
+  "source_unchanged": true,
+  "screenshots_recorded_at": "2026-09-30T21:47:06.708245+00:00",
+  "screenshots": [
+    "docs/screenshots/web-dashboard.png",
+    "docs/screenshots/laws-empty.png",
+    "docs/screenshots/laws-overview.png",
+    "docs/screenshots/laws-mobile.png"
+  ],
+  "source_error_codes": {
+    "law": [
+      "missing_credentials"
+    ],
+    "administrative": [
+      "missing_credentials"
+    ],
+    "ordinance": [
+      "missing_credentials"
+    ]
+  }
+}

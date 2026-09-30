@@ -1,0 +1,78 @@
+{
+  "scope": "Synthetic coverage counterexamples; no assertion about actual legal validity.",
+  "cases": [
+    {
+      "case": "synthetic_parent_conflict",
+      "input_markdown": "---\nid: RULE\nagency: 예시기관\nrule_name: 내부지침\narticle_no: 7\ntitle: 검토용 가상 조문\nkind: article\ndelegated_by:\n- '[[PARENT]]'\n---\n\n# 제7조 (가상 조문)\n\nAI 목적 제공은 허가 없이 언제든지 할 수 있다.\n",
+      "status": "draft",
+      "valid": true,
+      "issue_codes": [],
+      "document_count": 7,
+      "legal_authority_verified": false
+    },
+    {
+      "case": "removed_all_delegations",
+      "input_markdown": "---\nid: RULE\nagency: 예시기관\nrule_name: 내부지침\narticle_no: 7\ntitle: 검토용 가상 조문\nkind: article\n---\n\n# 제7조 (가상 조문)\n\nAI 목적 제공은 허가 없이 언제든지 할 수 있다.\n",
+      "status": "draft",
+      "valid": true,
+      "issue_codes": [],
+      "document_count": 7,
+      "legal_authority_verified": false
+    },
+    {
+      "case": "unknown_paragraph_and_item",
+      "input_markdown": "---\nid: RULE\nagency: 예시기관\nrule_name: 내부지침\narticle_no: 7\ntitle: 검토용 가상 조문\nkind: article\ndelegated_by:\n- '[[PARENT]]'\n---\n\n# 제7조 (가상 조문)\n\n「상위법」 제15조 제999항 제999호에 따른다.\n",
+      "status": "draft",
+      "valid": true,
+      "issue_codes": [],
+      "document_count": 7,
+      "legal_authority_verified": false
+    },
+    {
+      "case": "bare_law_title_ending_in_lawryul",
+      "input_markdown": "---\nid: RULE\nagency: 예시기관\nrule_name: 내부지침\narticle_no: 7\ntitle: 검토용 가상 조문\nkind: article\ndelegated_by:\n- '[[PARENT]]'\n---\n\n# 제7조 (가상 조문)\n\n공공데이터의 제공 및 이용 활성화에 관한 법률 제999조에 따른다.\n",
+      "status": "draft",
+      "valid": true,
+      "issue_codes": [],
+      "document_count": 7,
+      "legal_authority_verified": false
+    },
+    {
+      "case": "unverifiable_delegation_claim",
+      "input_markdown": "---\nid: RULE\nagency: 예시기관\nrule_name: 내부지침\narticle_no: 7\ntitle: 검토용 가상 조문\nkind: article\ndelegated_by:\n- '[[PARENT]]'\n---\n\n# 제7조 (가상 조문)\n\n「상위법」 제15조는 이 지침에 AI 제공 예외의 신설 권한을 위임한다.\n",
+      "status": "draft",
+      "valid": true,
+      "issue_codes": [],
+      "document_count": 7,
+      "legal_authority_verified": false
+    },
+    {
+      "case": "abolished_future_invalid_date_parent",
+      "input_markdown": "---\nid: PARENT\nagency: 예시기관\nrule_name: 상위법\narticle_no: 15\ntitle: 검토용 가상 조문\nkind: article\nstatus: abolished\nlast_amended: not-a-date\neffective_from: '2099-01-01'\n---\n\n# 제15조 (가상 조문)\n\nAI 목적 제공을 금지한다.\n",
+      "graph_issue_codes": []
+    },
+    {
+      "case": "control_explicit_unknown_article_with_brackets",
+      "input_text": "「상위법」 제999조",
+      "issue_codes": [
+        "unverified_text_citation"
+      ]
+    },
+    {
+      "case": "plain_citation_not_in_impact_graph",
+      "input_text": "「상위법」 제15조에 따른다.",
+      "text_citation_issue_codes": [],
+      "parent_backlink_ids": []
+    }
+  ],
+  "corpus": {
+    "seed_nodes": 12,
+    "seed_edges": 31,
+    "statute_nodes": 3,
+    "distinct_statute_rules": [
+      "개인정보보호법",
+      "공공데이터법"
+    ],
+    "seed_all_demo": true
+  }
+}

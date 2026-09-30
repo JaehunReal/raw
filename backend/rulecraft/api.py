@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import date
+from contextlib import asynccontextmanager
 from pathlib import Path
 import os
 import subprocess
@@ -19,6 +20,12 @@ from .delta import analyze, analyze_git
 from .documents import generate_statutory_diff
 from .graph import GraphStore
 from .mcp_bridge import MCPBridge, MCPBridgeInputError, MCPBridgeUnavailable
+from .law_jobs import LawJobs, LawJobConflict
+from .law_graph import query_official_graph
+from .law_store import LawStore
+from .law_sync import LawSync
+from .law_updates import change_impacts
+from .legal_grounding import add_text_impact
 from .workflow import PackageWorkflow
 
 
@@ -74,6 +81,12 @@ class MCPCallRequest(StrictModel):
     arguments: dict[str, Any]
 
 
+class LawSyncRequest(StrictModel):
+    sources: list[Literal["law", "administrative", "ordinance"]] = Field(
+        default_factory=lambda: ["law", "administrative", "ordinance"], min_length=1, max_length=3)
+    page_size: int = Field(default=100, ge=1, le=100)
+
+
 def _history(root: Path, nodes: list[dict[str, Any]]) -> list[dict[str, Any]]:
     try:
         result = subprocess.run(
@@ -95,20 +108,37 @@ def _history(root: Path, nodes: list[dict[str, Any]]) -> list[dict[str, Any]]:
             for node in sorted(nodes, key=lambda item: item["last_amended"], reverse=True)[:8]]
 
 
-def create_app(vault: Path | None = None, package_dir: Path | None = None) -> FastAPI:
+def create_app(vault: Path | None = None, package_dir: Path | None = None,
+               law_dir: Path | None = None) -> FastAPI:
+    # A separate durable index keeps nationwide legislation out of the editable demo vault.
+    default_law_dir = (Path(package_dir).parent / "national-law" if package_dir is not None
+                       else ROOT / ".rulecraft" / "national-law")
+    law_store = LawStore(law_dir or Path(os.getenv("RULECRAFT_LAW_DIR", str(default_law_dir))))
+    law_jobs = LawJobs(law_store, lambda: LawSync(law_store))
+
+    @asynccontextmanager
+    async def lifespan(application: FastAPI):
+        try:
+            yield
+        finally:
+            law_jobs.close()
+
     app = FastAPI(title="RuleCraft API", version=__version__,
-                  description="Markdown 지식그래프와 규정 제·개정 검토용 문서 워크스페이스")
+                  description="Markdown 지식그래프와 규정 제·개정 검토용 문서 워크스페이스",
+                  lifespan=lifespan)
     app.add_middleware(CORSMiddleware,
                        allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
                        allow_credentials=False, allow_methods=["GET", "POST", "PUT"],
                        allow_headers=["Content-Type"])
     store = GraphStore(vault or Path(os.getenv("RULECRAFT_VAULT", str(ROOT / "legal-knowledge-vault"))))
-    workflow = PackageWorkflow(store, package_dir or ROOT / ".rulecraft" / "packages")
-    mcp_bridge = MCPBridge(store.vault)
+    workflow = PackageWorkflow(store, package_dir or ROOT / ".rulecraft" / "packages", law_store=law_store)
+    mcp_bridge = MCPBridge(store.vault, law_dir=law_store.root)
     lock = threading.RLock()
     app.state.store = store
     app.state.workflow = workflow
     app.state.mcp_bridge = mcp_bridge
+    app.state.law_store = law_store
+    app.state.law_jobs = law_jobs
 
     @app.get("/api/health")
     def health() -> dict[str, Any]:
@@ -136,7 +166,11 @@ def create_app(vault: Path | None = None, package_dir: Path | None = None) -> Fa
 
     @app.get("/api/graph")
     def graph(agency_name: str = "", rule_name: str = "", article_no: str = "",
-              traverse_direction: Literal["UPWARD_PARENT", "DOWNWARD_DELEGATION", "BACKLINKS", "ALL"] = "ALL") -> dict:
+              traverse_direction: Literal["UPWARD_PARENT", "DOWNWARD_DELEGATION", "BACKLINKS", "ALL"] = "ALL",
+              source_scope: Literal["local", "official"] = "local", as_of: date | None = None) -> dict:
+        if source_scope == "official":
+            return query_official_graph(law_store, rule_name, article_no,
+                                        as_of=as_of.isoformat() if as_of else None)
         with lock:
             store.refresh()
             if agency_name or rule_name or article_no:
@@ -191,7 +225,13 @@ def create_app(vault: Path | None = None, package_dir: Path | None = None) -> Fa
         with lock:
             store.refresh()
             try:
-                return analyze(store, body.target_file_path, body.proposed_diff)
+                result = analyze(store, body.target_file_path, body.proposed_diff)
+                try:
+                    path = store.relative_path(body.target_file_path)
+                except ValueError:
+                    return result
+                node = next((item for item in store.graph()["nodes"] if item["path"] == path), None)
+                return add_text_impact(store, node, result) if node else result
             except (ValueError, FileNotFoundError, KeyError) as error:
                 raise HTTPException(400, str(error)) from None
 
@@ -256,6 +296,57 @@ def create_app(vault: Path | None = None, package_dir: Path | None = None) -> Fa
             return adapters.search_national_law(query)
         except adapters.AdapterUnavailable as error:
             raise HTTPException(503, str(error)) from None
+
+    @app.get("/api/laws/status")
+    def national_law_status() -> dict[str, Any]:
+        configured = bool(os.getenv("RULECRAFT_LAW_OC", "").strip())
+        return {"configured": configured,
+                "missing_requirements": [] if configured else ["RULECRAFT_LAW_OC"],
+                "coverage": law_store.coverage(), "job": law_jobs.status()}
+
+    @app.post("/api/laws/sync", status_code=202)
+    def sync_national_laws(body: LawSyncRequest) -> dict[str, Any]:
+        if len(set(body.sources)) != len(body.sources):
+            raise HTTPException(422, "수집 종류를 중복으로 선택할 수 없습니다.")
+        if not os.getenv("RULECRAFT_LAW_OC", "").strip():
+            raise HTTPException(503, "환경 설정에 RULECRAFT_LAW_OC를 등록해야 공식 법령을 수집할 수 있습니다.")
+        try:
+            return {"job": law_jobs.start(body.sources, body.page_size)}
+        except LawJobConflict as error:
+            raise HTTPException(409, str(error)) from None
+
+    @app.post("/api/laws/sync/cancel")
+    def cancel_national_law_sync() -> dict[str, Any]:
+        return {"job": law_jobs.cancel()}
+
+    @app.get("/api/laws")
+    def national_laws(q: str = Query(default="", max_length=500),
+                      source: Literal["law", "administrative", "ordinance"] | None = None,
+                      as_of: date | None = None,
+                      limit: int = Query(default=20, ge=1, le=100),
+                      offset: int = Query(default=0, ge=0)) -> dict[str, Any]:
+        return law_store.search(query=q, source=source, as_of=as_of.isoformat() if as_of else None,
+                                limit=limit, offset=offset)
+
+    @app.get("/api/laws/changes")
+    def national_law_changes(source: Literal["law", "administrative", "ordinance"] | None = None,
+                             limit: int = Query(default=20, ge=1, le=100),
+                             offset: int = Query(default=0, ge=0)) -> dict[str, Any]:
+        result = law_store.get_changes(source=source, limit=limit, offset=offset)
+        with lock:
+            store.refresh()
+            return {**result, "items": change_impacts(store, result["items"])}
+
+    @app.get("/api/laws/{source}/{law_id}")
+    def national_law(source: Literal["law", "administrative", "ordinance"],
+                     law_id: str, as_of: date | None = None) -> dict[str, Any]:
+        if len(law_id) > 200:
+            raise HTTPException(400, "법령 식별자가 너무 깁니다.")
+        identifier = law_id if law_id.startswith(source + ":") else f"{source}:{law_id}"
+        result = law_store.get(identifier, as_of=as_of.isoformat() if as_of else None)
+        if result is None:
+            raise HTTPException(404, "수집한 공식 원문에서 해당 법령·기준일 버전을 찾을 수 없습니다.")
+        return result
 
     @app.post("/api/diff")
     def statutory_diff(body: DiffRequest) -> dict:

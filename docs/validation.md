@@ -15,6 +15,8 @@ RuleCraft의 자동 검증은 마크다운 지식 저장소 안에서 확인할 
 
 샘플 저장소의 법령과 기관명은 시연용 데이터입니다. 테스트 통과는 해당 데이터와 기능의 동작 확인이며 실제 법령의 정확성 또는 공포 가능성을 보증하지 않습니다.
 
+공식 수집 관련 테스트는 합성 응답과 임시 원문 저장소를 사용합니다. 전체 페이지·개수·중복 대조, 실패 재개, 버전·해시 보존, 별도 색인, 날짜 불확실성, 추가·변경·목록 제외 이력과 영향 후보, 실제 HTTP→MCP의 공식 색인 조회, 원문을 입안 모델에 전달하는 흐름을 확인합니다. 조·항·호 인용은 구조화 원문이 있을 때 검사하고 파싱·시행 시점이 불확실할 때 존재나 부재를 확정하지 않습니다. 이 테스트는 공식 제공자의 실제 접근·원문 정확성·법적 적용성 검증과 구분합니다.
+
 브라우저 검증은 실행 중인 개발 서버를 대상으로 별도로 수행합니다. 기본 주소는 `http://127.0.0.1:5173`이며 `RULECRAFT_BROWSER_URL`로 변경할 수 있습니다. Playwright와 Chromium이 있는 환경에서 다음 명령을 실행하세요.
 
 ```bash
@@ -25,6 +27,14 @@ RULECRAFT_CHROMIUM_PATH=/usr/bin/chromium \
 # 웹에서 실제 MCP 예제를 실행하고 화면 및 응답 요약을 저장
 RULECRAFT_CHROMIUM_PATH=/usr/bin/chromium \
   uv run --with playwright --project backend python tests/browser_mcp_smoke.py
+
+# 실제 빈 공식 색인·수집 미완료 상태와 웹 조회·변경 이력·시연 구분 검증
+RULECRAFT_CHROMIUM_PATH=/usr/bin/chromium \
+  uv run --with playwright --project backend python tests/browser_laws_smoke.py
+
+# 전문 읽기·수집 중/취소·실패 화면은 별도 메모리 합성 응답으로 검증
+RULECRAFT_CHROMIUM_PATH=/usr/bin/chromium \
+  uv run --with playwright --project backend python tests/browser_laws_smoke.py --ui-fixtures
 ```
 
 다른 위치에 설치한 Chromium은 `RULECRAFT_CHROMIUM_PATH`로 지정합니다. 시연 저장소의 대시보드, 검색·편집 검증, 상위법 관계도, 7개 문서 영향 분석, 유효/차단 위저드, 미리보기, ZIP 다운로드와 390px 화면 탐색을 확인합니다. 원본 조문을 저장하지 않으며 이번 실행에서 만든 패키지 JSON만 정리합니다. 기본 패키지 폴더를 바꾼 서버에서는 같은 경로를 `RULECRAFT_BROWSER_PACKAGE_DIR`로 지정하세요.

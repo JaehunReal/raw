@@ -36,6 +36,7 @@ import "@fontsource-variable/dm-sans";
 import "@fontsource-variable/noto-sans-kr";
 import "./styles.css";
 import McpPlayground from "./McpPlayground";
+import NationalLawPanel from "./NationalLawPanel";
 
 type Node = {
   id: string;
@@ -101,10 +102,12 @@ type View =
   | "impact"
   | "packages"
   | "wizard"
-  | "mcp";
+  | "mcp"
+  | "laws";
 const nav = [
   { id: "dashboard", label: "워크스페이스", icon: LayoutDashboard },
   { id: "vault", label: "규정 지식 저장소", icon: Library },
+  { id: "laws", label: "공식 법령", icon: BookOpen },
   { id: "graph", label: "규정 관계 그래프", icon: Network },
   { id: "impact", label: "변경 영향 분석", icon: GitBranch },
   { id: "packages", label: "문서 패키지", icon: Files },
@@ -134,6 +137,16 @@ function displayArticle(n: Node) {
     : value.includes("의")
       ? `제${value.replace("의", "조의")}`
       : `제${value}조`;
+}
+function isDemoDocument(n: Node) {
+  return n.status === "demo" || n.metadata.demo === true;
+}
+function documentStatus(n: Node) {
+  if (isDemoDocument(n)) return "시연";
+  if (n.status === "draft") return "초안";
+  if (["abolished", "repealed"].includes(n.status)) return "폐지";
+  if (["pending", "scheduled"].includes(n.status)) return "시행 예정";
+  return "등록 자료";
 }
 function App() {
   const [view, setView] = useState<View>("dashboard"),
@@ -776,7 +789,7 @@ function App() {
                         최근 규정 현황{" "}
                         <span className="count-tag">{graph.nodes.length}</span>
                       </h3>
-                      <p>연결된 규정의 최신 상태를 확인하세요.</p>
+                      <p>저장소에 등록된 자료의 상태를 확인하세요.</p>
                     </div>
                     <button className="text-button" onClick={() => go("vault")}>
                       전체 보기
@@ -1592,6 +1605,7 @@ function App() {
               }}
             />
           )}
+          {view === "laws" && <NationalLawPanel />}
           <footer className="page-footer">
             <span>
               <span className="footer-mark">R.</span>연결된 지식으로, 신뢰할 수
@@ -1637,7 +1651,7 @@ function App() {
                     : displayArticle(selected)}
                 </span>
                 <span>버전 {selected.version}</span>
-                <span>수정 {selected.last_amended}</span>
+                <span>{isDemoDocument(selected) ? "예제 작성일" : "자료 기준일"} {selected.last_amended || "—"}</span>
               </div>
               <textarea
                 aria-label="조문 마크다운 편집"
@@ -1956,7 +1970,7 @@ function ArticleTable({
           <tr>
             <th>규정 · 조문</th>
             <th>구분</th>
-            <th>최종 개정일</th>
+            <th>자료 기준일</th>
             <th>상태</th>
             <th />
           </tr>
@@ -2000,11 +2014,16 @@ function ArticleTable({
                       : "내부 규정"}
                 </span>
               </td>
-              <td className="date-cell">{n.last_amended || "—"}</td>
+              <td className="date-cell">
+                {n.last_amended || "—"}
+                <small className="document-date-kind">
+                  {isDemoDocument(n) ? "예제 작성일" : "등록 메타데이터"}
+                </small>
+              </td>
               <td>
-                <span className="status-label">
+                <span className="status-label" data-status={n.status}>
                   <i />
-                  {n.status === "draft" ? "초안" : "시행 중"}
+                  {documentStatus(n)}
                 </span>
               </td>
               <td>

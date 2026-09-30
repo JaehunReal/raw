@@ -40,7 +40,8 @@ def _doc(name: str, content: str) -> dict[str, str]:
 
 
 def build_documents(request: dict[str, Any], node: dict[str, Any], revised: str,
-                    impact: dict[str, Any], forms: list[dict[str, Any]], provenance: str) -> list[dict[str, str]]:
+                    impact: dict[str, Any], forms: list[dict[str, Any]], provenance: str,
+                    grounding: dict[str, Any] | None = None) -> list[dict[str, str]]:
     agency = request["agency"]
     rule = request["rule_name"]
     objective = request["objective"].strip()
@@ -105,5 +106,26 @@ def build_documents(request: dict[str, Any], node: dict[str, Any], revised: str,
                    "로컬 지식문서의 스키마, 조문 번호, Wiki-Link 존재 여부 및 역참조를 검사합니다. "
                    "법적 효력, 상위법 위임 범위와 최신 법령 여부는 자동 확정하지 않습니다.",
                    "", "## 입안 범위", "", scope_note])
+    if grounding is not None:
+        report.extend(["", "## 공식 법령 근거와 수집 범위", "",
+                       f"- 시행 기준일: {grounding.get('as_of')}",
+                       f"- 공식 근거 상태: {grounding.get('status')}",
+                       f"- 선택한 API 목록 수집 완료 여부: {bool(grounding.get('corpus', {}).get('complete'))}",
+                       "- 전체 적용법·상위법 위임 범위·실질적 적법성 검토: 미완료 / 담당자 심사 필요",
+                       "- 시연용 로컬 조문은 공식 원문과 별도이며 공식 법령으로 승격하지 않습니다.", ""])
+        if not grounding.get("sources"):
+            report.append("확보한 공식 근거 원문이 없습니다. 이 패키지는 공식 원문 반영을 완료한 결과가 아닙니다.")
+        for source in grounding.get("sources", []):
+            report.extend([f"### {source.get('title')} {source.get('article_no') or ''}", "",
+                           f"- 공식 식별자: {source.get('law_id')} / 버전: {source.get('version_id')}",
+                           f"- 공포일: {source.get('publication_date')} / 시행일: {source.get('effective_date')}",
+                           f"- 출처: {source.get('source_url')}",
+                           f"- 원문 SHA-256: {source.get('sha256')}",
+                           f"- 근거 선정: {source.get('origin')} / 기준일 확인: {source.get('temporal_verified')}", "",
+                           "아래는 길이 제한으로 일부 발췌한 원문입니다." if source.get("passage_truncated") else "아래는 확보한 조문 원문입니다.",
+                           "", source.get("passage", ""), ""])
+        if grounding.get("issues"):
+            report.extend(["### 확인이 필요한 수집·근거 항목", ""])
+            report.extend(f"- {issue.get('code')}: {issue.get('message')}" for issue in grounding["issues"])
     documents.append(_doc("07_변경영향도보고서.md", "\n".join(report)))
     return documents

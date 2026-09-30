@@ -1,0 +1,28 @@
+{
+  "server": {
+    "name": "RuleCraft",
+    "version": "1.29.0"
+  },
+  "transport": "stdio",
+  "graph_node_ids": [
+    "KIPA-RULE-DAT-007",
+    "LAW-PRIV-015",
+    "LAW-DATA-012"
+  ],
+  "impacted_node_ids": [
+    "KIPA-RULE-DAT-007",
+    "KIPA-RULE-DAT-007-2",
+    "KIPA-RULE-SEC-020",
+    "KIPA-FORM-DAT-002",
+    "KIPA-RULE-DAT-008",
+    "KIPA-GUIDE-DAT-001",
+    "KIPA-RULE-DAT-012"
+  ],
+  "comparison_columns": [
+    "현행",
+    "개정안",
+    "개정이유"
+  ],
+  "vision_status": "unavailable",
+  "source_unchanged": true
+}

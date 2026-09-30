@@ -8,5 +8,8 @@ backend/.venv/
 .rulecraft/
 .cache/
 .env
+.env.*
+!.env.example
+.vercel/
 .DS_Store
 test-results/

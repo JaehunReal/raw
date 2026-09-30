@@ -16,6 +16,7 @@ from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, ConfigDict, Field
 
 from . import __version__, adapters
+from .api_security import APIAuthMiddleware
 from .delta import analyze, analyze_git
 from .documents import generate_statutory_diff
 from .graph import GraphStore
@@ -110,8 +111,11 @@ def _history(root: Path, nodes: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 def create_app(vault: Path | None = None, package_dir: Path | None = None,
                law_dir: Path | None = None) -> FastAPI:
+    production = os.getenv("RULECRAFT_DEPLOYMENT", "").strip().lower() == "production"
+    api_token = os.getenv("RULECRAFT_API_TOKEN", "").strip()
+    configured_package_dir = package_dir or Path(os.getenv("RULECRAFT_PACKAGE_DIR") or str(ROOT / ".rulecraft" / "packages"))
     # A separate durable index keeps nationwide legislation out of the editable demo vault.
-    default_law_dir = (Path(package_dir).parent / "national-law" if package_dir is not None
+    default_law_dir = (Path(configured_package_dir).parent / "national-law" if package_dir is not None or os.getenv("RULECRAFT_PACKAGE_DIR")
                        else ROOT / ".rulecraft" / "national-law")
     law_store = LawStore(law_dir or Path(os.getenv("RULECRAFT_LAW_DIR", str(default_law_dir))))
     law_jobs = LawJobs(law_store, lambda: LawSync(law_store))
@@ -125,13 +129,17 @@ def create_app(vault: Path | None = None, package_dir: Path | None = None,
 
     app = FastAPI(title="RuleCraft API", version=__version__,
                   description="Markdown 지식그래프와 규정 제·개정 검토용 문서 워크스페이스",
-                  lifespan=lifespan)
+                  lifespan=lifespan,
+                  docs_url=None if production else "/docs",
+                  redoc_url=None if production else "/redoc",
+                  openapi_url=None if production else "/openapi.json")
     app.add_middleware(CORSMiddleware,
                        allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
                        allow_credentials=False, allow_methods=["GET", "POST", "PUT"],
-                       allow_headers=["Content-Type"])
+                       allow_headers=["Content-Type", "Authorization"])
+    app.add_middleware(APIAuthMiddleware, token=api_token, production=production)
     store = GraphStore(vault or Path(os.getenv("RULECRAFT_VAULT", str(ROOT / "legal-knowledge-vault"))))
-    workflow = PackageWorkflow(store, package_dir or ROOT / ".rulecraft" / "packages", law_store=law_store)
+    workflow = PackageWorkflow(store, configured_package_dir, law_store=law_store)
     mcp_bridge = MCPBridge(store.vault, law_dir=law_store.root)
     lock = threading.RLock()
     app.state.store = store
@@ -373,6 +381,8 @@ def create_app(vault: Path | None = None, package_dir: Path | None = None,
     def frontend(path: str) -> FileResponse:
         if path == "api" or path.startswith("api/"):
             raise HTTPException(404, "API 경로를 찾을 수 없습니다.")
+        if production and path in {"docs", "redoc", "openapi.json"}:
+            raise HTTPException(404, "파일을 찾을 수 없습니다.")
         dist = (ROOT / "frontend" / "dist").resolve()
         requested = (dist / path).resolve()
         if not requested.is_relative_to(dist):

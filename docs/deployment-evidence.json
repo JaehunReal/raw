@@ -1,0 +1,46 @@
+{
+  "topology": "LoginGate → HTTPS Node api/proxy.mjs → bearer-auth HTTPS FastAPI → real MCP stdio",
+  "test_environment": "temporary local deployment; not a hosted publication",
+  "upstream_tls_verified": true,
+  "test_certificate": "temporary self-signed localhost SAN",
+  "anonymous_http_status": 401,
+  "wrong_password_http_status": 401,
+  "login_http_status": 200,
+  "logout_http_status": 200,
+  "after_logout_http_status": 401,
+  "workspace_nodes": 12,
+  "official_documents": 0,
+  "official_complete": false,
+  "mcp_server": {
+    "name": "RuleCraft",
+    "version": "1.29.0"
+  },
+  "mcp_transport": "stdio",
+  "mcp_nodes": 3,
+  "cookie": {
+    "http_only": true,
+    "secure": true,
+    "same_site": "Strict",
+    "path": "/api"
+  },
+  "browser_bearer_exposed": false,
+  "asset_secrets_exposed": false,
+  "mobile_width": 390,
+  "mobile_overflow": false,
+  "runtime_errors": 0,
+  "copied_source_unchanged": true,
+  "repository_source_unchanged": true,
+  "owned_processes_stopped": true,
+  "recorded_at": "2026-09-30T22:08:29.976040+00:00",
+  "backend_tests_passed": 117,
+  "proxy_tests_passed": 17,
+  "login_enabled_frontend_build_passed": true,
+  "hosted_deployment_verified": false,
+  "container_build_verified": false,
+  "external_blockers": [
+    "No configured Vercel or Render deployment credentials",
+    "Vercel and Render API tunnel requests returned 403 Forbidden",
+    "Docker registry request returned Forbidden"
+  ],
+  "official_provider_ingestion_verified": false
+}

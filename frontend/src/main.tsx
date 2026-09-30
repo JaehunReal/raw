@@ -37,6 +37,8 @@ import "@fontsource-variable/noto-sans-kr";
 import "./styles.css";
 import McpPlayground from "./McpPlayground";
 import NationalLawPanel from "./NationalLawPanel";
+import LoginGate from "./LoginGate";
+import { apiFetch } from "./apiFetch";
 
 type Node = {
   id: string;
@@ -116,7 +118,7 @@ const nav = [
 const steps = ["입안", "부서 사전협의", "입법예고", "법제·규제심사", "공포"];
 const API = "/api";
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const r = await fetch(API + path, {
+  const r = await apiFetch(API + path, {
     ...options,
     headers: { "Content-Type": "application/json", ...options.headers },
   });
@@ -2313,6 +2315,6 @@ function GraphCanvas({
 }
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
+    <LoginGate><App /></LoginGate>
   </React.StrictMode>,
 );

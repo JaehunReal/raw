@@ -16,6 +16,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import "./mcp.css";
+import { apiFetch } from "./apiFetch";
 
 type DemoNode = {
   id: string;
@@ -79,7 +80,7 @@ const toolCards = [
 ];
 const purpose = "인공지능 학습 목적과 안전성 요건을 명확히 하기 위함";
 async function fetchJson<T>(path: string, body?: unknown): Promise<T> {
-  const response = await fetch(
+  const response = await apiFetch(
     `/api/mcp/${path}`,
     body === undefined
       ? {}

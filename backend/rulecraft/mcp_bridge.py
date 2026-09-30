@@ -57,6 +57,11 @@ class MCPBridge:
 
     def _parameters(self) -> StdioServerParameters:
         environment = dict(os.environ)
+        # The stdio worker serves registered tools, not the public HTTP API.
+        # Keep tool-provider credentials but never forward the gateway secret.
+        for name in ("RULECRAFT_API_TOKEN", "RULECRAFT_DEPLOYMENT", "RULECRAFT_WEB_PASSWORD",
+                     "VERCEL_TOKEN", "RENDER_API_KEY"):
+            environment.pop(name, None)
         environment["RULECRAFT_VAULT"] = str(self.vault)
         if self.law_dir is not None:
             environment["RULECRAFT_LAW_DIR"] = str(self.law_dir)

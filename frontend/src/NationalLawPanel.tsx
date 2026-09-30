@@ -4,6 +4,7 @@ import {
   Clock3, Download, ExternalLink, FileText, Loader2, RefreshCw, Search, ShieldCheck, Square,
 } from "lucide-react";
 import "./national-laws.css";
+import { apiFetch } from "./apiFetch";
 
 type Source = "law" | "administrative" | "ordinance";
 const SOURCES: { id: Source; label: string; description: string }[] = [
@@ -50,7 +51,7 @@ const ACTIVE = new Set(["pending", "queued", "running", "cancelling"]);
 const EMPTY_COVERAGE: Coverage = { complete: false, scope: [], sources: {} };
 
 async function readJson<T>(path: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(`/api/laws${path}`, options);
+  const response = await apiFetch(`/api/laws${path}`, options);
   const body = await response.json().catch(() => null);
   if (!response.ok) {
     const detail = body?.detail;

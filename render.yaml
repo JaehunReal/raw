@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: rulecraft-api
+    runtime: docker
+    plan: starter
+    region: singapore
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    autoDeploy: false
+    numInstances: 1
+    healthCheckPath: /api/health
+    disk:
+      name: rulecraft-data
+      mountPath: /var/data
+      sizeGB: 20
+    envVars:
+      - key: RULECRAFT_DEPLOYMENT
+        value: production
+      - key: RULECRAFT_DATA_DIR
+        value: /var/data
+      - key: RULECRAFT_VAULT
+        value: /var/data/vault
+      - key: RULECRAFT_LAW_DIR
+        value: /var/data/national-law
+      - key: RULECRAFT_PACKAGE_DIR
+        value: /var/data/packages
+      - key: RULECRAFT_API_TOKEN
+        generateValue: true
+      # Optional: supply a valid official-law API account in Render settings.
+      # Empty allows the web app to start; collection reports the missing OC.
+      - key: RULECRAFT_LAW_OC
+        value: ""

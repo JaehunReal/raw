@@ -1,0 +1,7 @@
+{
+  "name": "rulecraft-deployment",
+  "private": true,
+  "type": "module",
+  "engines": { "node": "24.x" },
+  "scripts": { "test:proxy": "node --test tests/proxy.test.mjs" }
+}

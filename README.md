@@ -4,7 +4,7 @@
 
 ## 웹 배포
 
-프런트엔드는 Vercel에 배포하며, 백엔드가 준비되기 전에도 현재 구현을 볼 수 있는 공개 읽기 전용 시연 빌드를 제공합니다. 공개 URL은 아직 발급·검증되지 않았습니다. 실제 API 연동은 백엔드 서버의 접근 가능한 HTTPS 주소를 준비한 뒤 진행합니다.
+프런트엔드의 공개 읽기 전용 시연은 **[https://raw-ecru.vercel.app](https://raw-ecru.vercel.app)**에서 볼 수 있습니다. GitHub `main` 변경을 Vercel이 자동 배포하며, 실제 발급된 주소의 익명 접근을 확인했습니다. 실제 API 연동은 백엔드 서버의 접근 가능한 HTTPS 주소를 준비한 뒤 진행합니다.
 
 [Vercel에 GitHub 저장소 연결](https://vercel.com/new/import?s=https%3A%2F%2Fgithub.com%2FJaehunReal%2Fraw) · [공개 시연 안내](docs/public-preview.md) · [운영 백엔드 연결 요건](docs/deployment.md)
 

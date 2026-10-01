@@ -1,6 +1,6 @@
 import { useMemo, useState, type KeyboardEvent } from "react";
 import {
-  ArrowRight, ArrowUpRight, BookOpen, CheckCircle2, ChevronRight, CircleHelp,
+  ArrowRight, ArrowUpRight, BookOpen, CheckCircle2, ChevronRight,
   FileText, Files, GitBranch, LayoutDashboard, Library, LockKeyhole, Network,
   PlugZap, Search, ShieldCheck, Sparkles,
 } from "lucide-react";
@@ -226,7 +226,6 @@ export default function PublicPreview() {
         aria-current={view === item.id ? "page" : undefined}><item.icon size={19} /><span>{item.label}</span></button>)}</nav>
       <div className="sidebar-bottom preview-sidebar-bottom">
         <div className="preview-local-note"><ShieldCheck size={20} /><div><strong>예제를 직접 살펴보세요.</strong><p>검색과 관계 탐색은<br />브라우저에서 동작합니다.</p></div></div>
-        <a className="bottom-link" href={`${repository}/blob/main/docs/deployment.md`} target="_blank" rel="noreferrer"><CircleHelp size={17} /> 백엔드 연결 안내<ArrowUpRight size={14} /></a>
         <a className="preview-repository" href={repository} target="_blank" rel="noreferrer">GitHub에서 프로젝트 보기 <ArrowUpRight size={14} /></a>
       </div>
     </aside>
@@ -234,7 +233,7 @@ export default function PublicPreview() {
       <header className="topbar"><div className="breadcrumb"><span>공개 시연</span><ChevronRight size={13} /><strong>{navigation.find((item) => item.id === view)?.label}</strong></div>
         <span className="preview-mode"><EyeLabel /> 읽기 전용</span></header>
       <main>
-        <div className="preview-notice" data-testid="preview-notice"><LockKeyhole size={18} /><div><strong>공개 읽기 전용 시연</strong><p>규정과 문서는 합성 예제입니다. 백엔드는 연결 준비 중이며, 이 화면에서는 실제 API·MCP 실행과 편집·저장을 제공하지 않습니다.</p></div></div>
+        <div className="preview-notice" data-testid="preview-notice"><LockKeyhole size={18} /><div><strong>공개 읽기 전용 시연</strong><p>규정과 문서는 합성 예제입니다. 이 화면에서는 실제 API·MCP 실행과 편집·저장을 제공하지 않습니다.</p></div></div>
         {view === "dashboard" && <>
           <Heading eyebrow="YOUR REGULATORY WORKSPACE" title="규정의 흐름을 한눈에." description="지금까지 구현한 규정 저장소, 관계 탐색, 문서와 연동 검증을 살펴보세요." />
           <section className="preview-hero"><div><span className="pill light"><Sparkles size={12} /> RULECRAFT PREVIEW</span><h2>작은 변화도,<br /><span>빠짐없이 연결되도록.</span></h2><p>조문에서 상위법과 서식까지.<br />합성 예제로 규정 관리의 흐름을 확인하세요.</p><button onClick={() => setView("graph")}>규정 관계 살펴보기 <ArrowRight size={16} /></button></div>
@@ -246,7 +245,7 @@ export default function PublicPreview() {
             { label: "MCP 도구 검증 기록", value: mcp?.mcp_tools?.tool_count || 4, unit: "개 도구", detail: "2026-10-01 내부 연동 확인", icon: PlugZap, style: "lavender", target: "mcp", test: "preview-tool-count" },
           ].map((stat) => <button key={stat.label} className="stat-card" onClick={() => setView(stat.target as View)}><div className="stat-top"><span>{stat.label}</span><span className={`stat-icon ${stat.style}`}><stat.icon size={18} /></span></div><div className="stat-value"><span className="preview-stat-number" data-testid={stat.test}>{stat.value}</span><span>{stat.unit}</span></div><div className="stat-foot"><span className="stat-foot-dot" />{stat.detail}</div></button>)}</div>
           <div className="preview-columns"><section className="panel"><div className="panel-heading"><div><h3>예제 규정 둘러보기 <span className="count-tag">{graph.nodes.length}</span></h3><p>원문 형식과 조문 간 관계를 직접 확인하세요.</p></div><button className="text-button" onClick={() => setView("vault")}>전체 보기 <ChevronRight size={14} /></button></div><div className="preview-recent-list">{[defaultNode, ...graph.nodes.filter((node) => node.id !== defaultNode.id)].slice(0, 4).map((node) => <button key={node.id} onClick={() => openNode(node.id)}><span className="preview-doc-icon"><FileText size={18} /></span><span><strong>{node.title}</strong><small>{node.rule_name} · {article(node)}</small></span><span className="pill neutral">합성 예제</span><ChevronRight size={15} /></button>)}</div></section>
-            <section className="panel preview-progress"><div className="panel-heading"><div><h3>프로젝트 현재 상태</h3><p>구현과 실제 외부 연결을 구분해 확인합니다.</p></div></div><ul><li><CheckCircle2 size={18} /><div><strong>규정·관계·7개 문서 구성</strong><span>저장소 예제를 읽기 전용으로 공개했습니다.</span></div></li><li><CheckCircle2 size={18} /><div><strong>내부 API·MCP 검증 완료</strong><span>실제 stdio MCP와 인증 흐름의 과거 검증 기록입니다.</span></div></li><li><span className="preview-status-dot" /><div><strong>공식 법령 샘플 검증 기록</strong><span>{providerSummary} · 저장·전수 수집은 미실행입니다.</span></div></li><li><span className="preview-status-dot" /><div><strong>백엔드 연결 준비</strong><span>서버 구성 후 실제 API 연결을 확인합니다.</span></div></li></ul><a className="text-button" href={`${repository}/blob/main/docs/api-connection-review.md`} target="_blank" rel="noreferrer">검토 결과 읽기 <ArrowUpRight size={14} /></a></section></div>
+            <section className="panel preview-progress"><div className="panel-heading"><div><h3>프로젝트 현재 상태</h3><p>구현과 실제 외부 연결을 구분해 확인합니다.</p></div></div><ul><li><CheckCircle2 size={18} /><div><strong>규정·관계·7개 문서 구성</strong><span>저장소 예제를 읽기 전용으로 공개했습니다.</span></div></li><li><CheckCircle2 size={18} /><div><strong>내부 API·MCP 검증 완료</strong><span>실제 stdio MCP와 인증 흐름의 과거 검증 기록입니다.</span></div></li><li><span className="preview-status-dot" /><div><strong>공식 법령 샘플 검증 기록</strong><span>{providerSummary} · 저장·전수 수집은 미실행입니다.</span></div></li></ul><a className="text-button" href={`${repository}/blob/main/docs/api-connection-review.md`} target="_blank" rel="noreferrer">검토 결과 읽기 <ArrowUpRight size={14} /></a></section></div>
         </>}
         {view === "vault" && <>
           <Heading eyebrow="SYNTHETIC KNOWLEDGE VAULT" title="조문을 읽고, 연결을 이해하세요." description="저장소에 포함된 12개 합성 예제입니다. 실제 법령 원문이나 기관의 현행 규정이 아닙니다." />
@@ -291,15 +290,15 @@ export default function PublicPreview() {
             )}</div>
             <p className="preview-record-time">검토 시각: {recordedAt(evidence.provider?.checked_at)} (한국 시간) · 실시간 상태 아님</p>
           </section>
-          <section className="panel preview-next-steps"><h3>백엔드 연결 전에 확인할 내용</h3><ol><li>비공개 환경에 OC와 백엔드 인증값을 등록합니다.</li><li>소량 목록·본문 조회로 공식 API 응답을 확인합니다.</li><li>백엔드를 시작하고 실제 API·MCP와 공개 HTTPS 연결을 검증합니다.</li></ol><p>전국 수집과 전체 법적 적용성 검토는 별도 단계입니다.</p><div className="preview-links"><a className="button primary" href={`${repository}/blob/main/docs/deployment.md`} target="_blank" rel="noreferrer">백엔드 연결 안내 <ArrowUpRight size={15} /></a><a className="button secondary" href={`${repository}/blob/main/docs/api-connection-review.md`} target="_blank" rel="noreferrer">API 검토 기록 <ArrowUpRight size={15} /></a></div></section>
+          <a className="text-button preview-evidence-link" href={`${repository}/blob/main/docs/api-connection-review.md`} target="_blank" rel="noreferrer">API 검토 기록 <ArrowUpRight size={15} /></a>
         </>}
         {view === "mcp" && <>
           <Heading eyebrow="RECORDED MCP VERIFICATION" title="구현된 도구와 연동 검증을 확인하세요." description="내부 테스트 환경에서 수행한 실제 stdio MCP 검증 기록입니다. 현재 공개 화면의 실시간 연결 상태가 아닙니다." />
           <section className="preview-mcp-record" data-testid="preview-mcp-record"><PlugZap size={24} /><div><strong>2026-10-01 실제 MCP 내부 검증 완료</strong><p>도구 {mcp?.mcp_tools?.tool_count || 4}개 확인 · 조문 관계 조회 {mcp?.mcp_graph?.nodes || 3}개 노드 · stdio 전송</p><small>{recordedAt(mcp?.checked_at)} (한국 시간) · 임시 인증 API와 실제 자식 프로세스 사용</small></div><span className="pill sage">과거 검증 기록</span></section>
-          <div className="preview-mcp-layout"><div className="preview-tool-cards">{tools.map((tool, index) => <button key={tool.name} className={`panel ${index === toolIndex ? "selected" : ""}`} onClick={() => setToolIndex(index)} aria-pressed={index === toolIndex}><span className="preview-tool-icon"><tool.icon size={21} /></span><strong>{tool.title}</strong><small>{tool.name}</small><p>{tool.description}</p><span className="pill neutral">도구 구현 · 공개 실행 없음</span></button>)}</div><section className="panel preview-tool-reader"><div className="preview-reader-header"><span className="pill neutral">요청 형식 예제 · 읽기 전용</span><h2>{chosenTool.title}</h2><p>아래 JSON은 형식 예제이며 요청을 전송하지 않습니다.</p></div><pre>{JSON.stringify(chosenTool.parameters, null, 2)}</pre>{toolIndex === 0 ? <div className="preview-record-result"><h3>기록된 관계 조회 결과</h3><dl><div><dt>HTTP 상태</dt><dd>{mcp?.mcp_graph?.http_status || 200}</dd></div><div><dt>반환 노드</dt><dd>{mcp?.mcp_graph?.nodes || 3}개 합성 조문</dd></div><div><dt>검증 대상</dt><dd>데이터 반출 조문과 상위법 예제</dd></div></dl><p>이 결과는 공식 법령 API 연결 성공이나 법적 적용성 확인을 뜻하지 않습니다.</p></div> : <div className="preview-record-result"><h3>현재 시연 범위</h3><p>이 도구의 실제 실행은 백엔드 연결 준비 후 확인합니다. 공개 화면에서는 도구 설명과 입력 형식만 제공합니다.</p></div>}</section></div>
+          <div className="preview-mcp-layout"><div className="preview-tool-cards">{tools.map((tool, index) => <button key={tool.name} className={`panel ${index === toolIndex ? "selected" : ""}`} onClick={() => setToolIndex(index)} aria-pressed={index === toolIndex}><span className="preview-tool-icon"><tool.icon size={21} /></span><strong>{tool.title}</strong><small>{tool.name}</small><p>{tool.description}</p><span className="pill neutral">도구 구현 · 공개 실행 없음</span></button>)}</div><section className="panel preview-tool-reader"><div className="preview-reader-header"><span className="pill neutral">요청 형식 예제 · 읽기 전용</span><h2>{chosenTool.title}</h2><p>아래 JSON은 형식 예제이며 요청을 전송하지 않습니다.</p></div><pre>{JSON.stringify(chosenTool.parameters, null, 2)}</pre>{toolIndex === 0 ? <div className="preview-record-result"><h3>기록된 관계 조회 결과</h3><dl><div><dt>HTTP 상태</dt><dd>{mcp?.mcp_graph?.http_status || 200}</dd></div><div><dt>반환 노드</dt><dd>{mcp?.mcp_graph?.nodes || 3}개 합성 조문</dd></div><div><dt>검증 대상</dt><dd>데이터 반출 조문과 상위법 예제</dd></div></dl><p>이 결과는 공식 법령 API 연결 성공이나 법적 적용성 확인을 뜻하지 않습니다.</p></div> : <div className="preview-record-result"><h3>현재 시연 범위</h3><p>공개 화면에서는 도구 설명과 입력 형식만 제공합니다.</p></div>}</section></div>
           <a className="text-button preview-evidence-link" href={`${repository}/blob/main/docs/api-connection-evidence.json`} target="_blank" rel="noreferrer">전체 공개 검증 기록 보기 <ArrowUpRight size={14} /></a>
         </>}
-        <footer className="preview-footer"><span>RuleCraft · 공개 합성 예제</span><span>백엔드 연결 준비</span><a href={`${repository}/blob/main/docs/api-connection-evidence.json`} target="_blank" rel="noreferrer">검증 기록 <ArrowUpRight size={12} /></a></footer>
+        <footer className="preview-footer"><span>RuleCraft · 공개 합성 예제</span><a href={`${repository}/blob/main/docs/api-connection-evidence.json`} target="_blank" rel="noreferrer">검증 기록 <ArrowUpRight size={12} /></a></footer>
       </main>
     </div>
   </div>;

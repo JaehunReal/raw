@@ -4,11 +4,9 @@
 
 ## 웹 배포
 
-Vercel 웹 화면과 영구 저장소를 갖춘 Render 백엔드를 연결하는 배포 설정을 제공합니다. 비밀번호 로그인 후 규정 조회·편집·패키지 다운로드와 실제 MCP 예제를 사용할 수 있도록 구성했습니다. [배포 순서와 환경 변수](docs/deployment.md)를 확인하세요.
+프런트엔드는 Vercel, Python 백엔드는 사용자의 **Mac mini 서버에서 운영할 예정**입니다. 현재 백엔드 구축과 공개 배포는 보류 중이며, 발급·검증한 공개 URL은 없습니다. Vercel 연동은 Mac mini 백엔드의 실제 접근 가능한 HTTPS 주소가 준비된 뒤 진행합니다. [배포 대기 상태와 연결 요건](docs/deployment.md)을 확인하세요.
 
-[Render 백엔드 배포](https://render.com/deploy?repo=https://github.com/JaehunReal/raw) · [Vercel에 저장소 가져오기](https://vercel.com/new)
-
-현재 공급자 계정이 연결되지 않아 공개 URL은 발급하지 못했습니다. Render 설정은 유료 서버와 영구 디스크를 사용합니다. 공식 원문 수집에는 별도로 국가법령정보 API 계정이 필요합니다.
+국가법령정보 API 계정은 추후 Mac mini 백엔드에 설정합니다. 백엔드 인증 토큰은 Mac mini와 Vercel의 서버 환경에 같은 값으로 등록하며, 브라우저 코드에 넣지 않습니다.
 
 ## 공식 법령 전체 목록·전문 수집
 

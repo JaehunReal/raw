@@ -82,7 +82,7 @@
     "deployment_source": "GitHub main auto-deployment",
     "deployment_state": "READY",
     "deployment_target": "production",
-    "deployment_commit": "b106c0fc47d9ad06bed1e0f7b9ba4d380a2cd4dc",
+    "deployment_commit": "42dabd88a79a7b7043b57a1d5ca4c8a9e52ab615",
     "public_url": "https://raw-ecru.vercel.app",
     "anonymous_http_status": 200,
     "backend_deployed": false
@@ -134,5 +134,193 @@
     "live_content_matches_current_snapshot": true,
     "unique_resources_verified": 19
   },
-  "hosted_verification_pending_for_latest_build": true
+  "hosted_verification": {
+    "public_url": "https://raw-ecru.vercel.app",
+    "deployment_commit": "42dabd88a79a7b7043b57a1d5ca4c8a9e52ab615",
+    "checked_at": "2026-10-01T15:24:20.986535+09:00",
+    "anonymous": true,
+    "backend_started": false,
+    "official_api_contacted": false,
+    "screenshots_created": false,
+    "https_transport": "urllib.request with inherited proxy and default verified TLS; Playwright routes fulfilled only from actual same-origin HTTPS responses",
+    "native_chromium_https_verified": false,
+    "native_chromium_transport_limitation": "Previously diagnosed ERR_CERT_AUTHORITY_INVALID for session proxy CA; native attempt not repeated",
+    "tls_verification_disabled": false,
+    "anonymous_api_health_status": 503,
+    "anonymous_api_fail_closed": true,
+    "preview": {
+      "mode": "public_read_only_demo",
+      "tabs_verified": [
+        "워크스페이스",
+        "규정 예제 저장소",
+        "규정 관계 그래프",
+        "변경 영향 예제",
+        "문서 패키지 예제",
+        "공식 법령 현황",
+        "MCP 검증 기록"
+      ],
+      "source_documents_verified": 12,
+      "relations_verified": 31,
+      "package_documents_verified": 7,
+      "source_markdown_matches_tracked_demo": true,
+      "official_documents": 0,
+      "provider_sources_displayed": [
+        {
+          "source": "law",
+          "catalogue_verified": true,
+          "catalogue_total": 5621,
+          "catalogue_sample_count": 1,
+          "full_document_verified": true,
+          "sample_title": "10ㆍ27법난 피해자의 명예회복 등에 관한 법률",
+          "article_count": 8,
+          "response_identity_verified": true,
+          "response_version_verified": false,
+          "parse_warnings": [
+            "missing_document_version"
+          ]
+        },
+        {
+          "source": "administrative",
+          "catalogue_verified": true,
+          "catalogue_total": 24160,
+          "catalogue_sample_count": 1,
+          "full_document_verified": true,
+          "sample_title": "10·29이태원참사 진상규명과 재발방지를 위한 특별조사위원회 공무직 등에 관한 운영 규정",
+          "article_count": 74,
+          "response_identity_verified": true,
+          "response_version_verified": true,
+          "parse_warnings": [
+            "attachment_files_not_downloaded",
+            "unstructured_paragraphs"
+          ]
+        },
+        {
+          "source": "ordinance",
+          "catalogue_verified": true,
+          "catalogue_total": 161416,
+          "catalogue_sample_count": 1,
+          "full_document_verified": true,
+          "sample_title": "2018성공개최평창군위원회 설립 및 지원 조례",
+          "article_count": 6,
+          "response_identity_verified": true,
+          "response_version_verified": true,
+          "parse_warnings": []
+        }
+      ],
+      "provider_recorded_at": "2026-10-01T15:19:10.426166+09:00",
+      "provider_verification_does_not_claim_storage_or_full_coverage": true,
+      "past_mcp_tools_displayed": 4,
+      "past_mcp_nodes_displayed": 3,
+      "mobile_width": 390,
+      "mobile_overflow": false,
+      "runtime_errors": 0,
+      "console_errors": 0,
+      "failed_requests": 0,
+      "api_requests": 0,
+      "external_requests": 0
+    },
+    "live_content_matches_current_snapshot": true,
+    "verified_unique_remote_resources": [
+      {
+        "path": "/",
+        "status": 200,
+        "bytes": 686
+      },
+      {
+        "path": "/assets/index-wxRFG6B_.js",
+        "status": 200,
+        "bytes": 308038
+      },
+      {
+        "path": "/assets/index-D87IB9_h.css",
+        "status": 200,
+        "bytes": 158312
+      },
+      {
+        "path": "/favicon.svg",
+        "status": 200,
+        "bytes": 247
+      },
+      {
+        "path": "/assets/dm-sans-latin-wght-normal-Xz1IZZA0.woff2",
+        "status": 200,
+        "bytes": 36932
+      },
+      {
+        "path": "/assets/noto-sans-kr-119-wght-normal-C_6m2-od.woff2",
+        "status": 200,
+        "bytes": 16676
+      },
+      {
+        "path": "/assets/noto-sans-kr-118-wght-normal-Be8jlQ51.woff2",
+        "status": 200,
+        "bytes": 14664
+      },
+      {
+        "path": "/assets/noto-sans-kr-117-wght-normal-DNkILo1k.woff2",
+        "status": 200,
+        "bytes": 14460
+      },
+      {
+        "path": "/assets/noto-sans-kr-116-wght-normal-DvHAaAUg.woff2",
+        "status": 200,
+        "bytes": 16200
+      },
+      {
+        "path": "/assets/noto-sans-kr-112-wght-normal-DApkhTZy.woff2",
+        "status": 200,
+        "bytes": 16448
+      },
+      {
+        "path": "/assets/noto-sans-kr-115-wght-normal-Czx6kN3B.woff2",
+        "status": 200,
+        "bytes": 16272
+      },
+      {
+        "path": "/assets/noto-sans-kr-110-wght-normal-Bz2J7MHi.woff2",
+        "status": 200,
+        "bytes": 17608
+      },
+      {
+        "path": "/assets/noto-sans-kr-114-wght-normal-BcwVxkxL.woff2",
+        "status": 200,
+        "bytes": 16212
+      },
+      {
+        "path": "/assets/noto-sans-kr-113-wght-normal-DnhzVD4m.woff2",
+        "status": 200,
+        "bytes": 16464
+      },
+      {
+        "path": "/assets/noto-sans-kr-111-wght-normal-DeeXajyY.woff2",
+        "status": 200,
+        "bytes": 17464
+      },
+      {
+        "path": "/assets/noto-sans-kr-latin-wght-normal-CZ1P3i-_.woff2",
+        "status": 200,
+        "bytes": 26004
+      },
+      {
+        "path": "/assets/noto-sans-kr-108-wght-normal-CVosuT20.woff2",
+        "status": 200,
+        "bytes": 19672
+      },
+      {
+        "path": "/assets/noto-sans-kr-101-wght-normal-yIk-xkbt.woff2",
+        "status": 200,
+        "bytes": 26076
+      },
+      {
+        "path": "/assets/noto-sans-kr-107-wght-normal-CWnd6wcQ.woff2",
+        "status": 200,
+        "bytes": 18424
+      }
+    ],
+    "anonymous_api_health_path": "/api/health",
+    "backend_gateway_configuration_pending": true,
+    "actual_backend_health_endpoint_verified": false,
+    "additional_legacy_api_path": "/api/v1/health",
+    "additional_legacy_api_status": 503
+  }
 }

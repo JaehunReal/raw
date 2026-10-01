@@ -28,7 +28,7 @@ SOURCES = {
     "administrative": {"target": "admrul", "search_root": "AdmRulSearch", "items": {"admrul"},
                        "full_roots": {"행정규칙", "AdmRulService", "admrul"}},
     "ordinance": {"target": "ordin", "search_root": "OrdinSearch", "items": {"ordin", "law"},
-                  "full_roots": {"자치법규", "OrdinService", "ordin"}},
+                  "full_roots": {"자치법규", "OrdinService", "LawService", "ordin"}},
 }
 ALIASES = {"law": "law", "laws": "law", "statute": "law", "statutes": "law",
            "administrative": "administrative", "admrul": "administrative", "administrative_rule": "administrative",
@@ -80,10 +80,17 @@ def _children(element: ET.Element, names: set[str]) -> list[ET.Element]:
     return [child for child in element if _tag(child) in names]
 
 
-def _metadata_value(element: ET.Element, *names: str) -> str | None:
-    """Read document headers without borrowing another provision's metadata."""
+def _metadata_headers(element: ET.Element, source: str | None = None) -> list[ET.Element]:
     headers = _children(element, {"기본정보"})
-    for header in [*headers, element]:
+    source_header = {"administrative": "행정규칙기본정보", "ordinance": "자치법규기본정보"}.get(source)
+    if source_header:
+        headers = _children(element, {source_header}) + headers
+    return [*headers, element]
+
+
+def _metadata_value(element: ET.Element, *names: str, source: str | None = None) -> str | None:
+    """Read document headers without borrowing another provision's metadata."""
+    for header in _metadata_headers(element, source):
         for name in names:
             for child in header:
                 if _tag(child) == name:
@@ -160,22 +167,21 @@ def _check_api_error(root: ET.Element, source: str) -> None:
 
 def _identity(element: ET.Element, source: str) -> tuple[str | None, str | None, str | None]:
     if source == "law":
-        stable = _metadata_value(element, "법령ID", "법령아이디", "lawId")
+        stable = _metadata_value(element, "법령ID", "법령아이디", "lawId", source=source)
         # 법령키 is a compound official key, not the MST sequence identifier.
-        version = _metadata_value(element, "법령일련번호", "MST")
-        title = _metadata_value(element, "법령명한글", "법령명", "법령명_한글", "lawName")
+        version = _metadata_value(element, "법령일련번호", "MST", source=source)
+        title = _metadata_value(element, "법령명한글", "법령명", "법령명_한글", "lawName", source=source)
     elif source == "administrative":
-        stable = _metadata_value(element, "행정규칙ID", "행정규칙아이디")
-        version = _metadata_value(element, "행정규칙일련번호")
-        title = _metadata_value(element, "행정규칙명", "행정규칙명한글")
+        stable = _metadata_value(element, "행정규칙ID", "행정규칙아이디", source=source)
+        version = _metadata_value(element, "행정규칙일련번호", source=source)
+        title = _metadata_value(element, "행정규칙명", "행정규칙명한글", source=source)
     else:
-        stable = _metadata_value(element, "자치법규ID", "자치법규아이디")
-        version = _metadata_value(element, "자치법규일련번호")
-        title = _metadata_value(element, "자치법규명", "자치법규명한글")
+        stable = _metadata_value(element, "자치법규ID", "자치법규아이디", source=source)
+        version = _metadata_value(element, "자치법규일련번호", source=source)
+        title = _metadata_value(element, "자치법규명", "자치법규명한글", source=source)
     id_names = {"law": "법령ID", "administrative": "행정규칙ID", "ordinance": "자치법규ID"}
     version_names = {"law": "법령일련번호", "administrative": "행정규칙일련번호", "ordinance": "자치법규일련번호"}
-    headers = _children(element, {"기본정보"})
-    for header in [*headers, element]:
+    for header in _metadata_headers(element, source):
         stable = stable or header.get(id_names[source])
         version = version or header.get(version_names[source])
     return stable or version, version, title
@@ -228,6 +234,13 @@ def _plain_content(element: ET.Element, names: set[str]) -> str:
     return "\n".join(parts)
 
 
+def _unstructured_content(root: ET.Element) -> str:
+    # Administrative responses can split one article across repeated direct
+    # 조문내용 siblings. Keep every fragment in its original document order.
+    direct = _plain_content(root, {"조문내용", "행정규칙내용", "자치법규내용", "본문내용"})
+    return direct or _value(root, "조문내용", "행정규칙내용", "자치법규내용", "본문내용") or ""
+
+
 def _item(item: ET.Element) -> dict[str, Any]:
     text = _plain_content(item, {"호내용", "호본문", "text"})
     subitems = [_plain_content(sub, {"목내용", "text"})
@@ -251,14 +264,15 @@ def _paragraphs(unit: ET.Element) -> list[dict[str, Any]]:
     return paragraphs
 
 
-def _provisions(root: ET.Element, warnings: list[str]) -> list[dict[str, Any]]:
+def _provisions(root: ET.Element, warnings: list[str], source: str | None = None) -> list[dict[str, Any]]:
     result = []
     for unit in root.iter():
         if _tag(unit) not in {"조문단위", "조", "article"}:
             continue
         # Chapter/section headings can share a numeric 조문번호 with an
         # actual article. Their explicit 전문 marker takes precedence.
-        if _value(unit, "조문여부") == "전문":
+        marker = _value(unit, "조문여부")
+        if marker == "전문" or (source == "ordinance" and marker == "N"):
             continue
         article_no = _article_number(unit)
         if not article_no:
@@ -277,9 +291,8 @@ def _provisions(root: ET.Element, warnings: list[str]) -> list[dict[str, Any]]:
                                     "branch_no": _value(unit, "조문가지번호", "조가지번호")}})
     if result:
         return result
-    # Administrative instruments can expose one unstructured 조문내용 field.
-    contents = [_value(root, "조문내용", "행정규칙내용", "자치법규내용", "본문내용")]
-    text = "\n".join(value for value in contents if value)
+    # Administrative instruments can expose repeated unstructured text fields.
+    text = _unstructured_content(root)
     matches = list(re.finditer(r"(?m)^\s*(제\d+조(?:의\d+)?)(?:\(([^\n)]*)\))?", text))
     for index, match in enumerate(matches):
         end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
@@ -430,8 +443,9 @@ class LawClient:
 
     @staticmethod
     def _full_params(source: str, source_id: str, version_id: str, identifier_type: str | None = None) -> dict[str, str]:
-        key = "MST" if source == "law" and (identifier_type == "MST" or version_id != source_id) else "ID"
-        return {"target": SOURCES[source]["target"], "type": "XML", key: version_id if key == "MST" or source != "law" else source_id}
+        key = "MST" if source in {"law", "ordinance"} and (identifier_type == "MST" or version_id != source_id) else "ID"
+        value = version_id if key == "MST" or source == "administrative" else source_id
+        return {"target": SOURCES[source]["target"], "type": "XML", key: value}
 
     def catalog(self, source: str, page: int = 1, page_size: int = 100) -> dict[str, Any]:
         source = canonical_source(source)
@@ -455,7 +469,7 @@ class LawClient:
         for node in nodes:
             source_id, version_id, title = _identity(node, source)
             version_identifier_available = bool(version_id)
-            identifier_type = "MST" if source == "law" and version_id else "ID"
+            identifier_type = "MST" if source in {"law", "ordinance"} and version_id else "ID"
             version_id = version_id or source_id
             if not source_id or not version_id or not title:
                 raise LawSourceError("missing_identity", "법령 목록에 식별자 또는 명칭이 누락되었습니다.", source)
@@ -465,11 +479,11 @@ class LawClient:
                 raise LawSourceError("duplicate_identity", "법령 목록에 중복 버전 식별자가 있습니다.", source)
             seen.add(version_id)
             warnings: list[str] = []
-            publication_date = _iso_date(_metadata_value(node, "공포일자", "발령일자", "제정일자"), "publication_date", warnings)
-            effective_date = _iso_date(_metadata_value(node, "시행일자", "시행일"), "effective_date", warnings)
+            publication_date = _iso_date(_metadata_value(node, "공포일자", "발령일자", "제정일자", source=source), "publication_date", warnings)
+            effective_date = _iso_date(_metadata_value(node, "시행일자", "시행일", source=source), "effective_date", warnings)
             items.append({"source": source, "source_id": source_id, "version_id": version_id, "title": self._public_field(title),
                           "publication_date": publication_date, "effective_date": effective_date,
-                          "publication_no": self._public_field(number) if (number := _metadata_value(node, "공포번호", "발령번호")) else None,
+                          "publication_no": self._public_field(number) if (number := _metadata_value(node, "공포번호", "발령번호", source=source)) else None,
                           "source_url": self._source_url(source, source_id, version_id, identifier_type),
                           "metadata": {"parse_warnings": warnings, "version_identifier_type": identifier_type,
                                        "version_identifier_available": version_identifier_available,
@@ -490,24 +504,30 @@ class LawClient:
         _check_api_error(root, source)
         if _tag(root) not in SOURCES[source]["full_roots"]:
             raise LawSourceError("unexpected_schema", "요청한 자료 범위의 법령 본문 응답이 아닙니다.", source)
+        if source == "ordinance" and _tag(root) == "LawService" and not _children(root, {"자치법규기본정보"}):
+            raise LawSourceError("unexpected_schema", "자치법규 본문 응답의 기본정보를 확인할 수 없습니다.", source)
         actual_id, actual_version, title = _identity(root, source)
         if not actual_id and not actual_version:
             raise LawSourceError("identity_unverifiable", "법령 본문 응답의 자료 식별자를 확인할 수 없습니다.", source)
         if actual_id and actual_id != source_id and actual_id != version_id:
             raise LawSourceError("identity_mismatch", "요청한 법령과 본문 응답의 식별자가 일치하지 않습니다.", source)
-        requested_version_known = identifier_type == "MST" or version_id != source_id or source != "law"
+        requested_version_known = identifier_type == "MST" or version_id != source_id or source == "administrative"
         if actual_version and requested_version_known and actual_version != version_id:
             raise LawSourceError("version_mismatch", "요청한 버전과 법령 본문 응답의 버전이 일치하지 않습니다.", source)
         if not title:
             raise LawSourceError("missing_identity", "법령 본문 응답에 명칭이 누락되었습니다.", source)
         warnings: list[str] = []
-        publication_date = _iso_date(_metadata_value(root, "공포일자", "발령일자", "제정일자"), "publication_date", warnings)
-        effective_date = _iso_date(_metadata_value(root, "시행일자", "시행일"), "effective_date", warnings)
-        provisions = _provisions(root, warnings)
+        publication_date = _iso_date(_metadata_value(root, "공포일자", "발령일자", "제정일자", source=source), "publication_date", warnings)
+        effective_date = _iso_date(_metadata_value(root, "시행일자", "시행일", source=source), "effective_date", warnings)
+        provisions = _provisions(root, warnings, source)
         supplementary, attachments = _sections(root)
-        text = "\n\n".join(provision["text"] for provision in provisions if provision["text"])
+        # Preserve unstructured preambles as well as article fragments. For
+        # structured responses, keep the article-only flattening without adding
+        # a second copy of the same body from a summary text field.
+        text = (_unstructured_content(root) if "unstructured_paragraphs" in warnings else
+                "\n\n".join(provision["text"] for provision in provisions if provision["text"]))
         if not text:
-            text = _value(root, "조문내용", "행정규칙내용", "자치법규내용", "본문내용") or ""
+            text = _unstructured_content(root)
         if not text.strip():
             raise LawSourceError("missing_content", "법령 본문 응답에 조문 내용이 없습니다.", source)
         if not provisions:
@@ -522,7 +542,7 @@ class LawClient:
             warnings.append("requested_version_unverified")
         return {"source": source, "source_id": source_id, "version_id": version_id, "title": title,
                 "publication_date": publication_date, "effective_date": effective_date,
-                "publication_no": _metadata_value(root, "공포번호", "발령번호"),
+                "publication_no": _metadata_value(root, "공포번호", "발령번호", source=source),
                 "source_url": self._source_url(source, source_id, version_id, identifier_type), "raw": raw,
                 "raw_format": raw_format, "text": text, "provisions": provisions,
                 "metadata": {"parse_warnings": sorted(set(warnings)), "official_response": True,

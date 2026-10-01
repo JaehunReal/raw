@@ -165,19 +165,73 @@ def verify_preview(browser, base: str, snapshot: dict) -> dict:
 
     navigate(page, "공식 법령 현황")
     status = page.get_by_test_id("preview-law-status")
-    expect(status).to_contain_text("403")
-    expect(status).to_contain_text("0")
-    expect(status).to_contain_text("확인하지 못했습니다")
-    expect(status).to_contain_text("목록 일부 확인")
-    law_source = page.get_by_test_id("preview-law-source-law")
-    expect(law_source).to_contain_text("목록 확인")
-    expect(law_source).to_contain_text("전문 HTTP 403")
-    expect(law_source).to_contain_text("5,621건")
-    expect(law_source).to_contain_text("샘플 1건")
-    for source in ("administrative", "ordinance"):
+    expect(status).to_contain_text("공식 원문 저장 0건")
+    expect(status).to_contain_text("샘플은 저장하지 않았습니다")
+    expect(status).to_contain_text("전국 수집과 전체 법적 적용성 검토는 아직 수행하지 않았습니다")
+    expect(status).to_contain_text("실시간 상태 아님")
+    provider = snapshot["verification"].get("provider") or {}
+    recorded_sources = {record["source"]: record for record in provider.get("sources", [])}
+    source_ids = ("law", "administrative", "ordinance")
+    catalogue_count = sum(bool(recorded_sources.get(source, {}).get("catalogue_verified"))
+                          for source in source_ids)
+    full_count = sum(bool(recorded_sources.get(source, {}).get("full_document_verified"))
+                    for source in source_ids)
+    expect(status).to_contain_text(f"목록 {catalogue_count}종, 전문 샘플 {full_count}종")
+    displayed_sources = []
+    for source in source_ids:
         source_card = page.get_by_test_id(f"preview-law-source-{source}")
-        expect(source_card).to_contain_text("목록 HTTP 502")
-        expect(source_card).to_contain_text("목록 미확인 · 전문 미확보")
+        result = page.get_by_test_id(f"preview-law-result-{source}")
+        catalogue = page.get_by_test_id(f"preview-law-catalogue-{source}")
+        expect(source_card).to_contain_text("0건 저장")
+        record = recorded_sources.get(source)
+        if record is None:
+            expect(result).to_have_text("검증 기록 없음")
+            expect(catalogue).to_contain_text("목록 미확인")
+            displayed_sources.append({"source": source, "recorded": False})
+            continue
+        catalogue_verified = bool(record.get("catalogue_verified"))
+        full_verified = bool(record.get("full_document_verified"))
+        if catalogue_verified:
+            expect(result).to_contain_text("목록 확인")
+            total = record.get("catalogue_total")
+            expect(catalogue).to_contain_text(f"목록 총 {total:,}건" if total is not None
+                                             else "목록 총 미확인건")
+            expect(catalogue).to_contain_text(f"샘플 {record.get('catalogue_sample_count', 0)}건")
+        else:
+            expect(result).to_contain_text("목록 미확인")
+            expect(catalogue).to_contain_text("전국 수집 미실행")
+        sample = page.get_by_test_id(f"preview-law-sample-{source}")
+        identity = page.get_by_test_id(f"preview-law-identity-{source}")
+        if full_verified:
+            expect(result).to_contain_text("전문 샘플 확인")
+            expect(result).not_to_contain_text("HTTP")
+            expect(sample).to_contain_text(record.get("sample_title") or "제목 미기록")
+            articles = record.get("article_count")
+            expect(sample).to_contain_text(f"조문 {articles:,}개" if articles is not None
+                                          else "조문 미확인개")
+            identity_status = "확인" if record.get("response_identity_verified") else "미확인"
+            version_status = "확인" if record.get("response_version_verified") else "미확인"
+            expect(identity).to_have_text(f"응답 식별자 {identity_status} · 요청 버전 {version_status}")
+            warning_codes = source_card.locator("[data-warning-code]").evaluate_all(
+                "elements => elements.map(element => element.dataset.warningCode)")
+            assert warning_codes == record.get("parse_warnings", []), source
+        else:
+            expect(sample).to_have_count(0)
+            expect(identity).to_have_count(0)
+            if catalogue_verified:
+                expect(result).to_contain_text("전문 미확인")
+            error = record.get("error") or {}
+            if error.get("status_code"):
+                expect(result).to_contain_text(f"HTTP {error['status_code']}")
+            elif error:
+                expect(result).to_contain_text("오류")
+                expect(result).not_to_contain_text("HTTP")
+            if error.get("code"):
+                expect(result).to_contain_text(error["code"])
+        displayed_sources.append({key: record[key] for key in (
+            "source", "catalogue_verified", "catalogue_total", "catalogue_sample_count",
+            "full_document_verified", "sample_title", "article_count", "response_identity_verified",
+            "response_version_verified", "parse_warnings", "error") if key in record})
     navigate(page, "MCP 검증 기록")
     mcp = page.get_by_test_id("preview-mcp-record")
     expect(mcp).to_contain_text("4")
@@ -216,9 +270,9 @@ def verify_preview(browser, base: str, snapshot: dict) -> dict:
     return {"mode": "public_read_only_demo", "tabs_verified": list(TABS),
             "source_documents_verified": len(nodes), "relations_verified": len(edges),
             "package_documents_verified": len(documents), "source_markdown_matches_tracked_demo": True,
-            "official_documents": 0, "provider_full_text_status_displayed": 403,
-            "provider_catalogue_total_displayed": 5621, "provider_catalogue_sample_displayed": 1,
-            "administrative_catalogue_status_displayed": 502, "ordinance_catalogue_status_displayed": 502,
+            "official_documents": 0, "provider_sources_displayed": displayed_sources,
+            "provider_recorded_at": provider.get("checked_at"),
+            "provider_verification_does_not_claim_storage_or_full_coverage": True,
             "past_mcp_tools_displayed": 4, "past_mcp_nodes_displayed": 3,
             "mobile_width": 390, "mobile_overflow": False, "runtime_errors": 0,
             "console_errors": 0, "failed_requests": 0, "api_requests": 0, "external_requests": 0}

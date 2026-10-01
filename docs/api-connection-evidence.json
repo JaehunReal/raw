@@ -1,10 +1,10 @@
 {
   "recorded_at": "2026-10-01T11:34:20.375042+09:00",
   "provider": {
-    "checked_at": "2026-10-01T14:33:01.628616+09:00",
+    "checked_at": "2026-10-01T15:19:10.426166+09:00",
     "configured": true,
     "scope": "one catalogue page and at most one full document per selected source",
-    "provider_access_verified": false,
+    "provider_access_verified": true,
     "full_collection_verified": false,
     "writes_corpus": false,
     "sources": [
@@ -12,44 +12,55 @@
         "source": "law",
         "target": "law",
         "catalogue_verified": true,
-        "full_document_verified": false,
+        "full_document_verified": true,
         "catalogue_total": 5621,
         "catalogue_sample_count": 1,
-        "error": {
-          "code": "access_denied",
-          "message": "법령 API HTTP 요청이 실패했습니다.",
-          "source": "law",
-          "retriable": false,
-          "status_code": 403
-        }
+        "sample_title": "10ㆍ27법난 피해자의 명예회복 등에 관한 법률",
+        "article_count": 8,
+        "raw_bytes": 17189,
+        "raw_sha256": "1c20f6a0b50dc0ab2bd0313b4cb4b185a32a1d68d1f1419aa1e04759a6788a9b",
+        "response_identity_verified": true,
+        "response_version_verified": false,
+        "parse_warnings": [
+          "missing_document_version"
+        ]
       },
       {
         "source": "administrative",
         "target": "admrul",
-        "catalogue_verified": false,
-        "full_document_verified": false,
-        "error": {
-          "code": "http_error",
-          "message": "법령 API HTTP 요청이 실패했습니다.",
-          "source": "administrative",
-          "retriable": true,
-          "status_code": 502
-        }
+        "catalogue_verified": true,
+        "full_document_verified": true,
+        "catalogue_total": 24160,
+        "catalogue_sample_count": 1,
+        "sample_title": "10·29이태원참사 진상규명과 재발방지를 위한 특별조사위원회 공무직 등에 관한 운영 규정",
+        "article_count": 74,
+        "raw_bytes": 167747,
+        "raw_sha256": "6d65a7c2584726c1bfd0062fbc81a54001fd724f96b23f3669e3878d2a75e72e",
+        "response_identity_verified": true,
+        "response_version_verified": true,
+        "parse_warnings": [
+          "attachment_files_not_downloaded",
+          "unstructured_paragraphs"
+        ]
       },
       {
         "source": "ordinance",
         "target": "ordin",
-        "catalogue_verified": false,
-        "full_document_verified": false,
-        "error": {
-          "code": "http_error",
-          "message": "법령 API HTTP 요청이 실패했습니다.",
-          "source": "ordinance",
-          "retriable": true,
-          "status_code": 502
-        }
+        "catalogue_verified": true,
+        "full_document_verified": true,
+        "catalogue_total": 161416,
+        "catalogue_sample_count": 1,
+        "sample_title": "2018성공개최평창군위원회 설립 및 지원 조례",
+        "article_count": 6,
+        "raw_bytes": 4270,
+        "raw_sha256": "b9d349bf4e87d499c55a1b9c578a63b43a2effd5814277a34ec612a38a8c63d5",
+        "response_identity_verified": true,
+        "response_version_verified": true,
+        "parse_warnings": []
       }
-    ]
+    ],
+    "per_request_retry_limit": 1,
+    "retry_scope": "one retry for retriable HTTP/network failures; access denials are not retried"
   },
   "internal_api_mcp": {
     "checked_at": "2026-10-01T11:17:28.986300+09:00",
@@ -140,7 +151,7 @@
   "regression_validation": {
     "backend_command": "uv run --project backend --frozen python -m unittest discover -s tests -q",
     "backend_tests_run": 157,
-    "backend_tests_passed": 157,
+    "backend_tests_passed": 168,
     "backend_exit_code": 0,
     "backend_elapsed_seconds": 12.479,
     "loaded_private_env_for_regression_tests": false,
@@ -212,5 +223,172 @@
       }
     ]
   },
-  "latest_connectivity_note": "법령 목록 실제 조회 성공; 본문 HTTP403, 행정규칙·자치법규 목록 HTTP502. 공식 원문 저장과 전수 수집은 하지 않음."
+  "latest_connectivity_note": "2026-10-01 15:19 한국 시간, 실제 응답 형식과 자치법규 MST 요청을 수정한 코드에서 3종 목록과 전문 표본을 모두 조회했다. 재시도는 일시 HTTP/네트워크 오류에 요청당 1회만 허용했다. 원문 저장·전수 수집은 미실행이며 법령 표본 응답의 버전 식별자는 미확인, 행정규칙의 항·호 구조 및 첨부파일 수집도 미완료다.",
+  "provider_previous_checks": [
+    {
+      "checked_at": "2026-10-01T14:33:01.628616+09:00",
+      "configured": true,
+      "scope": "one catalogue page and at most one full document per selected source",
+      "provider_access_verified": false,
+      "full_collection_verified": false,
+      "writes_corpus": false,
+      "sources": [
+        {
+          "source": "law",
+          "target": "law",
+          "catalogue_verified": true,
+          "full_document_verified": false,
+          "catalogue_total": 5621,
+          "catalogue_sample_count": 1,
+          "error": {
+            "code": "access_denied",
+            "message": "법령 API HTTP 요청이 실패했습니다.",
+            "source": "law",
+            "retriable": false,
+            "status_code": 403
+          }
+        },
+        {
+          "source": "administrative",
+          "target": "admrul",
+          "catalogue_verified": false,
+          "full_document_verified": false,
+          "error": {
+            "code": "http_error",
+            "message": "법령 API HTTP 요청이 실패했습니다.",
+            "source": "administrative",
+            "retriable": true,
+            "status_code": 502
+          }
+        },
+        {
+          "source": "ordinance",
+          "target": "ordin",
+          "catalogue_verified": false,
+          "full_document_verified": false,
+          "error": {
+            "code": "http_error",
+            "message": "법령 API HTTP 요청이 실패했습니다.",
+            "source": "ordinance",
+            "retriable": true,
+            "status_code": 502
+          }
+        }
+      ]
+    },
+    {
+      "checked_at": "2026-10-01T15:07:30.245045+09:00",
+      "configured": true,
+      "scope": "one catalogue page and at most one full document per selected source",
+      "provider_access_verified": false,
+      "full_collection_verified": false,
+      "writes_corpus": false,
+      "sources": [
+        {
+          "source": "law",
+          "target": "law",
+          "catalogue_verified": true,
+          "full_document_verified": true,
+          "catalogue_total": 5621,
+          "catalogue_sample_count": 1,
+          "sample_title": "10ㆍ27법난 피해자의 명예회복 등에 관한 법률",
+          "article_count": 8,
+          "raw_bytes": 17189,
+          "raw_sha256": "1c20f6a0b50dc0ab2bd0313b4cb4b185a32a1d68d1f1419aa1e04759a6788a9b",
+          "response_identity_verified": true,
+          "response_version_verified": false,
+          "parse_warnings": [
+            "missing_document_version"
+          ]
+        },
+        {
+          "source": "administrative",
+          "target": "admrul",
+          "catalogue_verified": true,
+          "full_document_verified": false,
+          "catalogue_total": 24160,
+          "catalogue_sample_count": 1,
+          "error": {
+            "code": "identity_unverifiable",
+            "message": "법령 본문 응답의 자료 식별자를 확인할 수 없습니다.",
+            "source": "administrative",
+            "retriable": false,
+            "status_code": null
+          }
+        },
+        {
+          "source": "ordinance",
+          "target": "ordin",
+          "catalogue_verified": true,
+          "full_document_verified": false,
+          "catalogue_total": 161416,
+          "catalogue_sample_count": 1,
+          "error": {
+            "code": "unexpected_schema",
+            "message": "요청한 자료 범위의 법령 본문 응답이 아닙니다.",
+            "source": "ordinance",
+            "retriable": false,
+            "status_code": null
+          }
+        }
+      ]
+    },
+    {
+      "checked_at": "2026-10-01T15:17:32.277398+09:00",
+      "configured": true,
+      "scope": "one catalogue page and at most one full document per selected source",
+      "provider_access_verified": false,
+      "full_collection_verified": false,
+      "writes_corpus": false,
+      "sources": [
+        {
+          "source": "law",
+          "target": "law",
+          "catalogue_verified": true,
+          "full_document_verified": true,
+          "catalogue_total": 5621,
+          "catalogue_sample_count": 1,
+          "sample_title": "10ㆍ27법난 피해자의 명예회복 등에 관한 법률",
+          "article_count": 8,
+          "raw_bytes": 17189,
+          "raw_sha256": "1c20f6a0b50dc0ab2bd0313b4cb4b185a32a1d68d1f1419aa1e04759a6788a9b",
+          "response_identity_verified": true,
+          "response_version_verified": false,
+          "parse_warnings": [
+            "missing_document_version"
+          ]
+        },
+        {
+          "source": "administrative",
+          "target": "admrul",
+          "catalogue_verified": true,
+          "full_document_verified": false,
+          "catalogue_total": 24160,
+          "catalogue_sample_count": 1,
+          "error": {
+            "code": "http_error",
+            "message": "법령 API HTTP 요청이 실패했습니다.",
+            "source": "administrative",
+            "retriable": true,
+            "status_code": 502
+          }
+        },
+        {
+          "source": "ordinance",
+          "target": "ordin",
+          "catalogue_verified": true,
+          "full_document_verified": true,
+          "catalogue_total": 161416,
+          "catalogue_sample_count": 1,
+          "sample_title": "2018성공개최평창군위원회 설립 및 지원 조례",
+          "article_count": 6,
+          "raw_bytes": 4270,
+          "raw_sha256": "b9d349bf4e87d499c55a1b9c578a63b43a2effd5814277a34ec612a38a8c63d5",
+          "response_identity_verified": true,
+          "response_version_verified": true,
+          "parse_warnings": []
+        }
+      ]
+    }
+  ]
 }

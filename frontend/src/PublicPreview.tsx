@@ -14,17 +14,21 @@ type PreviewNode = {
 };
 type Edge = { source: string; target: string; type: string };
 type Document = { name: string; content: string; format: string };
+type SourceRecord = {
+  source: string; catalogue_verified?: boolean; full_document_verified?: boolean;
+  catalogue_total?: number; catalogue_sample_count?: number;
+  sample_title?: string; article_count?: number;
+  response_identity_verified?: boolean; response_version_verified?: boolean;
+  parse_warnings?: string[];
+  error?: { code?: string; status_code?: number; message?: string };
+};
 type Snapshot = {
   graph: { nodes: PreviewNode[]; edges: Edge[]; issues: unknown[] };
   verification: {
     recorded_at?: string;
     provider?: {
       checked_at?: string; provider_access_verified?: boolean;
-      sources?: {
-        source: string; catalogue_verified?: boolean; full_document_verified?: boolean;
-        catalogue_total?: number; catalogue_sample_count?: number;
-        error?: { code?: string; status_code?: number; message?: string };
-      }[];
+      sources?: SourceRecord[];
     };
     internal_api_mcp?: {
       checked_at?: string;
@@ -39,6 +43,19 @@ const snapshot: Snapshot = previewSnapshot;
 const graph = snapshot.graph;
 const evidence = snapshot.verification;
 const repository = "https://github.com/JaehunReal/raw";
+const lawSources = [
+  { id: "law", label: "법령" },
+  { id: "administrative", label: "행정규칙" },
+  { id: "ordinance", label: "자치법규" },
+];
+const providerRecords = lawSources.map((source) => ({ ...source,
+  recorded: evidence.provider?.sources?.find((item) => item.source === source.id) }));
+const catalogueVerified = providerRecords.filter(({ recorded }) => recorded?.catalogue_verified).length;
+const fullDocumentVerified = providerRecords.filter(({ recorded }) => recorded?.full_document_verified).length;
+const providerSummary = fullDocumentVerified === lawSources.length ? "3종 목록·전문 샘플 확인"
+  : fullDocumentVerified > 0 ? "전문 샘플 일부 확인"
+  : catalogueVerified > 0 ? "목록 샘플 일부 확인"
+  : evidence.provider ? "샘플 연결 미확인" : "API 검증 기록 없음";
 type View = "dashboard" | "vault" | "graph" | "impact" | "packages" | "laws" | "mcp";
 const navigation = [
   { id: "dashboard", label: "워크스페이스", icon: LayoutDashboard },
@@ -72,8 +89,30 @@ function short(value: string, length = 16) {
   return value.length > length ? `${value.slice(0, length - 1)}…` : value;
 }
 function recordedAt(value?: string) {
-  if (!value) return "2026-10-01";
+  if (!value) return "기록 없음";
   return new Date(value).toLocaleString("ko-KR", { timeZone: "Asia/Seoul", hour12: false });
+}
+function providerFailure(recorded: SourceRecord) {
+  if (!recorded.error) return "미확인";
+  const status = recorded.error.status_code ? `HTTP ${recorded.error.status_code}` : "응답·연결 오류";
+  return recorded.error.code ? `${status} (${recorded.error.code})` : status;
+}
+function providerStatus(recorded?: SourceRecord) {
+  if (!recorded) return "검증 기록 없음";
+  if (!recorded.catalogue_verified) return recorded.error ? `목록 미확인 · ${providerFailure(recorded)}` : "목록 미확인";
+  return recorded.full_document_verified ? "목록 확인 · 전문 샘플 확인"
+    : `목록 확인 · 전문 미확인${recorded.error ? ` · ${providerFailure(recorded)}` : ""}`;
+}
+function warningLabel(warning: string) {
+  const labels: Record<string, string> = {
+    unstructured_paragraphs: "항·호 구조 미확인", unparsed_provisions: "조문 구분 미확인",
+    unparsed_article_number: "조문 번호 미확인", attachment_files_not_downloaded: "첨부파일 미수집",
+    missing_document_identity: "응답 법령 식별자 없음", missing_document_version: "응답 버전 없음",
+    requested_version_unverified: "요청 버전 미확인", missing_publication_date: "공포·발령일 없음",
+    invalid_publication_date: "공포·발령일 형식 확인 필요", missing_effective_date: "시행일 없음",
+    invalid_effective_date: "시행일 형식 확인 필요",
+  };
+  return labels[warning] || `파싱 확인 필요: ${warning}`;
 }
 function backlinks(root: string) {
   const visited = new Map<string, number>([[root, 0]]);
@@ -203,11 +242,11 @@ export default function PublicPreview() {
           <div className="stats-grid preview-stats">{[
             { label: "예제 지식 저장소", value: graph.nodes.length, unit: "개 문서", detail: "모두 합성 조문·서식", icon: Library, style: "sage", target: "vault", test: "preview-node-count" },
             { label: "규정 간 연결", value: graph.edges.length, unit: "개 관계", detail: "예제 메타데이터·인용 링크", icon: Network, style: "blue", target: "graph", test: "preview-edge-count" },
-            { label: "공식 원문 수집", value: 0, unit: "건", detail: "법령 목록 일부 확인 · 전문 미확보", icon: BookOpen, style: "sand", target: "laws", test: "preview-official-count" },
+            { label: "공식 원문 저장", value: 0, unit: "건", detail: "연결 검증 샘플은 저장하지 않음", icon: BookOpen, style: "sand", target: "laws", test: "preview-official-count" },
             { label: "MCP 도구 검증 기록", value: mcp?.mcp_tools?.tool_count || 4, unit: "개 도구", detail: "2026-10-01 내부 연동 확인", icon: PlugZap, style: "lavender", target: "mcp", test: "preview-tool-count" },
           ].map((stat) => <button key={stat.label} className="stat-card" onClick={() => setView(stat.target as View)}><div className="stat-top"><span>{stat.label}</span><span className={`stat-icon ${stat.style}`}><stat.icon size={18} /></span></div><div className="stat-value"><span className="preview-stat-number" data-testid={stat.test}>{stat.value}</span><span>{stat.unit}</span></div><div className="stat-foot"><span className="stat-foot-dot" />{stat.detail}</div></button>)}</div>
           <div className="preview-columns"><section className="panel"><div className="panel-heading"><div><h3>예제 규정 둘러보기 <span className="count-tag">{graph.nodes.length}</span></h3><p>원문 형식과 조문 간 관계를 직접 확인하세요.</p></div><button className="text-button" onClick={() => setView("vault")}>전체 보기 <ChevronRight size={14} /></button></div><div className="preview-recent-list">{[defaultNode, ...graph.nodes.filter((node) => node.id !== defaultNode.id)].slice(0, 4).map((node) => <button key={node.id} onClick={() => openNode(node.id)}><span className="preview-doc-icon"><FileText size={18} /></span><span><strong>{node.title}</strong><small>{node.rule_name} · {article(node)}</small></span><span className="pill neutral">합성 예제</span><ChevronRight size={15} /></button>)}</div></section>
-            <section className="panel preview-progress"><div className="panel-heading"><div><h3>프로젝트 현재 상태</h3><p>구현과 실제 외부 연결을 구분해 확인합니다.</p></div></div><ul><li><CheckCircle2 size={18} /><div><strong>규정·관계·7개 문서 구성</strong><span>저장소 예제를 읽기 전용으로 공개했습니다.</span></div></li><li><CheckCircle2 size={18} /><div><strong>내부 API·MCP 검증 완료</strong><span>실제 stdio MCP와 인증 흐름의 과거 검증 기록입니다.</span></div></li><li><span className="preview-status-dot" /><div><strong>공식 법령 연결 확인 필요</strong><span>일부 목록 조회 성공 · 공식 전문 미확보입니다.</span></div></li><li><span className="preview-status-dot" /><div><strong>백엔드 연결 준비</strong><span>서버 구성 후 실제 API 연결을 확인합니다.</span></div></li></ul><a className="text-button" href={`${repository}/blob/main/docs/api-connection-review.md`} target="_blank" rel="noreferrer">검토 결과 읽기 <ArrowUpRight size={14} /></a></section></div>
+            <section className="panel preview-progress"><div className="panel-heading"><div><h3>프로젝트 현재 상태</h3><p>구현과 실제 외부 연결을 구분해 확인합니다.</p></div></div><ul><li><CheckCircle2 size={18} /><div><strong>규정·관계·7개 문서 구성</strong><span>저장소 예제를 읽기 전용으로 공개했습니다.</span></div></li><li><CheckCircle2 size={18} /><div><strong>내부 API·MCP 검증 완료</strong><span>실제 stdio MCP와 인증 흐름의 과거 검증 기록입니다.</span></div></li><li><span className="preview-status-dot" /><div><strong>공식 법령 샘플 검증 기록</strong><span>{providerSummary} · 저장·전수 수집은 미실행입니다.</span></div></li><li><span className="preview-status-dot" /><div><strong>백엔드 연결 준비</strong><span>서버 구성 후 실제 API 연결을 확인합니다.</span></div></li></ul><a className="text-button" href={`${repository}/blob/main/docs/api-connection-review.md`} target="_blank" rel="noreferrer">검토 결과 읽기 <ArrowUpRight size={14} /></a></section></div>
         </>}
         {view === "vault" && <>
           <Heading eyebrow="SYNTHETIC KNOWLEDGE VAULT" title="조문을 읽고, 연결을 이해하세요." description="저장소에 포함된 12개 합성 예제입니다. 실제 법령 원문이나 기관의 현행 규정이 아닙니다." />
@@ -229,8 +268,29 @@ export default function PublicPreview() {
           <div className="preview-package-layout"><section className="panel preview-package-list"><div className="panel-heading"><div><h3>데이터 반출 조문 검토 예제</h3><p>공공데이터제공지침 · 제7조</p></div></div>{snapshot.package_example.documents.map((document, index) => <button key={document.name} data-testid={`preview-package-doc-${index}`} className={documentIndex === index ? "selected" : ""} onClick={() => setDocumentIndex(index)} aria-pressed={documentIndex === index}><span className="preview-document-number">{String(index + 1).padStart(2, "0")}</span><span><strong>{document.name.replace(/^\d+_/, "").replace(/\.md$/, "")}</strong><small>Markdown · 검토용 합성 예제</small></span><ChevronRight size={15} /></button>)}</section><section className="panel preview-package-reader" data-testid="preview-package-reader"><div className="preview-reader-header"><span className="pill warning">합성 예제 · 검토용 초안</span><h2>{selectedDocument?.name.replace(/^\d+_/, "").replace(/\.md$/, "")}</h2><p>미리 만든 문서를 읽기 전용으로 보여줍니다.</p></div><pre>{selectedDocument?.content}</pre></section></div>
         </>}
         {view === "laws" && <>
-          <Heading eyebrow="OFFICIAL LAW CONNECTION STATUS" title="법령 목록을 일부 확인했습니다." description="2026-10-01의 최신 소량 조회 기록입니다. 목록과 전문 조회를 구분하며, 이 화면은 공식 API를 새로 호출하지 않습니다." />
-          <section className="panel preview-law-status" data-testid="preview-law-status"><div className="preview-law-summary"><span className="preview-law-icon"><BookOpen size={26} /></span><div><span className="pill warning">목록 일부 확인 · 전문 미확보</span><h2>공식 원문 0건 · 전체 반영 미완료</h2><p>법령 목록 샘플 1건을 확인했고, 목록 응답에는 총 5,621건으로 표시됐습니다. 전문 요청은 HTTP 403, 행정규칙·자치법규 목록 요청은 HTTP 502로 실패했습니다. 본문 접근과 나머지 자료 유형의 승인 여부는 아직 확인하지 못했습니다.</p></div></div><div className="preview-law-sources">{[{ id: "law", label: "법령" }, { id: "administrative", label: "행정규칙" }, { id: "ordinance", label: "자치법규" }].map((source) => { const recorded = evidence.provider?.sources?.find((item) => item.source === source.id); return <div key={source.id} data-testid={`preview-law-source-${source.id}`}><BookOpen size={18} /><strong>{source.label}</strong><span>0건 수집</span><em>{recorded?.catalogue_verified ? `목록 확인 · ${recorded.full_document_verified ? "전문 확인" : `전문 HTTP ${recorded.error?.status_code || "미확인"}`}` : `목록 HTTP ${recorded?.error?.status_code || "미확인"}`}</em><small>{recorded?.catalogue_verified ? `목록 총 ${recorded.catalogue_total?.toLocaleString("ko-KR") || "미확인"}건 · 샘플 ${recorded.catalogue_sample_count || 0}건` : "목록 미확인 · 전문 미확보"}</small></div>; })}</div><p className="preview-record-time">검토 시각: {recordedAt(evidence.provider?.checked_at)} (한국 시간)</p></section>
+          <Heading eyebrow="RECORDED OFFICIAL LAW API CHECK" title="공식 법령 API 검증 기록을 확인하세요." description="기록된 소량 목록·전문 표본 조회 결과입니다. 이 읽기 전용 화면은 실제 API를 새로 호출하지 않습니다." />
+          <section className="panel preview-law-status" data-testid="preview-law-status">
+            <div className="preview-law-summary"><span className="preview-law-icon"><BookOpen size={26} /></span><div>
+              <span className="pill warning" data-testid="preview-provider-summary">{providerSummary}</span>
+              <h2>공식 원문 저장 0건 · 전체 반영 미완료</h2>
+              <p>자료 유형 {lawSources.length}종 중 목록 {catalogueVerified}종, 전문 샘플 {fullDocumentVerified}종의 응답을 확인한 기록입니다. 연결 검증 샘플은 저장하지 않았습니다. 전국 수집과 전체 법적 적용성 검토는 아직 수행하지 않았습니다.</p>
+            </div></div>
+            <div className="preview-law-sources">{providerRecords.map(({ id, label, recorded }) =>
+              <div key={id} data-testid={`preview-law-source-${id}`} style={{ overflowWrap: "anywhere" }}>
+                <BookOpen size={18} /><strong>{label}</strong><span>0건 저장</span>
+                <em data-testid={`preview-law-result-${id}`}>{providerStatus(recorded)}</em>
+                <small data-testid={`preview-law-catalogue-${id}`}>{recorded?.catalogue_verified
+                  ? `목록 총 ${recorded.catalogue_total?.toLocaleString("ko-KR") ?? "미확인"}건 · 샘플 ${recorded.catalogue_sample_count ?? 0}건`
+                  : "목록 미확인 · 전국 수집 미실행"}</small>
+                {recorded?.full_document_verified && <>
+                  <small data-testid={`preview-law-sample-${id}`}>전문 샘플: {recorded.sample_title || "제목 미기록"} · 조문 {recorded.article_count?.toLocaleString("ko-KR") ?? "미확인"}개</small>
+                  <small data-testid={`preview-law-identity-${id}`}>응답 식별자 {recorded.response_identity_verified ? "확인" : "미확인"} · 요청 버전 {recorded.response_version_verified ? "확인" : "미확인"}</small>
+                  {recorded.parse_warnings?.map((warning) => <small key={warning} data-warning-code={warning}>{warningLabel(warning)}</small>)}
+                </>}
+              </div>
+            )}</div>
+            <p className="preview-record-time">검토 시각: {recordedAt(evidence.provider?.checked_at)} (한국 시간) · 실시간 상태 아님</p>
+          </section>
           <section className="panel preview-next-steps"><h3>백엔드 연결 전에 확인할 내용</h3><ol><li>비공개 환경에 OC와 백엔드 인증값을 등록합니다.</li><li>소량 목록·본문 조회로 공식 API 응답을 확인합니다.</li><li>백엔드를 시작하고 실제 API·MCP와 공개 HTTPS 연결을 검증합니다.</li></ol><p>전국 수집과 전체 법적 적용성 검토는 별도 단계입니다.</p><div className="preview-links"><a className="button primary" href={`${repository}/blob/main/docs/deployment.md`} target="_blank" rel="noreferrer">백엔드 연결 안내 <ArrowUpRight size={15} /></a><a className="button secondary" href={`${repository}/blob/main/docs/api-connection-review.md`} target="_blank" rel="noreferrer">API 검토 기록 <ArrowUpRight size={15} /></a></div></section>
         </>}
         {view === "mcp" && <>

@@ -14,11 +14,51 @@
   "package_documents_verified": 7,
   "source_markdown_matches_tracked_demo": true,
   "official_documents": 0,
-  "provider_full_text_status_displayed": 403,
-  "provider_catalogue_total_displayed": 5621,
-  "provider_catalogue_sample_displayed": 1,
-  "administrative_catalogue_status_displayed": 502,
-  "ordinance_catalogue_status_displayed": 502,
+  "provider_sources_displayed": [
+    {
+      "source": "law",
+      "catalogue_verified": true,
+      "catalogue_total": 5621,
+      "catalogue_sample_count": 1,
+      "full_document_verified": true,
+      "sample_title": "10ㆍ27법난 피해자의 명예회복 등에 관한 법률",
+      "article_count": 8,
+      "response_identity_verified": true,
+      "response_version_verified": false,
+      "parse_warnings": [
+        "missing_document_version"
+      ]
+    },
+    {
+      "source": "administrative",
+      "catalogue_verified": true,
+      "catalogue_total": 24160,
+      "catalogue_sample_count": 1,
+      "full_document_verified": true,
+      "sample_title": "10·29이태원참사 진상규명과 재발방지를 위한 특별조사위원회 공무직 등에 관한 운영 규정",
+      "article_count": 74,
+      "response_identity_verified": true,
+      "response_version_verified": true,
+      "parse_warnings": [
+        "attachment_files_not_downloaded",
+        "unstructured_paragraphs"
+      ]
+    },
+    {
+      "source": "ordinance",
+      "catalogue_verified": true,
+      "catalogue_total": 161416,
+      "catalogue_sample_count": 1,
+      "full_document_verified": true,
+      "sample_title": "2018성공개최평창군위원회 설립 및 지원 조례",
+      "article_count": 6,
+      "response_identity_verified": true,
+      "response_version_verified": true,
+      "parse_warnings": []
+    }
+  ],
+  "provider_recorded_at": "2026-10-01T15:19:10.426166+09:00",
+  "provider_verification_does_not_claim_storage_or_full_coverage": true,
   "past_mcp_tools_displayed": 4,
   "past_mcp_nodes_displayed": 3,
   "mobile_width": 390,
@@ -28,7 +68,7 @@
   "failed_requests": 0,
   "api_requests": 0,
   "external_requests": 0,
-  "checked_at": "2026-10-01T14:38:00.491335+09:00",
+  "checked_at": "2026-10-01T15:21:00.861186+09:00",
   "test_environment": "temporary local static build; no hosted publication",
   "backend_started": false,
   "official_api_contacted": false,
@@ -47,7 +87,7 @@
     "anonymous_http_status": 200,
     "backend_deployed": false
   },
-  "hosted_verification": {
+  "previous_hosted_verification": {
     "public_url": "https://raw-ecru.vercel.app",
     "checked_at": "2026-10-01T14:48:04.795663+09:00",
     "anonymous": true,
@@ -93,5 +133,6 @@
     },
     "live_content_matches_current_snapshot": true,
     "unique_resources_verified": 19
-  }
+  },
+  "hosted_verification_pending_for_latest_build": true
 }

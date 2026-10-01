@@ -40,6 +40,31 @@ FULL_LAW = """<?xml version="1.0" encoding="UTF-8"?>
 </법령>""".encode()
 
 
+FULL_ADMINISTRATIVE = """<AdmRulService><행정규칙기본정보>
+<행정규칙ID>201</행정규칙ID><행정규칙일련번호>2001</행정규칙일련번호>
+<행정규칙명>합성 행정규칙</행정규칙명><발령일자>20250901</발령일자>
+<시행일자>20260101</시행일자><발령번호>101</발령번호></행정규칙기본정보>
+<조문내용>제1장 총칙</조문내용>
+<조문내용>제1조(목적) 첫 번째 합성 본문.</조문내용>
+<조문내용>① 첫 조문의 별도 항.</조문내용>
+<조문내용>제2조(절차) 두 번째 합성 본문.</조문내용>
+<조문내용>② 둘째 조문의 별도 항.</조문내용></AdmRulService>""".encode()
+
+ORDINANCE_CATALOG = """<OrdinSearch><totalCnt>1</totalCnt><law>
+<자치법규ID>301</자치법규ID><자치법규일련번호>3001</자치법규일련번호>
+<자치법규명>합성 조례</자치법규명></law></OrdinSearch>""".encode()
+
+FULL_ORDINANCE = """<LawService><자치법규기본정보>
+<자치법규ID>301</자치법규ID><자치법규일련번호>3001</자치법규일련번호>
+<자치법규명>합성 조례</자치법규명><공포일자>20250901</공포일자>
+<시행일자>20260101</시행일자><공포번호>102</공포번호></자치법규기본정보>
+<조문><조 조문번호="1"><조문번호>1</조문번호><조문여부>N</조문여부><조내용>제1장 총칙</조내용></조>
+<조 조문번호="1"><조문번호>1</조문번호><조문여부>Y</조문여부><조제목>목적</조제목>
+<조내용>제1조(목적) 합성 조례의 목적.</조내용></조>
+<조 조문번호="2"><조문번호>2</조문번호><조문여부>Y</조문여부><조제목>절차</조제목>
+<조내용>제2조(절차) 합성 조례의 절차.</조내용></조></조문></LawService>""".encode()
+
+
 class LawSourceTests(unittest.TestCase):
     def client(self, handler, **kwargs) -> LawClient:
         client = LawClient(oc=OC, transport=httpx.MockTransport(handler), minimum_interval=0, **kwargs)
@@ -93,7 +118,8 @@ class LawSourceTests(unittest.TestCase):
                 result = self.client(lambda _, raw=raw: httpx.Response(200, content=raw)).catalog(source)
                 item = result["items"][0]
                 self.assertEqual(item["source"], canonical)
-                self.assertIn("ID=12", item["source_url"])
+                key = "MST" if canonical == "ordinance" else "ID"
+                self.assertIn(f"{key}=12", item["source_url"])
                 self.assertIsNone(item["publication_date"])
                 self.assertIsNone(item["effective_date"])
                 self.assertIn("missing_effective_date", item["metadata"]["parse_warnings"])
@@ -332,6 +358,125 @@ class LawSourceTests(unittest.TestCase):
         self.assertFalse(document["metadata"]["unit_coverage"]["paragraphs"])
         self.assertIn("unstructured_paragraphs", document["metadata"]["parse_warnings"])
         self.assertIsNone(document["effective_date"])
+
+    def test_administrative_header_takes_precedence_over_other_metadata(self) -> None:
+        other = """<기본정보><행정규칙ID>OTHER</행정규칙ID><행정규칙일련번호>OTHER-VERSION</행정규칙일련번호>
+        <행정규칙명>다른 합성 규정</행정규칙명><발령일자>19990101</발령일자></기본정보>
+        <행정규칙ID>ROOT-OTHER</행정규칙ID><관련규정><행정규칙ID>RELATED</행정규칙ID>
+        <행정규칙일련번호>RELATED-VERSION</행정규칙일련번호></관련규정>"""
+        raw = FULL_ADMINISTRATIVE.replace(b"<AdmRulService>", ("<AdmRulService>" + other).encode())
+        document = self.client(lambda _: httpx.Response(200, content=raw)).fetch_full(self.item("administrative", "201", "2001"))
+        self.assertEqual(document["title"], "합성 행정규칙")
+        self.assertEqual(document["publication_date"], "2025-09-01")
+        self.assertEqual(document["effective_date"], "2026-01-01")
+        self.assertEqual(document["publication_no"], "101")
+        self.assertTrue(document["metadata"]["response_identity_verified"])
+        self.assertTrue(document["metadata"]["response_version_verified"])
+
+    def test_administrative_missing_header_identity_is_not_borrowed_from_related_rule(self) -> None:
+        raw = FULL_ADMINISTRATIVE.decode().replace("<행정규칙ID>201</행정규칙ID>", "").replace(
+            "<행정규칙일련번호>2001</행정규칙일련번호>", "").replace(
+            "</행정규칙기본정보>", "</행정규칙기본정보><관련규정><행정규칙ID>201</행정규칙ID>"
+            "<행정규칙일련번호>2001</행정규칙일련번호></관련규정>").encode()
+        client = self.client(lambda _: httpx.Response(200, content=raw))
+        self.assert_error("identity_unverifiable", lambda: client.fetch_full(self.item("administrative", "201", "2001")))
+
+    def test_administrative_missing_header_dates_are_not_borrowed_from_supplementary(self) -> None:
+        raw = FULL_ADMINISTRATIVE.decode().replace("<발령일자>20250901</발령일자>", "").replace(
+            "<시행일자>20260101</시행일자>", "").replace("<발령번호>101</발령번호>", "").replace(
+            "</AdmRulService>", "<부칙><발령일자>19990101</발령일자><시행일자>19990201</시행일자>"
+            "<발령번호>999</발령번호></부칙></AdmRulService>").encode()
+        document = self.client(lambda _: httpx.Response(200, content=raw)).fetch_full(self.item("administrative", "201", "2001"))
+        self.assertIsNone(document["publication_date"])
+        self.assertIsNone(document["effective_date"])
+        self.assertIsNone(document["publication_no"])
+
+    def test_administrative_mismatching_identity_or_version_is_rejected(self) -> None:
+        for field, original, replacement, code in [
+            ("행정규칙ID", "201", "202", "identity_mismatch"),
+            ("행정규칙일련번호", "2001", "2002", "version_mismatch"),
+        ]:
+            with self.subTest(code=code):
+                raw = FULL_ADMINISTRATIVE.decode().replace(f"<{field}>{original}</{field}>",
+                    f"<{field}>{replacement}</{field}>").replace("<AdmRulService>",
+                    f"<AdmRulService><{field}>{original}</{field}>").encode()
+                client = self.client(lambda _, raw=raw: httpx.Response(200, content=raw))
+                self.assert_error(code, lambda: client.fetch_full(self.item("administrative", "201", "2001")))
+
+    def test_repeated_administrative_content_preserves_preamble_and_every_fragment(self) -> None:
+        document = self.client(lambda _: httpx.Response(200, content=FULL_ADMINISTRATIVE)).fetch_full(self.item("administrative", "201", "2001"))
+        fragments = ["제1장 총칙", "제1조(목적) 첫 번째 합성 본문.", "① 첫 조문의 별도 항.",
+                     "제2조(절차) 두 번째 합성 본문.", "② 둘째 조문의 별도 항."]
+        self.assertEqual(document["text"], "\n".join(fragments))
+        self.assertEqual([p["article_no"] for p in document["provisions"]], ["제1조", "제2조"])
+        self.assertEqual(document["provisions"][0]["text"], "\n".join(fragments[1:3]))
+        self.assertEqual(document["provisions"][1]["text"], "\n".join(fragments[3:]))
+        self.assertEqual(document["raw"], FULL_ADMINISTRATIVE)
+        self.assertIn("unstructured_paragraphs", document["metadata"]["parse_warnings"])
+
+    def test_repeated_content_without_article_numbers_is_preserved(self) -> None:
+        raw = FULL_ADMINISTRATIVE.decode().replace("제1조(목적)", "목적:").replace("제2조(절차)", "절차:").encode()
+        document = self.client(lambda _: httpx.Response(200, content=raw)).fetch_full(self.item("administrative", "201", "2001"))
+        self.assertEqual(document["provisions"], [])
+        self.assertIn("첫 번째 합성 본문.", document["text"])
+        self.assertIn("둘째 조문의 별도 항.", document["text"])
+        self.assertIn("unparsed_provisions", document["metadata"]["parse_warnings"])
+
+    def test_structured_articles_are_not_duplicated_by_direct_summary_fields(self) -> None:
+        summary = "<조문내용>제7조의2(검증) 검증의 범위는 다음과 같다.</조문내용>"
+        raw = FULL_LAW.replace("</법령>".encode(), (summary + "</법령>").encode())
+        document = self.client(lambda _: httpx.Response(200, content=raw)).fetch_full(self.item())
+        self.assertEqual(document["text"].count("제7조의2(검증) 검증의 범위는 다음과 같다."), 1)
+        self.assertEqual(len(document["provisions"]), 2)
+        self.assertNotIn("unstructured_paragraphs", document["metadata"]["parse_warnings"])
+
+    def test_ordinance_version_uses_mst_and_parses_its_own_header_and_articles(self) -> None:
+        requests = []
+        def handler(request):
+            requests.append(request)
+            return httpx.Response(200, content=ORDINANCE_CATALOG if request.url.path.endswith("lawSearch.do") else FULL_ORDINANCE)
+        client = self.client(handler)
+        item = client.catalog("ordinance", page_size=1)["items"][0]
+        self.assertEqual(item["metadata"]["version_identifier_type"], "MST")
+        document = client.fetch_full(item)
+        self.assertEqual(dict(requests[-1].url.params), {"OC": OC, "target": "ordin", "type": "XML", "MST": "3001"})
+        self.assertEqual(document["title"], "합성 조례")
+        self.assertEqual(document["publication_date"], "2025-09-01")
+        self.assertEqual(document["effective_date"], "2026-01-01")
+        self.assertEqual(document["publication_no"], "102")
+        self.assertEqual([p["article_no"] for p in document["provisions"]], ["제1조", "제2조"])
+        self.assertEqual(document["provisions"][0]["title"], "목적")
+        self.assertNotIn("제1장 총칙", document["text"])
+        self.assertTrue(document["metadata"]["response_identity_verified"])
+        self.assertTrue(document["metadata"]["response_version_verified"])
+
+    def test_ordinance_with_only_stable_id_uses_id_without_claiming_version_verified(self) -> None:
+        catalog = ORDINANCE_CATALOG.replace("<자치법규일련번호>3001</자치법규일련번호>".encode(), b"")
+        requests = []
+        def handler(request):
+            requests.append(request)
+            return httpx.Response(200, content=catalog if request.url.path.endswith("lawSearch.do") else FULL_ORDINANCE)
+        client = self.client(handler)
+        item = client.catalog("ordinance", page_size=1)["items"][0]
+        document = client.fetch_full(item)
+        self.assertEqual(requests[-1].url.params["ID"], "301")
+        self.assertNotIn("MST", requests[-1].url.params)
+        self.assertFalse(document["metadata"]["response_version_verified"])
+        self.assertIn("requested_version_unverified", document["metadata"]["parse_warnings"])
+
+    def test_ordinance_mismatching_header_identity_or_version_is_rejected(self) -> None:
+        for original, replacement, code in [(b">301<", b">302<", "identity_mismatch"),
+                                            (b">3001<", b">3002<", "version_mismatch")]:
+            with self.subTest(code=code):
+                raw = FULL_ORDINANCE.replace(original, replacement)
+                client = self.client(lambda _, raw=raw: httpx.Response(200, content=raw))
+                self.assert_error(code, lambda: client.fetch_full(self.item("ordinance", "301", "3001")))
+
+    def test_ordinance_empty_or_wrong_source_body_is_rejected(self) -> None:
+        for raw in [b"<Law/>", FULL_LAW, b"<LawService><basicInfo/></LawService>"]:
+            with self.subTest(raw=raw[:30]):
+                client = self.client(lambda _, raw=raw: httpx.Response(200, content=raw))
+                self.assert_error("unexpected_schema", lambda: client.fetch_full(self.item("ordinance", "301", "3001")))
 
     def test_unstructured_deleted_article_is_marked_without_deleting_active_mentions(self) -> None:
         raw = """<행정규칙><기본정보><행정규칙일련번호>12</행정규칙일련번호><행정규칙명>합성 지침</행정규칙명></기본정보>

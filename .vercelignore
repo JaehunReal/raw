@@ -1,0 +1,12 @@
+.git/
+.env
+.env.*
+.rulecraft/
+.cache/
+.vercel/
+backend/.venv/
+frontend/node_modules/
+frontend/dist/
+**/__pycache__/
+*.pyc
+*.tsbuildinfo

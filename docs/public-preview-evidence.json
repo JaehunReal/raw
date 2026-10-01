@@ -14,7 +14,11 @@
   "package_documents_verified": 7,
   "source_markdown_matches_tracked_demo": true,
   "official_documents": 0,
-  "provider_proxy_status_displayed": 403,
+  "provider_full_text_status_displayed": 403,
+  "provider_catalogue_total_displayed": 5621,
+  "provider_catalogue_sample_displayed": 1,
+  "administrative_catalogue_status_displayed": 502,
+  "ordinance_catalogue_status_displayed": 502,
   "past_mcp_tools_displayed": 4,
   "past_mcp_nodes_displayed": 3,
   "mobile_width": 390,
@@ -24,29 +28,17 @@
   "failed_requests": 0,
   "api_requests": 0,
   "external_requests": 0,
-  "production_login": {
-    "login_gate_preserved": true,
-    "anonymous_session_http_status": 401,
-    "public_preview_not_rendered": true,
-    "mobile_overflow": false,
-    "test_scope": "LoginGate render check with a local test server returning session HTTP 401; no real backend in this run"
-  },
-  "checked_at": "2026-10-01T13:15:51.909089+09:00",
+  "checked_at": "2026-10-01T14:38:00.491335+09:00",
   "test_environment": "temporary local static build; no hosted publication",
   "backend_started": false,
   "official_api_contacted": false,
   "screenshots_created": false,
   "owned_servers_stopped": true,
-  "actual_vercel_build_command_passed": true,
-  "vercel_build_command": "VITE_REQUIRE_LOGIN=true VITE_PUBLIC_PREVIEW=${VITE_PUBLIC_PREVIEW:-true} npm run build --prefix frontend",
-  "production_build_passed": true,
-  "production_mode_preserved": true,
-  "default_public_build_restored": true,
   "vercel_publication": {
-    "credential_bound_in_current_environment": false,
-    "api_access_check": "cloud proxy denied HTTPS CONNECT with 403 before provider response",
+    "credential_bound_in_current_environment": true,
+    "api_authentication_verified": true,
+    "team_verified": true,
     "deployment_created": false,
-    "public_url": null,
-    "next_step": "Vercel account login and GitHub repository Import"
+    "public_url": null
   }
 }

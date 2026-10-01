@@ -1,7 +1,7 @@
 {
   "recorded_at": "2026-10-01T11:34:20.375042+09:00",
   "provider": {
-    "checked_at": "2026-10-01T11:23:29.415368+09:00",
+    "checked_at": "2026-10-01T14:33:01.628616+09:00",
     "configured": true,
     "scope": "one catalogue page and at most one full document per selected source",
     "provider_access_verified": false,
@@ -11,11 +11,13 @@
       {
         "source": "law",
         "target": "law",
-        "catalogue_verified": false,
+        "catalogue_verified": true,
         "full_document_verified": false,
+        "catalogue_total": 5621,
+        "catalogue_sample_count": 1,
         "error": {
-          "code": "proxy_access_denied",
-          "message": "환경 프록시가 법령 API 연결을 차단했습니다. 네트워크 허용 설정을 확인하세요.",
+          "code": "access_denied",
+          "message": "법령 API HTTP 요청이 실패했습니다.",
           "source": "law",
           "retriable": false,
           "status_code": 403
@@ -27,11 +29,11 @@
         "catalogue_verified": false,
         "full_document_verified": false,
         "error": {
-          "code": "proxy_access_denied",
-          "message": "환경 프록시가 법령 API 연결을 차단했습니다. 네트워크 허용 설정을 확인하세요.",
+          "code": "http_error",
+          "message": "법령 API HTTP 요청이 실패했습니다.",
           "source": "administrative",
-          "retriable": false,
-          "status_code": 403
+          "retriable": true,
+          "status_code": 502
         }
       },
       {
@@ -40,11 +42,11 @@
         "catalogue_verified": false,
         "full_document_verified": false,
         "error": {
-          "code": "proxy_access_denied",
-          "message": "환경 프록시가 법령 API 연결을 차단했습니다. 네트워크 허용 설정을 확인하세요.",
+          "code": "http_error",
+          "message": "법령 API HTTP 요청이 실패했습니다.",
           "source": "ordinance",
-          "retriable": false,
-          "status_code": 403
+          "retriable": true,
+          "status_code": 502
         }
       }
     ]
@@ -152,13 +154,63 @@
     "official_provider_contract": true,
     "full_legal_coverage": true,
     "nationwide_collection": true,
-    "native_macmini_execution": true,
-    "public_deployment": true
+    "public_deployment": true,
+    "backend_server_execution": true
   },
   "deployment_state": {
-    "macmini_backend": "awaiting_home_setup",
     "vercel_public_origin": "not_configured",
     "render_service_created": false,
-    "full_collection_started": false
-  }
+    "full_collection_started": false,
+    "backend_server": "awaiting_setup"
+  },
+  "provider_previous_check": {
+    "checked_at": "2026-10-01T11:23:29.415368+09:00",
+    "configured": true,
+    "scope": "one catalogue page and at most one full document per selected source",
+    "provider_access_verified": false,
+    "full_collection_verified": false,
+    "writes_corpus": false,
+    "sources": [
+      {
+        "source": "law",
+        "target": "law",
+        "catalogue_verified": false,
+        "full_document_verified": false,
+        "error": {
+          "code": "proxy_access_denied",
+          "message": "환경 프록시가 법령 API 연결을 차단했습니다. 네트워크 허용 설정을 확인하세요.",
+          "source": "law",
+          "retriable": false,
+          "status_code": 403
+        }
+      },
+      {
+        "source": "administrative",
+        "target": "admrul",
+        "catalogue_verified": false,
+        "full_document_verified": false,
+        "error": {
+          "code": "proxy_access_denied",
+          "message": "환경 프록시가 법령 API 연결을 차단했습니다. 네트워크 허용 설정을 확인하세요.",
+          "source": "administrative",
+          "retriable": false,
+          "status_code": 403
+        }
+      },
+      {
+        "source": "ordinance",
+        "target": "ordin",
+        "catalogue_verified": false,
+        "full_document_verified": false,
+        "error": {
+          "code": "proxy_access_denied",
+          "message": "환경 프록시가 법령 API 연결을 차단했습니다. 네트워크 허용 설정을 확인하세요.",
+          "source": "ordinance",
+          "retriable": false,
+          "status_code": 403
+        }
+      }
+    ]
+  },
+  "latest_connectivity_note": "법령 목록 실제 조회 성공; 본문 HTTP403, 행정규칙·자치법규 목록 HTTP502. 공식 원문 저장과 전수 수집은 하지 않음."
 }

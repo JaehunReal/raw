@@ -124,7 +124,7 @@ def build_snapshot() -> dict[str, Any]:
         "schema_version": 1,
         "mode": "public_read_only_demo",
         "recorded_at": verification["recorded_at"],
-        "notice": "읽기 전용 공개 예제입니다. 실제 법령 원문이나 기관 현행 규정이 아니며, Mac mini 백엔드와 공식 API는 연결하지 않았습니다.",
+        "notice": "읽기 전용 공개 예제입니다. 실제 법령 원문이나 기관 현행 규정이 아니며, 백엔드와 공식 API는 연결하지 않았습니다.",
         "graph": graph,
         "verification": verification,
         "package_example": {

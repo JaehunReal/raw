@@ -168,6 +168,16 @@ def verify_preview(browser, base: str, snapshot: dict) -> dict:
     expect(status).to_contain_text("403")
     expect(status).to_contain_text("0")
     expect(status).to_contain_text("확인하지 못했습니다")
+    expect(status).to_contain_text("목록 일부 확인")
+    law_source = page.get_by_test_id("preview-law-source-law")
+    expect(law_source).to_contain_text("목록 확인")
+    expect(law_source).to_contain_text("전문 HTTP 403")
+    expect(law_source).to_contain_text("5,621건")
+    expect(law_source).to_contain_text("샘플 1건")
+    for source in ("administrative", "ordinance"):
+        source_card = page.get_by_test_id(f"preview-law-source-{source}")
+        expect(source_card).to_contain_text("목록 HTTP 502")
+        expect(source_card).to_contain_text("목록 미확인 · 전문 미확보")
     navigate(page, "MCP 검증 기록")
     mcp = page.get_by_test_id("preview-mcp-record")
     expect(mcp).to_contain_text("4")
@@ -206,7 +216,9 @@ def verify_preview(browser, base: str, snapshot: dict) -> dict:
     return {"mode": "public_read_only_demo", "tabs_verified": list(TABS),
             "source_documents_verified": len(nodes), "relations_verified": len(edges),
             "package_documents_verified": len(documents), "source_markdown_matches_tracked_demo": True,
-            "official_documents": 0, "provider_proxy_status_displayed": 403,
+            "official_documents": 0, "provider_full_text_status_displayed": 403,
+            "provider_catalogue_total_displayed": 5621, "provider_catalogue_sample_displayed": 1,
+            "administrative_catalogue_status_displayed": 502, "ordinance_catalogue_status_displayed": 502,
             "past_mcp_tools_displayed": 4, "past_mcp_nodes_displayed": 3,
             "mobile_width": 390, "mobile_overflow": False, "runtime_errors": 0,
             "console_errors": 0, "failed_requests": 0, "api_requests": 0, "external_requests": 0}

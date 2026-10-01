@@ -82,7 +82,7 @@ def main():
     signal.signal(signal.SIGINT, request_shutdown)
     signal.signal(signal.SIGTERM, request_shutdown)
     if os.environ.get('RULECRAFT_API_TOKEN', '').strip() or os.environ.get('RULECRAFT_DEPLOYMENT', '').strip().lower() == 'production':
-        print('Authenticated production settings detected. Use the backend-only command in docs/macmini-setup.md; the development frontend has no authenticated gateway.', file=sys.stderr)
+        print('Authenticated production settings detected. Use the backend-only command in docs/deployment.md; the development frontend has no authenticated gateway.', file=sys.stderr)
         return 1
     for port in (8000, 5173):
         with socket.socket() as probe:

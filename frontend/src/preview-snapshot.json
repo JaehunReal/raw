@@ -520,7 +520,7 @@
     ]
   },
   "mode": "public_read_only_demo",
-  "notice": "읽기 전용 공개 예제입니다. 실제 법령 원문이나 기관 현행 규정이 아니며, Mac mini 백엔드와 공식 API는 연결하지 않았습니다.",
+  "notice": "읽기 전용 공개 예제입니다. 실제 법령 원문이나 기관 현행 규정이 아니며, 백엔드와 공식 API는 연결하지 않았습니다.",
   "package_example": {
     "agency": "한국행정연구원",
     "article_id": "KIPA-RULE-DAT-007",
@@ -646,8 +646,8 @@
   ],
   "verification": {
     "deployment_state": {
+      "backend_server": "awaiting_setup",
       "full_collection_started": false,
-      "macmini_backend": "awaiting_home_setup",
       "render_service_created": false,
       "vercel_public_origin": "not_configured"
     },
@@ -689,6 +689,7 @@
       "test_scope": "isolated ASGI API and actual stdio MCP, no server deployment",
       "used_supplied_oc": true
     },
+    "latest_connectivity_note": "법령 목록 실제 조회 성공; 본문 HTTP403, 행정규칙·자치법규 목록 HTTP502. 공식 원문 저장과 전수 수집은 하지 않음.",
     "local_https_browser": {
       "artifact_written_at": "2026-10-01T11:24:46.640192+09:00",
       "called_official_provider": false,
@@ -738,14 +739,65 @@
       "used_generated_test_credentials": true
     },
     "not_verified": {
+      "backend_server_execution": true,
       "full_legal_coverage": true,
       "nationwide_collection": true,
-      "native_macmini_execution": true,
       "oc_acceptance": true,
       "official_provider_contract": true,
       "public_deployment": true
     },
     "provider": {
+      "checked_at": "2026-10-01T14:33:01.628616+09:00",
+      "configured": true,
+      "full_collection_verified": false,
+      "provider_access_verified": false,
+      "scope": "one catalogue page and at most one full document per selected source",
+      "sources": [
+        {
+          "catalogue_sample_count": 1,
+          "catalogue_total": 5621,
+          "catalogue_verified": true,
+          "error": {
+            "code": "access_denied",
+            "message": "법령 API HTTP 요청이 실패했습니다.",
+            "retriable": false,
+            "source": "law",
+            "status_code": 403
+          },
+          "full_document_verified": false,
+          "source": "law",
+          "target": "law"
+        },
+        {
+          "catalogue_verified": false,
+          "error": {
+            "code": "http_error",
+            "message": "법령 API HTTP 요청이 실패했습니다.",
+            "retriable": true,
+            "source": "administrative",
+            "status_code": 502
+          },
+          "full_document_verified": false,
+          "source": "administrative",
+          "target": "admrul"
+        },
+        {
+          "catalogue_verified": false,
+          "error": {
+            "code": "http_error",
+            "message": "법령 API HTTP 요청이 실패했습니다.",
+            "retriable": true,
+            "source": "ordinance",
+            "status_code": 502
+          },
+          "full_document_verified": false,
+          "source": "ordinance",
+          "target": "ordin"
+        }
+      ],
+      "writes_corpus": false
+    },
+    "provider_previous_check": {
       "checked_at": "2026-10-01T11:23:29.415368+09:00",
       "configured": true,
       "full_collection_verified": false,

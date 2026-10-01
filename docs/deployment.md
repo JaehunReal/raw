@@ -1,6 +1,6 @@
 # Mac mini 백엔드 준비 후 Vercel 연결
 
-프런트엔드는 Vercel, Python API는 사용자의 Mac mini 서버에서 운영할 예정입니다. **현재 백엔드 구축과 공개 배포는 보류 중이며, 발급·검증한 공개 웹 주소는 없습니다.** Mac mini 서버가 준비되면 운영 방식과 외부 접근 경로를 결정하고 실제 연결을 확인한 뒤 Vercel을 연결합니다.
+프런트엔드는 Vercel, Python API는 사용자의 Mac mini 서버에서 운영할 예정입니다. **Mac mini 백엔드 구축은 보류 중입니다.** 현재 구현을 먼저 볼 수 있도록 [공개 읽기 전용 시연](public-preview.md)을 배포할 준비를 했으며 Vercel 계정 연결을 기다립니다. 발급·검증한 공개 웹 주소는 아직 없습니다. 실제 API 연결은 Mac mini 서버를 준비하고 외부 HTTPS 접근을 확인한 뒤 진행합니다.
 
 집에서의 설치·비공개 설정·로컬 API와 실제 MCP 확인은 [Mac mini 실행 안내](macmini-setup.md)를 따릅니다. 공개 연결을 만들기 전에 공식 API 소량 조회도 별도로 확인할 수 있습니다.
 
@@ -22,7 +22,7 @@ SQLite 색인·공식 원문·수집 체크포인트, 편집 규정집, 생성 �
 
 외부에서 실행되는 Vercel 함수는 Mac mini의 `localhost`, `127.0.0.1` 또는 공유기 내부의 사설 IP에 직접 연결할 수 없습니다. Mac mini를 준비할 때 외부에서 접근 가능한 **실제 HTTPS 원점 주소**를 확보해야 합니다. 터널, 리버스 프록시 또는 다른 네트워크 구성을 사용할지는 그때 결정합니다. 아직 도메인이나 호스트 이름을 정하거나 발급하지 않았습니다.
 
-Vercel의 GitHub 프로젝트를 사용할 때는 저장소 **JaehunReal/raw**의 루트(`.`)를 Root Directory로 설정합니다. 루트의 `vercel.json`이 설치·빌드 명령과 `frontend/dist` 출력을 지정하고, 로그인/API 함수도 함께 포함합니다. 이 프로젝트 연결과 실제 배포는 백엔드 주소 준비 후 진행합니다.
+Vercel의 GitHub 프로젝트를 사용할 때는 저장소 **JaehunReal/raw**의 루트(`.`)를 Root Directory로 설정합니다. 루트의 `vercel.json`이 설치·빌드 명령과 `frontend/dist` 출력을 지정하고, 로그인/API 함수도 함께 포함합니다. 기본 빌드는 공개 시연 화면이며 `/api`를 호출하지 않습니다. 실제 HTTPS 백엔드를 연결할 때 `VITE_PUBLIC_PREVIEW=false`로 재배포해 운영 로그인 화면으로 전환합니다.
 
 | Vercel 서버 환경 변수 | 준비 후 등록할 값 |
 | --- | --- |

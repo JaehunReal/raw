@@ -1,0 +1,811 @@
+{
+  "graph": {
+    "edges": [
+      {
+        "source": "KIPA-GUIDE-DAT-001",
+        "target": "KIPA-RULE-DAT-007",
+        "type": "CITES"
+      },
+      {
+        "source": "KIPA-GUIDE-DAT-001",
+        "target": "KIPA-FORM-DAT-002",
+        "type": "uses_form"
+      },
+      {
+        "source": "KIPA-GUIDE-DAT-001",
+        "target": "KIPA-RULE-DAT-007",
+        "type": "REFERENCES"
+      },
+      {
+        "source": "KIPA-GUIDE-DAT-001",
+        "target": "KIPA-RULE-DAT-007-2",
+        "type": "REFERENCES"
+      },
+      {
+        "source": "KIPA-GUIDE-DAT-001",
+        "target": "KIPA-FORM-DAT-002",
+        "type": "REFERENCES"
+      },
+      {
+        "source": "KIPA-FORM-DAT-002",
+        "target": "KIPA-RULE-DAT-007",
+        "type": "CITES"
+      },
+      {
+        "source": "KIPA-FORM-DAT-002",
+        "target": "KIPA-RULE-DAT-007-2",
+        "type": "CITES"
+      },
+      {
+        "source": "KIPA-FORM-DAT-002",
+        "target": "KIPA-RULE-DAT-007",
+        "type": "REFERENCES"
+      },
+      {
+        "source": "KIPA-FORM-DAT-002",
+        "target": "KIPA-RULE-DAT-007-2",
+        "type": "REFERENCES"
+      },
+      {
+        "source": "KIPA-RULE-DAT-001",
+        "target": "LAW-DATA-012",
+        "type": "delegated_by"
+      },
+      {
+        "source": "KIPA-RULE-DAT-002",
+        "target": "KIPA-RULE-DAT-001",
+        "type": "CITES"
+      },
+      {
+        "source": "KIPA-RULE-DAT-007",
+        "target": "LAW-PRIV-015",
+        "type": "delegated_by"
+      },
+      {
+        "source": "KIPA-RULE-DAT-007",
+        "target": "LAW-DATA-012",
+        "type": "delegated_by"
+      },
+      {
+        "source": "KIPA-RULE-DAT-007",
+        "target": "KIPA-RULE-SEC-020",
+        "type": "CITES"
+      },
+      {
+        "source": "KIPA-RULE-DAT-007",
+        "target": "KIPA-FORM-DAT-002",
+        "type": "uses_form"
+      },
+      {
+        "source": "KIPA-RULE-DAT-007",
+        "target": "KIPA-FORM-DAT-002",
+        "type": "REFERENCES"
+      },
+      {
+        "source": "KIPA-RULE-DAT-007",
+        "target": "LAW-PRIV-015",
+        "type": "REFERENCES"
+      },
+      {
+        "source": "KIPA-RULE-DAT-007",
+        "target": "KIPA-RULE-SEC-020",
+        "type": "REFERENCES"
+      },
+      {
+        "source": "KIPA-RULE-DAT-007-2",
+        "target": "KIPA-RULE-DAT-007",
+        "type": "delegated_by"
+      },
+      {
+        "source": "KIPA-RULE-DAT-007-2",
+        "target": "LAW-PRIV-015",
+        "type": "CITES"
+      },
+      {
+        "source": "KIPA-RULE-DAT-007-2",
+        "target": "KIPA-FORM-DAT-002",
+        "type": "uses_form"
+      },
+      {
+        "source": "KIPA-RULE-DAT-007-2",
+        "target": "KIPA-RULE-DAT-007",
+        "type": "REFERENCES"
+      },
+      {
+        "source": "KIPA-RULE-DAT-008",
+        "target": "KIPA-RULE-DAT-007",
+        "type": "CITES"
+      },
+      {
+        "source": "KIPA-RULE-DAT-008",
+        "target": "KIPA-RULE-DAT-007-2",
+        "type": "CITES"
+      },
+      {
+        "source": "KIPA-RULE-DAT-008",
+        "target": "KIPA-RULE-DAT-007",
+        "type": "REFERENCES"
+      },
+      {
+        "source": "KIPA-RULE-DAT-008",
+        "target": "KIPA-RULE-DAT-007-2",
+        "type": "REFERENCES"
+      },
+      {
+        "source": "KIPA-RULE-DAT-012",
+        "target": "KIPA-RULE-DAT-008",
+        "type": "CITES"
+      },
+      {
+        "source": "KIPA-RULE-DAT-012",
+        "target": "KIPA-RULE-DAT-008",
+        "type": "REFERENCES"
+      },
+      {
+        "source": "KIPA-RULE-SEC-020",
+        "target": "LAW-PRIV-015",
+        "type": "delegated_by"
+      },
+      {
+        "source": "KIPA-RULE-SEC-020",
+        "target": "LAW-PRIV-015",
+        "type": "REFERENCES"
+      },
+      {
+        "source": "LAW-PRIV-015",
+        "target": "LAW-PRIV-001",
+        "type": "CITES"
+      }
+    ],
+    "issues": [],
+    "nodes": [
+      {
+        "agency": "한국행정연구원",
+        "article_no": "",
+        "body": "\n> **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.\n\n# 데이터 반출 검토 체크리스트\n\n- [ ] [[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조]]의 승인 절차 확인\n- [ ] [[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조의2]]의 AI 학습 목적 확인\n- [ ] [[/agencies/한국행정연구원/지침/공공데이터제공지침/별표_서식/별지제2호_데이터반출신청서.md]] 작성 여부 확인\n",
+        "id": "KIPA-GUIDE-DAT-001",
+        "kind": "guide",
+        "last_amended": "2026-09-30",
+        "markdown": "---\nversion: 0.1.0-demo\nlast_amended: '2026-09-30'\nstatus: demo\ndemo: true\nid: KIPA-GUIDE-DAT-001\nagency: 한국행정연구원\nrule_name: 업무안내\ntitle: 데이터 반출 검토 체크리스트\nkind: guide\ncites:\n- '[[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조]]'\nuses_form:\n- '[[/agencies/한국행정연구원/지침/공공데이터제공지침/별표_서식/별지제2호_데이터반출신청서.md]]'\n---\n\n> **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.\n\n# 데이터 반출 검토 체크리스트\n\n- [ ] [[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조]]의 승인 절차 확인\n- [ ] [[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조의2]]의 AI 학습 목적 확인\n- [ ] [[/agencies/한국행정연구원/지침/공공데이터제공지침/별표_서식/별지제2호_데이터반출신청서.md]] 작성 여부 확인\n",
+        "metadata": {
+          "agency": "한국행정연구원",
+          "cites": [
+            "[[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조]]"
+          ],
+          "demo": true,
+          "id": "KIPA-GUIDE-DAT-001",
+          "kind": "guide",
+          "last_amended": "2026-09-30",
+          "rule_name": "업무안내",
+          "status": "demo",
+          "title": "데이터 반출 검토 체크리스트",
+          "uses_form": [
+            "[[/agencies/한국행정연구원/지침/공공데이터제공지침/별표_서식/별지제2호_데이터반출신청서.md]]"
+          ],
+          "version": "0.1.0-demo"
+        },
+        "path": "agencies/한국행정연구원/업무안내/데이터반출_체크리스트.md",
+        "rule_name": "업무안내",
+        "status": "demo",
+        "title": "데이터 반출 검토 체크리스트",
+        "version": "0.1.0-demo"
+      },
+      {
+        "agency": "한국행정연구원",
+        "article_no": "",
+        "body": "\n> **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.\n\n# 별지 제2호 데이터 반출 신청서\n\n관련 근거: [[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조]], [[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조의2]]\n\n| 항목 | 작성 내용 |\n| --- | --- |\n| 신청인 / 부서 |  |\n| 데이터 명칭 |  |\n| 반출 목적 | □ 일반 연구 □ AI 모델 학습 |\n| 개인정보 포함 여부 | □ 포함 □ 미포함 |\n| 보안 조치 |  |\n| 검토자 / 승인자 |  |\n",
+        "id": "KIPA-FORM-DAT-002",
+        "kind": "form",
+        "last_amended": "2026-09-30",
+        "markdown": "---\nversion: 0.1.0-demo\nlast_amended: '2026-09-30'\nstatus: demo\ndemo: true\nid: KIPA-FORM-DAT-002\nagency: 한국행정연구원\nrule_name: 공공데이터제공지침\ntitle: 별지 제2호 데이터 반출 신청서\nkind: form\ncites:\n- '[[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조]]'\n- '[[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조의2]]'\n---\n\n> **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.\n\n# 별지 제2호 데이터 반출 신청서\n\n관련 근거: [[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조]], [[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조의2]]\n\n| 항목 | 작성 내용 |\n| --- | --- |\n| 신청인 / 부서 |  |\n| 데이터 명칭 |  |\n| 반출 목적 | □ 일반 연구 □ AI 모델 학습 |\n| 개인정보 포함 여부 | □ 포함 □ 미포함 |\n| 보안 조치 |  |\n| 검토자 / 승인자 |  |\n",
+        "metadata": {
+          "agency": "한국행정연구원",
+          "cites": [
+            "[[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조]]",
+            "[[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조의2]]"
+          ],
+          "demo": true,
+          "id": "KIPA-FORM-DAT-002",
+          "kind": "form",
+          "last_amended": "2026-09-30",
+          "rule_name": "공공데이터제공지침",
+          "status": "demo",
+          "title": "별지 제2호 데이터 반출 신청서",
+          "version": "0.1.0-demo"
+        },
+        "path": "agencies/한국행정연구원/지침/공공데이터제공지침/별표_서식/별지제2호_데이터반출신청서.md",
+        "rule_name": "공공데이터제공지침",
+        "status": "demo",
+        "title": "별지 제2호 데이터 반출 신청서",
+        "version": "0.1.0-demo"
+      },
+      {
+        "agency": "한국행정연구원",
+        "article_no": "제1조",
+        "body": "\n> **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.\n\n# 제1조 (목적)\n\n이 예시 지침은 공공데이터 제공 및 AI 활용 절차를 정한다.\n",
+        "id": "KIPA-RULE-DAT-001",
+        "kind": "article",
+        "last_amended": "2026-09-30",
+        "markdown": "---\nversion: 0.1.0-demo\nlast_amended: '2026-09-30'\nstatus: demo\ndemo: true\nid: KIPA-RULE-DAT-001\nagency: 한국행정연구원\nrule_name: 공공데이터제공지침\ntitle: 목적\nkind: article\narticle_no: 제1조\ndelegated_by:\n- '[[/statutes/공공데이터법#제12조]]'\n---\n\n> **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.\n\n# 제1조 (목적)\n\n이 예시 지침은 공공데이터 제공 및 AI 활용 절차를 정한다.\n",
+        "metadata": {
+          "agency": "한국행정연구원",
+          "article_no": "제1조",
+          "delegated_by": [
+            "[[/statutes/공공데이터법#제12조]]"
+          ],
+          "demo": true,
+          "id": "KIPA-RULE-DAT-001",
+          "kind": "article",
+          "last_amended": "2026-09-30",
+          "rule_name": "공공데이터제공지침",
+          "status": "demo",
+          "title": "목적",
+          "version": "0.1.0-demo"
+        },
+        "path": "agencies/한국행정연구원/지침/공공데이터제공지침/제01조_목적.md",
+        "rule_name": "공공데이터제공지침",
+        "status": "demo",
+        "title": "목적",
+        "version": "0.1.0-demo"
+      },
+      {
+        "agency": "한국행정연구원",
+        "article_no": "제2조",
+        "body": "\n> **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.\n\n# 제2조 (용어의 정의)\n\n연구데이터란 이 시연에서 연구 업무 과정에 생성되는 자료를 말한다.\n",
+        "id": "KIPA-RULE-DAT-002",
+        "kind": "article",
+        "last_amended": "2026-09-30",
+        "markdown": "---\nversion: 0.1.0-demo\nlast_amended: '2026-09-30'\nstatus: demo\ndemo: true\nid: KIPA-RULE-DAT-002\nagency: 한국행정연구원\nrule_name: 공공데이터제공지침\ntitle: 용어의 정의\nkind: article\narticle_no: 제2조\ncites:\n- '[[./제01조_목적.md]]'\n---\n\n> **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.\n\n# 제2조 (용어의 정의)\n\n연구데이터란 이 시연에서 연구 업무 과정에 생성되는 자료를 말한다.\n",
+        "metadata": {
+          "agency": "한국행정연구원",
+          "article_no": "제2조",
+          "cites": [
+            "[[./제01조_목적.md]]"
+          ],
+          "demo": true,
+          "id": "KIPA-RULE-DAT-002",
+          "kind": "article",
+          "last_amended": "2026-09-30",
+          "rule_name": "공공데이터제공지침",
+          "status": "demo",
+          "title": "용어의 정의",
+          "version": "0.1.0-demo"
+        },
+        "path": "agencies/한국행정연구원/지침/공공데이터제공지침/제02조_정의.md",
+        "rule_name": "공공데이터제공지침",
+        "status": "demo",
+        "title": "용어의 정의",
+        "version": "0.1.0-demo"
+      },
+      {
+        "agency": "한국행정연구원",
+        "article_no": "제7조",
+        "body": "\n> **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.\n\n# 제7조 (데이터의 반출 허가)\n\n① 연구데이터를 기관 외부로 반출하려는 연구자는 [[./별표_서식/별지제2호_데이터반출신청서.md|별지 제2호 서식]]으로 승인을 신청하여야 한다.\n\n② 개인정보가 포함된 경우 [[/statutes/개인정보보호법#제15조]]와 [[/agencies/한국행정연구원/지침/보안업무지침#제20조]]에 따른 사전 검토를 거쳐야 한다.\n",
+        "id": "KIPA-RULE-DAT-007",
+        "kind": "article",
+        "last_amended": "2026-09-30",
+        "markdown": "---\nversion: 0.1.0-demo\nlast_amended: '2026-09-30'\nstatus: demo\ndemo: true\nid: KIPA-RULE-DAT-007\nagency: 한국행정연구원\nrule_name: 공공데이터제공지침\ntitle: 데이터의 반출 허가\nkind: article\narticle_no: 제7조\ndelegated_by:\n- '[[/statutes/개인정보보호법#제15조]]'\n- '[[/statutes/공공데이터법#제12조]]'\ncites:\n- '[[/agencies/한국행정연구원/지침/보안업무지침#제20조]]'\nuses_form:\n- '[[./별표_서식/별지제2호_데이터반출신청서.md]]'\n---\n\n> **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.\n\n# 제7조 (데이터의 반출 허가)\n\n① 연구데이터를 기관 외부로 반출하려는 연구자는 [[./별표_서식/별지제2호_데이터반출신청서.md|별지 제2호 서식]]으로 승인을 신청하여야 한다.\n\n② 개인정보가 포함된 경우 [[/statutes/개인정보보호법#제15조]]와 [[/agencies/한국행정연구원/지침/보안업무지침#제20조]]에 따른 사전 검토를 거쳐야 한다.\n",
+        "metadata": {
+          "agency": "한국행정연구원",
+          "article_no": "제7조",
+          "cites": [
+            "[[/agencies/한국행정연구원/지침/보안업무지침#제20조]]"
+          ],
+          "delegated_by": [
+            "[[/statutes/개인정보보호법#제15조]]",
+            "[[/statutes/공공데이터법#제12조]]"
+          ],
+          "demo": true,
+          "id": "KIPA-RULE-DAT-007",
+          "kind": "article",
+          "last_amended": "2026-09-30",
+          "rule_name": "공공데이터제공지침",
+          "status": "demo",
+          "title": "데이터의 반출 허가",
+          "uses_form": [
+            "[[./별표_서식/별지제2호_데이터반출신청서.md]]"
+          ],
+          "version": "0.1.0-demo"
+        },
+        "path": "agencies/한국행정연구원/지침/공공데이터제공지침/제07조_데이터반출.md",
+        "rule_name": "공공데이터제공지침",
+        "status": "demo",
+        "title": "데이터의 반출 허가",
+        "version": "0.1.0-demo"
+      },
+      {
+        "agency": "한국행정연구원",
+        "article_no": "제7조의2",
+        "body": "\n> **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.\n\n# 제7조의2 (인공지능 학습데이터의 안전성 확보)\n\n① AI 학습 목적으로 데이터를 반출하려는 연구자는 [[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조]]에 따른 신청에 학습 목적과 보안 조치를 포함하여야 한다.\n\n② 담당자는 개인정보 포함 여부와 제공 범위를 검토하여야 한다.\n",
+        "id": "KIPA-RULE-DAT-007-2",
+        "kind": "article",
+        "last_amended": "2026-09-30",
+        "markdown": "---\nversion: 0.1.0-demo\nlast_amended: '2026-09-30'\nstatus: demo\ndemo: true\nid: KIPA-RULE-DAT-007-2\nagency: 한국행정연구원\nrule_name: 공공데이터제공지침\ntitle: 인공지능 학습데이터의 안전성 확보\nkind: article\narticle_no: 제7조의2\ndelegated_by:\n- '[[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조]]'\ncites:\n- '[[/statutes/개인정보보호법#제15조]]'\nuses_form:\n- '[[./별표_서식/별지제2호_데이터반출신청서.md]]'\n---\n\n> **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.\n\n# 제7조의2 (인공지능 학습데이터의 안전성 확보)\n\n① AI 학습 목적으로 데이터를 반출하려는 연구자는 [[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조]]에 따른 신청에 학습 목적과 보안 조치를 포함하여야 한다.\n\n② 담당자는 개인정보 포함 여부와 제공 범위를 검토하여야 한다.\n",
+        "metadata": {
+          "agency": "한국행정연구원",
+          "article_no": "제7조의2",
+          "cites": [
+            "[[/statutes/개인정보보호법#제15조]]"
+          ],
+          "delegated_by": [
+            "[[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조]]"
+          ],
+          "demo": true,
+          "id": "KIPA-RULE-DAT-007-2",
+          "kind": "article",
+          "last_amended": "2026-09-30",
+          "rule_name": "공공데이터제공지침",
+          "status": "demo",
+          "title": "인공지능 학습데이터의 안전성 확보",
+          "uses_form": [
+            "[[./별표_서식/별지제2호_데이터반출신청서.md]]"
+          ],
+          "version": "0.1.0-demo"
+        },
+        "path": "agencies/한국행정연구원/지침/공공데이터제공지침/제07조의2_AI안전.md",
+        "rule_name": "공공데이터제공지침",
+        "status": "demo",
+        "title": "인공지능 학습데이터의 안전성 확보",
+        "version": "0.1.0-demo"
+      },
+      {
+        "agency": "한국행정연구원",
+        "article_no": "제8조",
+        "body": "\n> **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.\n\n# 제8조 (반출 기록의 관리)\n\n[[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조]] 및 [[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조의2]]에 따른 검토와 승인 기록을 보관하여야 한다.\n",
+        "id": "KIPA-RULE-DAT-008",
+        "kind": "article",
+        "last_amended": "2026-09-30",
+        "markdown": "---\nversion: 0.1.0-demo\nlast_amended: '2026-09-30'\nstatus: demo\ndemo: true\nid: KIPA-RULE-DAT-008\nagency: 한국행정연구원\nrule_name: 공공데이터제공지침\ntitle: 반출 기록의 관리\nkind: article\narticle_no: 제8조\ncites:\n- '[[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조]]'\n- '[[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조의2]]'\n---\n\n> **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.\n\n# 제8조 (반출 기록의 관리)\n\n[[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조]] 및 [[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조의2]]에 따른 검토와 승인 기록을 보관하여야 한다.\n",
+        "metadata": {
+          "agency": "한국행정연구원",
+          "article_no": "제8조",
+          "cites": [
+            "[[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조]]",
+            "[[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조의2]]"
+          ],
+          "demo": true,
+          "id": "KIPA-RULE-DAT-008",
+          "kind": "article",
+          "last_amended": "2026-09-30",
+          "rule_name": "공공데이터제공지침",
+          "status": "demo",
+          "title": "반출 기록의 관리",
+          "version": "0.1.0-demo"
+        },
+        "path": "agencies/한국행정연구원/지침/공공데이터제공지침/제08조_기록관리.md",
+        "rule_name": "공공데이터제공지침",
+        "status": "demo",
+        "title": "반출 기록의 관리",
+        "version": "0.1.0-demo"
+      },
+      {
+        "agency": "한국행정연구원",
+        "article_no": "제12조",
+        "body": "\n> **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.\n\n# 제12조 (이행 점검)\n\n담당 부서는 [[/agencies/한국행정연구원/지침/공공데이터제공지침#제8조]]에 따른 반출 기록의 누락 여부를 정기적으로 확인하여야 한다.\n",
+        "id": "KIPA-RULE-DAT-012",
+        "kind": "article",
+        "last_amended": "2026-09-30",
+        "markdown": "---\nversion: 0.1.0-demo\nlast_amended: '2026-09-30'\nstatus: demo\ndemo: true\nid: KIPA-RULE-DAT-012\nagency: 한국행정연구원\nrule_name: 공공데이터제공지침\ntitle: 이행 점검\nkind: article\narticle_no: 제12조\ncites:\n- '[[/agencies/한국행정연구원/지침/공공데이터제공지침#제8조]]'\n---\n\n> **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.\n\n# 제12조 (이행 점검)\n\n담당 부서는 [[/agencies/한국행정연구원/지침/공공데이터제공지침#제8조]]에 따른 반출 기록의 누락 여부를 정기적으로 확인하여야 한다.\n",
+        "metadata": {
+          "agency": "한국행정연구원",
+          "article_no": "제12조",
+          "cites": [
+            "[[/agencies/한국행정연구원/지침/공공데이터제공지침#제8조]]"
+          ],
+          "demo": true,
+          "id": "KIPA-RULE-DAT-012",
+          "kind": "article",
+          "last_amended": "2026-09-30",
+          "rule_name": "공공데이터제공지침",
+          "status": "demo",
+          "title": "이행 점검",
+          "version": "0.1.0-demo"
+        },
+        "path": "agencies/한국행정연구원/지침/공공데이터제공지침/제12조_점검.md",
+        "rule_name": "공공데이터제공지침",
+        "status": "demo",
+        "title": "이행 점검",
+        "version": "0.1.0-demo"
+      },
+      {
+        "agency": "한국행정연구원",
+        "article_no": "제20조",
+        "body": "\n> **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.\n\n# 제20조 (데이터 보안 조치)\n\n개인정보가 포함된 자료는 [[/statutes/개인정보보호법#제15조]]의 처리 근거를 확인한 뒤 접근 권한과 반출 범위를 검토하여야 한다.\n",
+        "id": "KIPA-RULE-SEC-020",
+        "kind": "article",
+        "last_amended": "2026-09-30",
+        "markdown": "---\nversion: 0.1.0-demo\nlast_amended: '2026-09-30'\nstatus: demo\ndemo: true\nid: KIPA-RULE-SEC-020\nagency: 한국행정연구원\nrule_name: 보안업무지침\ntitle: 데이터 보안 조치\nkind: article\narticle_no: 제20조\ndelegated_by:\n- '[[/statutes/개인정보보호법#제15조]]'\n---\n\n> **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.\n\n# 제20조 (데이터 보안 조치)\n\n개인정보가 포함된 자료는 [[/statutes/개인정보보호법#제15조]]의 처리 근거를 확인한 뒤 접근 권한과 반출 범위를 검토하여야 한다.\n",
+        "metadata": {
+          "agency": "한국행정연구원",
+          "article_no": "제20조",
+          "delegated_by": [
+            "[[/statutes/개인정보보호법#제15조]]"
+          ],
+          "demo": true,
+          "id": "KIPA-RULE-SEC-020",
+          "kind": "article",
+          "last_amended": "2026-09-30",
+          "rule_name": "보안업무지침",
+          "status": "demo",
+          "title": "데이터 보안 조치",
+          "version": "0.1.0-demo"
+        },
+        "path": "agencies/한국행정연구원/지침/보안업무지침/제20조_데이터보안.md",
+        "rule_name": "보안업무지침",
+        "status": "demo",
+        "title": "데이터 보안 조치",
+        "version": "0.1.0-demo"
+      },
+      {
+        "agency": "국가법령",
+        "article_no": "제1조",
+        "body": "\n> **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.\n\n# 제1조 (개인정보 보호의 목적)\n\n이 예시 법령은 연구데이터 취급 과정의 개인정보 보호 관계를 설명한다.\n",
+        "id": "LAW-PRIV-001",
+        "kind": "article",
+        "last_amended": "2026-09-30",
+        "markdown": "---\nversion: 0.1.0-demo\nlast_amended: '2026-09-30'\nstatus: demo\ndemo: true\nid: LAW-PRIV-001\nagency: 국가법령\nrule_name: 개인정보보호법\ntitle: 개인정보 보호의 목적\nkind: article\narticle_no: 제1조\n---\n\n> **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.\n\n# 제1조 (개인정보 보호의 목적)\n\n이 예시 법령은 연구데이터 취급 과정의 개인정보 보호 관계를 설명한다.\n",
+        "metadata": {
+          "agency": "국가법령",
+          "article_no": "제1조",
+          "demo": true,
+          "id": "LAW-PRIV-001",
+          "kind": "article",
+          "last_amended": "2026-09-30",
+          "rule_name": "개인정보보호법",
+          "status": "demo",
+          "title": "개인정보 보호의 목적",
+          "version": "0.1.0-demo"
+        },
+        "path": "statutes/개인정보보호법/제01조_목적.md",
+        "rule_name": "개인정보보호법",
+        "status": "demo",
+        "title": "개인정보 보호의 목적",
+        "version": "0.1.0-demo"
+      },
+      {
+        "agency": "국가법령",
+        "article_no": "제15조",
+        "body": "\n> **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.\n\n# 제15조 (개인정보의 수집·이용)\n\n개인정보가 포함된 연구데이터의 수집·이용 목적과 처리 근거를 사전에 확인하여야 한다.\n\n이 문구는 관계도와 개정 영향도 시연을 위한 가상 조문이다.\n",
+        "id": "LAW-PRIV-015",
+        "kind": "article",
+        "last_amended": "2026-09-30",
+        "markdown": "---\nversion: 0.1.0-demo\nlast_amended: '2026-09-30'\nstatus: demo\ndemo: true\nid: LAW-PRIV-015\nagency: 국가법령\nrule_name: 개인정보보호법\ntitle: 개인정보의 수집·이용\nkind: article\narticle_no: 제15조\ncites:\n- '[[/statutes/개인정보보호법#제1조]]'\n---\n\n> **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.\n\n# 제15조 (개인정보의 수집·이용)\n\n개인정보가 포함된 연구데이터의 수집·이용 목적과 처리 근거를 사전에 확인하여야 한다.\n\n이 문구는 관계도와 개정 영향도 시연을 위한 가상 조문이다.\n",
+        "metadata": {
+          "agency": "국가법령",
+          "article_no": "제15조",
+          "cites": [
+            "[[/statutes/개인정보보호법#제1조]]"
+          ],
+          "demo": true,
+          "id": "LAW-PRIV-015",
+          "kind": "article",
+          "last_amended": "2026-09-30",
+          "rule_name": "개인정보보호법",
+          "status": "demo",
+          "title": "개인정보의 수집·이용",
+          "version": "0.1.0-demo"
+        },
+        "path": "statutes/개인정보보호법/제15조_수집이용.md",
+        "rule_name": "개인정보보호법",
+        "status": "demo",
+        "title": "개인정보의 수집·이용",
+        "version": "0.1.0-demo"
+      },
+      {
+        "agency": "국가법령",
+        "article_no": "제12조",
+        "body": "\n> **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.\n\n# 제12조 (공공데이터 제공 절차)\n\n공공데이터 제공 절차와 검토 책임을 내부 지침에 정하여야 한다.\n",
+        "id": "LAW-DATA-012",
+        "kind": "article",
+        "last_amended": "2026-09-30",
+        "markdown": "---\nversion: 0.1.0-demo\nlast_amended: '2026-09-30'\nstatus: demo\ndemo: true\nid: LAW-DATA-012\nagency: 국가법령\nrule_name: 공공데이터법\ntitle: 공공데이터 제공 절차\nkind: article\narticle_no: 제12조\n---\n\n> **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.\n\n# 제12조 (공공데이터 제공 절차)\n\n공공데이터 제공 절차와 검토 책임을 내부 지침에 정하여야 한다.\n",
+        "metadata": {
+          "agency": "국가법령",
+          "article_no": "제12조",
+          "demo": true,
+          "id": "LAW-DATA-012",
+          "kind": "article",
+          "last_amended": "2026-09-30",
+          "rule_name": "공공데이터법",
+          "status": "demo",
+          "title": "공공데이터 제공 절차",
+          "version": "0.1.0-demo"
+        },
+        "path": "statutes/공공데이터법/제12조_제공절차.md",
+        "rule_name": "공공데이터법",
+        "status": "demo",
+        "title": "공공데이터 제공 절차",
+        "version": "0.1.0-demo"
+      }
+    ]
+  },
+  "mode": "public_read_only_demo",
+  "notice": "읽기 전용 공개 예제입니다. 실제 법령 원문이나 기관 현행 규정이 아니며, Mac mini 백엔드와 공식 API는 연결하지 않았습니다.",
+  "package_example": {
+    "agency": "한국행정연구원",
+    "article_id": "KIPA-RULE-DAT-007",
+    "created_at": "2026-10-01T11:34:20.375042+09:00",
+    "documents": [
+      {
+        "content": "---\nversion: 0.1.0-demo\nlast_amended: '2026-09-30'\nstatus: demo\ndemo: true\nid: KIPA-RULE-DAT-007\nagency: 한국행정연구원\nrule_name: 공공데이터제공지침\ntitle: 데이터의 반출 허가\nkind: article\narticle_no: 제7조\ndelegated_by:\n- '[[/statutes/개인정보보호법#제15조]]'\n- '[[/statutes/공공데이터법#제12조]]'\ncites:\n- '[[/agencies/한국행정연구원/지침/보안업무지침#제20조]]'\nuses_form:\n- '[[./별표_서식/별지제2호_데이터반출신청서.md]]'\n---\n\n> **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.\n\n# 제7조 (데이터의 반출 허가)\n\n① 연구데이터를 기관 외부로 반출하려는 연구자는 [[./별표_서식/별지제2호_데이터반출신청서.md|별지 제2호 서식]]으로 승인을 신청하여야 한다.\n\n② 개인정보가 포함된 경우 [[/statutes/개인정보보호법#제15조]]와 [[/agencies/한국행정연구원/지침/보안업무지침#제20조]]에 따른 사전 검토를 거쳐야 한다.\n\n③ 인공지능 모델 학습 목적의 반출은 개인정보 보호 요건을 사전에 확인하여야 한다.\n",
+        "format": "markdown",
+        "name": "01_개정조문안.md"
+      },
+      {
+        "content": "# 신구조문대비표\n\n> 검토용 초안 · 현행 / 개정안 / 개정이유\n\n| 현행 | 개정안 | 개정이유 |\n| --- | --- | --- |\n| &gt; **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.<br><br># 제7조 (데이터의 반출 허가)<br><br>① 연구데이터를 기관 외부로 반출하려는 연구자는 [[./별표_서식/별지제2호_데이터반출신청서.md&#124;별지 제2호 서식]]으로 승인을 신청하여야 한다.<br><br>② 개인정보가 포함된 경우 [[/statutes/개인정보보호법#제15조]]와 [[/agencies/한국행정연구원/지침/보안업무지침#제20조]]에 따른 사전 검토를 거쳐야 한다. | &gt; **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.<br><br># 제7조 (데이터의 반출 허가)<br><br>① 연구데이터를 기관 외부로 반출하려는 연구자는 [[./별표_서식/별지제2호_데이터반출신청서.md&#124;별지 제2호 서식]]으로 승인을 신청하여야 한다.<br><br>② 개인정보가 포함된 경우 [[/statutes/개인정보보호법#제15조]]와 [[/agencies/한국행정연구원/지침/보안업무지침#제20조]]에 따른 사전 검토를 거쳐야 한다. | 현행 유지 |\n| — | <br>③ 인공지능 모델 학습 목적의 반출은 개인정보 보호 요건을 사전에 확인하여야 한다. | 인공지능 모델 학습을 위한 데이터 반출 절차와 개인정보 보호 요건을 명확히 하고자 합니다. |\n",
+        "format": "markdown",
+        "name": "02_신구조문대비표.md"
+      },
+      {
+        "content": "# 공공데이터제공지침 일부개정이유서\n\n> 검토용 초안 · 담당자 및 법제 심사자의 확인 후 사용\n\n## 1. 제안 기관\n한국행정연구원\n\n## 2. 제·개정 목적\n인공지능 모델 학습을 위한 데이터 반출 절차와 개인정보 보호 요건을 명확히 하고자 합니다.\n\n## 3. 주요 내용\n데이터의 반출 허가 조문의 운영 기준을 검토·정비한다.\n\n이 패키지는 선택한 조문 1개의 입안 검토 자료입니다. 제정 또는 전부개정 시 규정 전체의 조문 체계, 정의, 권한, 다른 규정과의 관계를 별도로 작성·심사하여야 합니다.\n\n## 4. 제·개정 사유\n인공지능 모델 학습을 위한 데이터 반출 절차와 개인정보 보호 요건을 명확히 하고자 합니다.\n\n## 5. 시행 예정일\n2026-12-01\n\n## 6. 검토 사항\n상위 법령 위임 범위, 적용 대상, 예산 및 개인정보 영향은 별도 법제 심사에서 확인한다.\n",
+        "format": "markdown",
+        "name": "03_제개정이유서.md"
+      },
+      {
+        "content": "# 부칙안\n\n> 검토용 초안 · 담당자 및 법제 심사자의 확인 후 사용\n\n제1조(시행일) 이 규정은 2026-12-01부터 시행한다.\n\n제2조(경과조치 검토) 시행 전에 진행 중인 업무의 적용 기준은 소관 부서가 검토한 후 확정한다.\n\n※ 경과조치 및 다른 규정의 개정 여부를 확인한 뒤 문안을 확정하여야 한다.\n",
+        "format": "markdown",
+        "name": "04_부칙안.md"
+      },
+      {
+        "content": "# 공공데이터제공지침 일부개정안 예고문\n\n> 검토용 초안 · 담당자 및 법제 심사자의 확인 후 사용\n\n한국행정연구원는 공공데이터제공지침의 일부개정을 검토하고 다음과 같이 의견을 수렴하고자 합니다.\n\n## 제·개정 목적\n인공지능 모델 학습을 위한 데이터 반출 절차와 개인정보 보호 요건을 명확히 하고자 합니다.\n\n## 주요 내용\n첨부 조문안 및 신구조문대비표 참조\n\n## 시행 예정일\n2026-12-01\n\n## 의견 제출\n의견 제출 기간, 담당 부서, 제출 주소와 연락처는 공고 전에 기관에서 확정하여야 합니다.\n\n※ 기관별 예고 의무와 기간, 내부 규정에 대한 적용 여부는 담당자가 확인하여야 합니다.\n",
+        "format": "markdown",
+        "name": "05_입법예고문안.md"
+      },
+      {
+        "content": "# 별지 서식 정비 검토안\n\n> 검토용 초안 · 담당자 및 법제 심사자의 확인 후 사용\n\n기존 Markdown 서식을 바탕으로 작성한 검토안입니다. 스캔 이미지 OCR 결과가 아닙니다.\n\n정비 목적: 인공지능 모델 학습을 위한 데이터 반출 절차와 개인정보 보호 요건을 명확히 하고자 합니다.\n\n## 별지 제2호 데이터 반출 신청서\n\n> **시연용 예시 데이터** — 실제 법령 원문이나 기관의 현행 규정이 아닙니다. 적용 전 공식 원문과 담당자의 검토가 필요합니다.\n\n# 별지 제2호 데이터 반출 신청서\n\n관련 근거: [[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조]], [[/agencies/한국행정연구원/지침/공공데이터제공지침#제7조의2]]\n\n| 항목 | 작성 내용 |\n| --- | --- |\n| 신청인 / 부서 |  |\n| 데이터 명칭 |  |\n| 반출 목적 | □ 일반 연구 □ AI 모델 학습 |\n| 개인정보 포함 여부 | □ 포함 □ 미포함 |\n| 보안 조치 |  |\n| 검토자 / 승인자 |  |\n\n### 추가 확인 항목 (미확정)\n\n| 검토 항목 | 담당자 확인 |\n| --- | --- |\n| 인공지능 모델 학습을 위한 데이터 반출 절차와 개인정보 보호 요건을 명확히 하고자 합니다.에 필요한 입력 항목 | □ 검토 완료 |\n| 개인정보 수집 범위 및 처리 근거 | □ 검토 완료 |\n| 승인권자 및 서명란 적정성 | □ 검토 완료 |\n",
+        "format": "markdown",
+        "name": "06_별지서식정비안.md"
+      },
+      {
+        "content": "# 변경 영향도 분석 보고서\n\n> 검토용 초안 · 담당자 및 법제 심사자의 확인 후 사용\n\n- 변경 대상: `agencies/한국행정연구원/지침/공공데이터제공지침/제07조_데이터반출.md`\n- 작성 방식: offline_public_demo\n- 역참조 영향 대상: 5개\n\n## 영향 대상\n\n| 조문 / 서식 | 규정 | 경로 |\n| --- | --- | --- |\n| 별지 제2호 데이터 반출 신청서 | 공공데이터제공지침 | agencies/한국행정연구원/지침/공공데이터제공지침/별표_서식/별지제2호_데이터반출신청서.md |\n| 인공지능 학습데이터의 안전성 확보 | 공공데이터제공지침 | agencies/한국행정연구원/지침/공공데이터제공지침/제07조의2_AI안전.md |\n| 반출 기록의 관리 | 공공데이터제공지침 | agencies/한국행정연구원/지침/공공데이터제공지침/제08조_기록관리.md |\n| 데이터 반출 검토 체크리스트 | 업무안내 | agencies/한국행정연구원/업무안내/데이터반출_체크리스트.md |\n| 이행 점검 | 공공데이터제공지침 | agencies/한국행정연구원/지침/공공데이터제공지침/제12조_점검.md |\n\n## 인용 정비 제안\n\n조문 번호 변경에 따른 인용 치환 제안이 없습니다.\n\n## 검증 범위\n\n로컬 지식문서의 스키마, 조문 번호, Wiki-Link 존재 여부 및 역참조를 검사합니다. 법적 효력, 상위법 위임 범위와 최신 법령 여부는 자동 확정하지 않습니다.\n\n## 입안 범위\n\n이 패키지는 선택한 조문 1개의 입안 검토 자료입니다. 제정 또는 전부개정 시 규정 전체의 조문 체계, 정의, 권한, 다른 규정과의 관계를 별도로 작성·심사하여야 합니다.\n\n## 공식 법령 근거와 수집 범위\n\n- 시행 기준일: 2026-12-01\n- 공식 근거 상태: not_collected\n- 선택한 API 목록 수집 완료 여부: False\n- 전체 적용법·상위법 위임 범위·실질적 적법성 검토: 미완료 / 담당자 심사 필요\n- 시연용 로컬 조문은 공식 원문과 별도이며 공식 법령으로 승격하지 않습니다.\n\n확보한 공식 근거 원문이 없습니다. 이 패키지는 공식 원문 반영을 완료한 결과가 아닙니다.\n### 확인이 필요한 수집·근거 항목\n\n- public_demo_only: 공개 예제 자료로 작성했습니다. 공식 원문은 미수집 상태이며 실제 법적 효력과 적법성은 검증하지 않았습니다.\n",
+        "format": "markdown",
+        "name": "07_변경영향도보고서.md"
+      }
+    ],
+    "effective_date": "2026-12-01",
+    "id": "public-demo-data-export",
+    "notice": "기존 문서 엔진으로 오프라인 생성한 고정 예제입니다. 공식 원문을 반영한 운영 결과가 아닙니다.",
+    "objective": "인공지능 모델 학습을 위한 데이터 반출 절차와 개인정보 보호 요건을 명확히 하고자 합니다.",
+    "provenance": "offline_public_demo",
+    "rule_name": "공공데이터제공지침",
+    "status": "example",
+    "verification": {
+      "issues": [],
+      "legal_authority_verified": false,
+      "legal_coverage": {
+        "as_of": "2026-12-01",
+        "corpus": {
+          "complete": false,
+          "official_count": 0
+        },
+        "issues": [
+          {
+            "code": "public_demo_only",
+            "message": "공개 예제 자료로 작성했습니다. 공식 원문은 미수집 상태이며 실제 법적 효력과 적법성은 검증하지 않았습니다."
+          }
+        ],
+        "sources": [],
+        "status": "not_collected"
+      },
+      "requires_human_review": true,
+      "scope": "공개 시연 규정의 로컬 스키마·조문 번호·Wiki-Link 및 역참조 검사",
+      "valid": true
+    }
+  },
+  "recorded_at": "2026-10-01T11:34:20.375042+09:00",
+  "schema_version": 1,
+  "source_files": [
+    {
+      "path": "legal-knowledge-vault/agencies/한국행정연구원/업무안내/데이터반출_체크리스트.md",
+      "sha256": "ee590a9ae1511705efb4959377bd7b10b66ee2d7aa319911e5f8fa0572ec5e74"
+    },
+    {
+      "path": "legal-knowledge-vault/agencies/한국행정연구원/지침/공공데이터제공지침/별표_서식/별지제2호_데이터반출신청서.md",
+      "sha256": "080c2e48566a5a7227b7fc033cc8b6cd7b72aeab97ec83dfcd1981f2b5c71c01"
+    },
+    {
+      "path": "legal-knowledge-vault/agencies/한국행정연구원/지침/공공데이터제공지침/제01조_목적.md",
+      "sha256": "b67b0fe23554a38b760a64b11b278b36d80693b69a7a930f294d05fcb5e3c779"
+    },
+    {
+      "path": "legal-knowledge-vault/agencies/한국행정연구원/지침/공공데이터제공지침/제02조_정의.md",
+      "sha256": "310bfcd4b8607cff4e99354d0a8db5d04a8110805c06a47c4d177bba99efc7b1"
+    },
+    {
+      "path": "legal-knowledge-vault/agencies/한국행정연구원/지침/공공데이터제공지침/제07조_데이터반출.md",
+      "sha256": "2abbf49935ad209ca73b9d1fc13898bacf9f1d91e1fbd38b922718dcb6b896f9"
+    },
+    {
+      "path": "legal-knowledge-vault/agencies/한국행정연구원/지침/공공데이터제공지침/제07조의2_AI안전.md",
+      "sha256": "497d3b2eff30d5362b06959bbc9fb218bc6f3827678064fcdb9a858b4fef4b72"
+    },
+    {
+      "path": "legal-knowledge-vault/agencies/한국행정연구원/지침/공공데이터제공지침/제08조_기록관리.md",
+      "sha256": "84ba00c41d6f55d770630c20dc199c5a11859e98a3e8f3616842bc5944a537f0"
+    },
+    {
+      "path": "legal-knowledge-vault/agencies/한국행정연구원/지침/공공데이터제공지침/제12조_점검.md",
+      "sha256": "4a9d0759a792fa3f70675ce8b404559f0a40b0876b6454010167b2939c378233"
+    },
+    {
+      "path": "legal-knowledge-vault/agencies/한국행정연구원/지침/보안업무지침/제20조_데이터보안.md",
+      "sha256": "55e08f1caa16d1adfcf24e9fb2b6a1d142bfb293afe3bfe17b9d674c36935ccd"
+    },
+    {
+      "path": "legal-knowledge-vault/statutes/개인정보보호법/제01조_목적.md",
+      "sha256": "74f8ae0603caa34e9f2e1d0d9740826c727322c6f3ce44a5f2e1466a0480cce5"
+    },
+    {
+      "path": "legal-knowledge-vault/statutes/개인정보보호법/제15조_수집이용.md",
+      "sha256": "cd91439a7b2cb096377a9310b81bf694504d151f8d921334f31f7f41f89533ab"
+    },
+    {
+      "path": "legal-knowledge-vault/statutes/공공데이터법/제12조_제공절차.md",
+      "sha256": "a82b0faf15f87476f0d08c1ba34e86084581ea65282f09cca0ae189437c31dce"
+    }
+  ],
+  "verification": {
+    "deployment_state": {
+      "full_collection_started": false,
+      "macmini_backend": "awaiting_home_setup",
+      "render_service_created": false,
+      "vercel_public_origin": "not_configured"
+    },
+    "internal_api_mcp": {
+      "anonymous_api_http_status": 401,
+      "checked_at": "2026-10-01T11:17:28.986300+09:00",
+      "full_collection_started": false,
+      "health_http_status": 200,
+      "law_status": {
+        "complete": false,
+        "configured": true,
+        "http_status": 200,
+        "job": null,
+        "missing_requirements": [],
+        "official_count": 0
+      },
+      "local_graph": {
+        "edges": 31,
+        "http_status": 200,
+        "nodes": 12
+      },
+      "mcp_graph": {
+        "http_status": 200,
+        "is_error": false,
+        "nodes": 3,
+        "transport": "stdio"
+      },
+      "mcp_tools": {
+        "http_status": 200,
+        "tool_count": 4,
+        "transport": "stdio"
+      },
+      "original_markdown_unchanged": true,
+      "remote_law_search": {
+        "detail": "외부 서비스 요청 실패 (ProxyError). 연결 설정을 확인하세요.",
+        "http_status": 503,
+        "official_response_received": false
+      },
+      "test_scope": "isolated ASGI API and actual stdio MCP, no server deployment",
+      "used_supplied_oc": true
+    },
+    "local_https_browser": {
+      "artifact_written_at": "2026-10-01T11:24:46.640192+09:00",
+      "called_official_provider": false,
+      "result": {
+        "after_logout_http_status": 401,
+        "anonymous_http_status": 401,
+        "asset_secrets_exposed": false,
+        "authenticated_download": {
+          "download_http_status": 200,
+          "error_response_downloaded": false,
+          "expired_download_http_status": 401,
+          "expired_download_returned_to_login": true,
+          "package_create_http_status": 201,
+          "zip_content_verified": true,
+          "zip_entries": 8
+        },
+        "browser_bearer_exposed": false,
+        "cookie": {
+          "http_only": true,
+          "path": "/api",
+          "same_site": "Strict",
+          "secure": true
+        },
+        "copied_source_unchanged": true,
+        "login_http_status": 200,
+        "logout_http_status": 200,
+        "mcp_nodes": 3,
+        "mcp_server": {
+          "name": "RuleCraft",
+          "version": "1.29.0"
+        },
+        "mcp_transport": "stdio",
+        "mobile_overflow": false,
+        "mobile_width": 390,
+        "official_complete": false,
+        "official_documents": 0,
+        "owned_processes_stopped": true,
+        "repository_source_unchanged": true,
+        "runtime_errors": 0,
+        "test_certificate": "temporary self-signed localhost SAN",
+        "test_environment": "temporary local deployment; not a hosted publication",
+        "topology": "LoginGate → HTTPS Node api/proxy.mjs → bearer-auth HTTPS FastAPI → real MCP stdio",
+        "upstream_tls_verified": true,
+        "workspace_nodes": 12,
+        "wrong_password_http_status": 401
+      },
+      "used_generated_test_credentials": true
+    },
+    "not_verified": {
+      "full_legal_coverage": true,
+      "nationwide_collection": true,
+      "native_macmini_execution": true,
+      "oc_acceptance": true,
+      "official_provider_contract": true,
+      "public_deployment": true
+    },
+    "provider": {
+      "checked_at": "2026-10-01T11:23:29.415368+09:00",
+      "configured": true,
+      "full_collection_verified": false,
+      "provider_access_verified": false,
+      "scope": "one catalogue page and at most one full document per selected source",
+      "sources": [
+        {
+          "catalogue_verified": false,
+          "error": {
+            "code": "proxy_access_denied",
+            "message": "환경 프록시가 법령 API 연결을 차단했습니다. 네트워크 허용 설정을 확인하세요.",
+            "retriable": false,
+            "source": "law",
+            "status_code": 403
+          },
+          "full_document_verified": false,
+          "source": "law",
+          "target": "law"
+        },
+        {
+          "catalogue_verified": false,
+          "error": {
+            "code": "proxy_access_denied",
+            "message": "환경 프록시가 법령 API 연결을 차단했습니다. 네트워크 허용 설정을 확인하세요.",
+            "retriable": false,
+            "source": "administrative",
+            "status_code": 403
+          },
+          "full_document_verified": false,
+          "source": "administrative",
+          "target": "admrul"
+        },
+        {
+          "catalogue_verified": false,
+          "error": {
+            "code": "proxy_access_denied",
+            "message": "환경 프록시가 법령 API 연결을 차단했습니다. 네트워크 허용 설정을 확인하세요.",
+            "retriable": false,
+            "source": "ordinance",
+            "status_code": 403
+          },
+          "full_document_verified": false,
+          "source": "ordinance",
+          "target": "ordin"
+        }
+      ],
+      "writes_corpus": false
+    },
+    "recorded_at": "2026-10-01T11:34:20.375042+09:00",
+    "regression_validation": {
+      "backend_command": "uv run --project backend --frozen python -m unittest discover -s tests -q",
+      "backend_elapsed_seconds": 12.479,
+      "backend_exit_code": 0,
+      "backend_tests_passed": 157,
+      "backend_tests_run": 157,
+      "bash_script_syntax_passed": true,
+      "frontend_login_enabled_build_passed": true,
+      "loaded_private_env_for_regression_tests": false,
+      "official_provider_fixtures_are_synthetic": true,
+      "production_settings_rejected_by_dev_supervisor": true
+    }
+  }
+}

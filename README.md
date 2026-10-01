@@ -4,7 +4,11 @@
 
 ## 웹 배포
 
-프런트엔드는 Vercel, Python 백엔드는 사용자의 **Mac mini 서버에서 운영할 예정**입니다. 현재 백엔드 구축과 공개 배포는 보류 중이며, 발급·검증한 공개 URL은 없습니다. Vercel 연동은 Mac mini 백엔드의 실제 접근 가능한 HTTPS 주소가 준비된 뒤 진행합니다. [배포 대기 상태와 연결 요건](docs/deployment.md)을 확인하세요.
+프런트엔드는 Vercel, Python 백엔드는 사용자의 **Mac mini 서버에서 운영할 예정**입니다. Mac mini를 준비하는 동안 현재 구현을 볼 수 있는 공개 읽기 전용 시연 빌드를 제공합니다. 공개 URL은 아직 발급·검증되지 않았으며 Vercel 계정 연결이 필요합니다. 실제 API 연동은 Mac mini 백엔드의 접근 가능한 HTTPS 주소가 준비된 뒤 진행합니다.
+
+[Vercel에 GitHub 저장소 연결](https://vercel.com/new/import?s=https%3A%2F%2Fgithub.com%2FJaehunReal%2Fraw) · [공개 시연 안내](docs/public-preview.md) · [운영 백엔드 연결 요건](docs/deployment.md)
+
+공개 시연에는 합성 규정 12개·관계 31개·검토 문서 7개와 MCP의 기록된 실행 결과가 표시됩니다. 검색·원문 열람·관계 탐색은 브라우저에서 동작하며, 저장·공식 수집·실시간 MCP는 Mac mini 백엔드 준비를 기다립니다. 공개 시연 배포에는 API 키나 비밀번호가 필요하지 않습니다.
 
 국가법령정보 API 계정은 추후 Mac mini 백엔드에 설정합니다. 백엔드 인증 토큰은 Mac mini와 Vercel의 서버 환경에 같은 값으로 등록하며, 브라우저 코드에 넣지 않습니다.
 

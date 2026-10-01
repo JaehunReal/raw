@@ -39,6 +39,7 @@ import McpPlayground from "./McpPlayground";
 import NationalLawPanel from "./NationalLawPanel";
 import LoginGate from "./LoginGate";
 import { apiFetch } from "./apiFetch";
+import PublicPreview from "./PublicPreview";
 
 type Node = {
   id: string;
@@ -2337,6 +2338,8 @@ function GraphCanvas({
 }
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <LoginGate><App /></LoginGate>
+    {import.meta.env.VITE_PUBLIC_PREVIEW === "true"
+      ? <PublicPreview />
+      : <LoginGate><App /></LoginGate>}
   </React.StrictMode>,
 );

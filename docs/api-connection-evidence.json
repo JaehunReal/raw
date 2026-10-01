@@ -1,0 +1,164 @@
+{
+  "recorded_at": "2026-10-01T11:34:20.375042+09:00",
+  "provider": {
+    "checked_at": "2026-10-01T11:23:29.415368+09:00",
+    "configured": true,
+    "scope": "one catalogue page and at most one full document per selected source",
+    "provider_access_verified": false,
+    "full_collection_verified": false,
+    "writes_corpus": false,
+    "sources": [
+      {
+        "source": "law",
+        "target": "law",
+        "catalogue_verified": false,
+        "full_document_verified": false,
+        "error": {
+          "code": "proxy_access_denied",
+          "message": "환경 프록시가 법령 API 연결을 차단했습니다. 네트워크 허용 설정을 확인하세요.",
+          "source": "law",
+          "retriable": false,
+          "status_code": 403
+        }
+      },
+      {
+        "source": "administrative",
+        "target": "admrul",
+        "catalogue_verified": false,
+        "full_document_verified": false,
+        "error": {
+          "code": "proxy_access_denied",
+          "message": "환경 프록시가 법령 API 연결을 차단했습니다. 네트워크 허용 설정을 확인하세요.",
+          "source": "administrative",
+          "retriable": false,
+          "status_code": 403
+        }
+      },
+      {
+        "source": "ordinance",
+        "target": "ordin",
+        "catalogue_verified": false,
+        "full_document_verified": false,
+        "error": {
+          "code": "proxy_access_denied",
+          "message": "환경 프록시가 법령 API 연결을 차단했습니다. 네트워크 허용 설정을 확인하세요.",
+          "source": "ordinance",
+          "retriable": false,
+          "status_code": 403
+        }
+      }
+    ]
+  },
+  "internal_api_mcp": {
+    "checked_at": "2026-10-01T11:17:28.986300+09:00",
+    "test_scope": "isolated ASGI API and actual stdio MCP, no server deployment",
+    "used_supplied_oc": true,
+    "full_collection_started": false,
+    "health_http_status": 200,
+    "anonymous_api_http_status": 401,
+    "law_status": {
+      "http_status": 200,
+      "configured": true,
+      "missing_requirements": [],
+      "complete": false,
+      "official_count": 0,
+      "job": null
+    },
+    "local_graph": {
+      "http_status": 200,
+      "nodes": 12,
+      "edges": 31
+    },
+    "remote_law_search": {
+      "http_status": 503,
+      "detail": "외부 서비스 요청 실패 (ProxyError). 연결 설정을 확인하세요.",
+      "official_response_received": false
+    },
+    "mcp_tools": {
+      "http_status": 200,
+      "tool_count": 4,
+      "transport": "stdio"
+    },
+    "mcp_graph": {
+      "http_status": 200,
+      "is_error": false,
+      "nodes": 3,
+      "transport": "stdio"
+    },
+    "original_markdown_unchanged": true
+  },
+  "local_https_browser": {
+    "artifact_written_at": "2026-10-01T11:24:46.640192+09:00",
+    "used_generated_test_credentials": true,
+    "called_official_provider": false,
+    "result": {
+      "topology": "LoginGate → HTTPS Node api/proxy.mjs → bearer-auth HTTPS FastAPI → real MCP stdio",
+      "test_environment": "temporary local deployment; not a hosted publication",
+      "upstream_tls_verified": true,
+      "test_certificate": "temporary self-signed localhost SAN",
+      "anonymous_http_status": 401,
+      "wrong_password_http_status": 401,
+      "login_http_status": 200,
+      "logout_http_status": 200,
+      "after_logout_http_status": 401,
+      "workspace_nodes": 12,
+      "official_documents": 0,
+      "official_complete": false,
+      "mcp_server": {
+        "name": "RuleCraft",
+        "version": "1.29.0"
+      },
+      "mcp_transport": "stdio",
+      "mcp_nodes": 3,
+      "cookie": {
+        "http_only": true,
+        "secure": true,
+        "same_site": "Strict",
+        "path": "/api"
+      },
+      "browser_bearer_exposed": false,
+      "asset_secrets_exposed": false,
+      "mobile_width": 390,
+      "mobile_overflow": false,
+      "runtime_errors": 0,
+      "authenticated_download": {
+        "package_create_http_status": 201,
+        "download_http_status": 200,
+        "zip_entries": 8,
+        "zip_content_verified": true,
+        "expired_download_http_status": 401,
+        "expired_download_returned_to_login": true,
+        "error_response_downloaded": false
+      },
+      "copied_source_unchanged": true,
+      "repository_source_unchanged": true,
+      "owned_processes_stopped": true
+    }
+  },
+  "regression_validation": {
+    "backend_command": "uv run --project backend --frozen python -m unittest discover -s tests -q",
+    "backend_tests_run": 157,
+    "backend_tests_passed": 157,
+    "backend_exit_code": 0,
+    "backend_elapsed_seconds": 12.479,
+    "loaded_private_env_for_regression_tests": false,
+    "official_provider_fixtures_are_synthetic": true,
+    "frontend_login_enabled_build_passed": true,
+    "bash_script_syntax_passed": true,
+    "production_settings_rejected_by_dev_supervisor": true
+  },
+  "not_verified": {
+    "oc_acceptance": true,
+    "official_provider_contract": true,
+    "full_legal_coverage": true,
+    "nationwide_collection": true,
+    "native_macmini_execution": true,
+    "public_deployment": true
+  },
+  "deployment_state": {
+    "macmini_backend": "awaiting_home_setup",
+    "vercel_public_origin": "not_configured",
+    "render_service_created": false,
+    "full_collection_started": false
+  }
+}

@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import httpx
 
-from rulecraft.law_sources import LawClient, LawSourceError
+from rulecraft.law_sources import LawClient, LawSourceError, is_deleted_article
 
 
 OC = "fixture-account-secret"
@@ -182,6 +182,84 @@ class LawSourceTests(unittest.TestCase):
         self.assertFalse(metadata["full_legal_coverage_verified"])
         self.assertIn("attachment_files_not_downloaded", metadata["parse_warnings"])
 
+    def test_numbered_chapter_heading_cannot_replace_or_duplicate_a_real_article(self) -> None:
+        units = """<조문단위><조문번호>1</조문번호><조문여부>전문</조문여부>
+        <조문내용>제1장 총칙</조문내용></조문단위>
+        <조문단위><조문번호>1</조문번호><조문여부>조문</조문여부>
+        <조문제목>목적</조문제목><조문내용>제1조(목적) 합성 검증의 목적이다.</조문내용></조문단위>
+        <조문단위><조문번호>2</조문번호><조문여부>조문</조문여부>
+        <조문내용>제2조 삭제</조문내용></조문단위>"""
+        prefix, tail = FULL_LAW.decode().split("<조문>", 1)
+        _, suffix = tail.split("</조문>", 1)
+        raw = (prefix + "<조문>" + units + "</조문>" + suffix).encode()
+        document = self.client(lambda _: httpx.Response(200, content=raw)).fetch_full(self.item())
+        self.assertEqual([p["article_no"] for p in document["provisions"]], ["제1조", "제2조"])
+        self.assertEqual(document["provisions"][0]["title"], "목적")
+        self.assertIn("합성 검증의 목적", document["provisions"][0]["text"])
+        self.assertEqual(document["provisions"][1]["text"], "제2조 삭제")
+        self.assertTrue(document["provisions"][1]["deleted"])
+        self.assertFalse(document["provisions"][0]["deleted"])
+        self.assertNotIn("제1장 총칙", document["text"])
+        self.assertIn("제1장 총칙".encode(), document["raw"])
+        self.assertNotIn("unparsed_article_number", document["metadata"]["parse_warnings"])
+
+    def test_only_whole_article_deletion_markers_are_deleted(self) -> None:
+        deleted = ("삭제", "(삭제)", "[삭제]", "제2조 삭제", "제2조의3 삭제 <2020. 12. 31.>",
+                   "제2조(삭제)", "제2조(기존 제목) 삭제", "제2조 삭제 [2020-12-31]")
+        active = ("삭제 절차를 마련한다.", "제2조(삭제절차) 자료를 삭제한다.", "제2조 삭제된 자료의 보관",
+                  "제2조 삭제\n남은 의무를 이행한다.", "제2조(삭제) 새 문구가 존재한다.",
+                  "제2조 삭제 <새 의무>", "제2조 삭제 <2020.12.31]")
+        for text in deleted:
+            with self.subTest(text=text):
+                self.assertTrue(is_deleted_article(text))
+        for text in active:
+            with self.subTest(text=text):
+                self.assertFalse(is_deleted_article(text))
+
+    def test_direct_article_item_keeps_subitem_obligations_in_searchable_text(self) -> None:
+        raw = FULL_LAW.decode().replace("<호내용>2) 절차</호내용></호>",
+            "<호내용>2) 절차</호내용><목><목번호>가.</목번호><목내용>가. 원본 보관 의무</목내용></목>"
+            "<목단위><목번호>나.</목번호><목내용>나. 파기 기록 의무</목내용></목단위></호>").encode()
+        document = self.client(lambda _: httpx.Response(200, content=raw)).fetch_full(self.item())
+        direct = document["provisions"][1]["paragraphs"][0]["items"][0]
+        self.assertEqual(direct["item_no"], "2")
+        for obligation in ("가. 원본 보관 의무", "나. 파기 기록 의무"):
+            self.assertIn(obligation, direct["text"])
+            self.assertIn(obligation, document["provisions"][1]["text"])
+            self.assertIn(obligation, document["text"])
+        self.assertEqual(document["raw"], raw)
+
+    def test_missing_header_dates_cannot_be_inferred_from_articles_or_supplementary(self) -> None:
+        raw = FULL_LAW.decode().replace("<공포일자>20250901</공포일자>", "").replace(
+            "<시행일자>20260101</시행일자>", "").replace("<공포번호>12345</공포번호>", "").replace(
+            "<부칙단위>", "<부칙단위><공포일자>19990101</공포일자><공포번호>999</공포번호>").replace(
+            "<조문번호>8</조문번호>", "<조문번호>8</조문번호><시행일자>19990201</시행일자>").encode()
+        document = self.client(lambda _: httpx.Response(200, content=raw)).fetch_full(self.item())
+        self.assertIsNone(document["publication_date"])
+        self.assertIsNone(document["effective_date"])
+        self.assertIsNone(document["publication_no"])
+        self.assertIn("missing_publication_date", document["metadata"]["parse_warnings"])
+        self.assertIn("missing_effective_date", document["metadata"]["parse_warnings"])
+        self.assertEqual(document["raw"], raw)
+
+    def test_header_identity_and_title_take_precedence_over_related_law_aliases(self) -> None:
+        related = """<관련법령><법령ID>OTHER</법령ID><법령일련번호>OTHER-VERSION</법령일련번호>
+        <법령명한글>합성 인용 법령 이름</법령명한글><공포일자>19990101</공포일자></관련법령>"""
+        raw = FULL_LAW.decode().replace("</기본정보>", "</기본정보>" + related).encode()
+        document = self.client(lambda _: httpx.Response(200, content=raw)).fetch_full(self.item())
+        self.assertEqual(document["title"], "합성 검증용 법률")
+        self.assertEqual(document["source_id"], "00123")
+        self.assertEqual(document["metadata"]["response_version_id"], "987")
+        self.assertEqual(document["publication_date"], "2025-09-01")
+
+    def test_root_direct_headers_remain_supported_without_basic_information_wrapper(self) -> None:
+        raw = FULL_LAW.replace("<기본정보>".encode(), b"").replace("</기본정보>".encode(), b"")
+        document = self.client(lambda _: httpx.Response(200, content=raw)).fetch_full(self.item())
+        self.assertEqual(document["title"], "합성 검증용 법률")
+        self.assertEqual(document["publication_date"], "2025-09-01")
+        self.assertEqual(document["effective_date"], "2026-01-01")
+        self.assertTrue(document["metadata"]["response_version_verified"])
+
     def test_compound_law_key_is_not_confused_with_mst(self) -> None:
         raw = FULL_LAW.decode().replace("<법령>", '<법령 법령키="001232025090112345">').replace("<법령일련번호>987</법령일련번호>", "").encode()
         document = self.client(lambda _: httpx.Response(200, content=raw)).fetch_full(self.item())
@@ -208,9 +286,16 @@ class LawSourceTests(unittest.TestCase):
             requests.append(request)
             return httpx.Response(200, content=catalog if request.url.path.endswith("lawSearch.do") else FULL_LAW)
         client = self.client(handler)
-        client.fetch_full(client.catalog("law")["items"][0])
+        item = client.catalog("law")["items"][0]
+        self.assertEqual(item["metadata"]["version_identifier_type"], "ID")
+        self.assertFalse(item["metadata"]["version_identifier_available"])
+        document = client.fetch_full(item)
         self.assertEqual(requests[-1].url.params["ID"], "00123")
         self.assertNotIn("MST", requests[-1].url.params)
+        self.assertEqual(document["version_id"], "00123")
+        self.assertEqual(document["metadata"]["response_version_id"], "987")
+        self.assertFalse(document["metadata"]["response_version_verified"])
+        self.assertIn("requested_version_unverified", document["metadata"]["parse_warnings"])
 
     def test_zero_padded_article_and_extended_circle_numbers(self) -> None:
         raw = FULL_LAW.decode().replace("<조문번호>7</조문번호>", "<조문번호>0007</조문번호>").replace("<항번호>①</항번호>", "<항번호>㉑</항번호>").replace("<호번호>1.</호번호>", "<호번호>(1)</호번호>").encode()
@@ -248,6 +333,15 @@ class LawSourceTests(unittest.TestCase):
         self.assertIn("unstructured_paragraphs", document["metadata"]["parse_warnings"])
         self.assertIsNone(document["effective_date"])
 
+    def test_unstructured_deleted_article_is_marked_without_deleting_active_mentions(self) -> None:
+        raw = """<행정규칙><기본정보><행정규칙일련번호>12</행정규칙일련번호><행정규칙명>합성 지침</행정규칙명></기본정보>
+        <조문내용><![CDATA[제1조(삭제절차) 정보를 삭제하는 절차를 정한다.
+제2조 삭제 <2020. 12. 31.>]]></조문내용></행정규칙>""".encode()
+        document = self.client(lambda _: httpx.Response(200, content=raw)).fetch_full(self.item("administrative", "12", "12"))
+        self.assertFalse(document["provisions"][0]["deleted"])
+        self.assertTrue(document["provisions"][1]["deleted"])
+        self.assertEqual(document["raw"], raw)
+
     def test_xml_entities_login_and_api_errors_fail_without_leaking_bodies(self) -> None:
         fixtures = [(b'<!DOCTYPE LawSearch [<!ENTITY x "unsafe">]><LawSearch/>', "unsafe_xml"),
                     ('<!DOCTYPE LawSearch [<!ENTITY x "unsafe">]><LawSearch/>'.encode("utf-16"), "unsafe_xml"),
@@ -279,6 +373,34 @@ class LawSourceTests(unittest.TestCase):
         self.assertEqual(result["total"], 1)
         self.assertEqual(len(attempts), 2)
         sleep.assert_called_once_with(5.0)
+
+    def test_proxy_connect_403_is_not_retried_and_never_exposes_credentials(self) -> None:
+        attempts = []
+        def handler(request):
+            attempts.append(request)
+            raise httpx.ProxyError(f"403 Forbidden CONNECT https://www.law.go.kr/DRF?OC={OC}", request=request)
+        with patch("rulecraft.law_sources.time.sleep") as sleep:
+            error = self.assert_error("proxy_access_denied", lambda: self.client(handler, retries=3).catalog("law"))
+        self.assertEqual(error.status_code, 403)
+        self.assertFalse(error.retriable)
+        self.assertEqual(error.source, "law")
+        self.assertEqual(len(attempts), 1)
+        sleep.assert_not_called()
+        self.assertNotIn("https://", str(error))
+        self.assertNotIn(OC, json.dumps(error.as_dict()))
+
+    def test_other_proxy_failures_keep_bounded_network_retries(self) -> None:
+        attempts = []
+        def handler(request):
+            attempts.append(request)
+            raise httpx.ProxyError(f"502 proxy unavailable https://www.law.go.kr?OC={OC}", request=request)
+        with patch("rulecraft.law_sources.time.sleep") as sleep:
+            error = self.assert_error("network_error", lambda: self.client(handler, retries=1).catalog("law"))
+        self.assertTrue(error.retriable)
+        self.assertIsNone(error.status_code)
+        self.assertEqual(len(attempts), 2)
+        sleep.assert_called_once_with(.25)
+        self.assertNotIn("https://", str(error))
 
     def test_network_errors_do_not_expose_httpx_exception_url(self) -> None:
         def handler(request):

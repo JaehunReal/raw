@@ -80,6 +80,19 @@ def _children(element: ET.Element, names: set[str]) -> list[ET.Element]:
     return [child for child in element if _tag(child) in names]
 
 
+def _metadata_value(element: ET.Element, *names: str) -> str | None:
+    """Read document headers without borrowing another provision's metadata."""
+    headers = _children(element, {"기본정보"})
+    for header in [*headers, element]:
+        for name in names:
+            for child in header:
+                if _tag(child) == name:
+                    value = "".join(child.itertext()).strip()
+                    if value:
+                        return value
+    return None
+
+
 def _iso_date(value: str | None, field: str, warnings: list[str]) -> str | None:
     if not value:
         warnings.append(f"missing_{field}")
@@ -147,22 +160,24 @@ def _check_api_error(root: ET.Element, source: str) -> None:
 
 def _identity(element: ET.Element, source: str) -> tuple[str | None, str | None, str | None]:
     if source == "law":
-        stable = _value(element, "법령ID", "법령아이디", "lawId")
+        stable = _metadata_value(element, "법령ID", "법령아이디", "lawId")
         # 법령키 is a compound official key, not the MST sequence identifier.
-        version = _value(element, "법령일련번호", "MST")
-        title = _value(element, "법령명한글", "법령명", "법령명_한글", "lawName")
+        version = _metadata_value(element, "법령일련번호", "MST")
+        title = _metadata_value(element, "법령명한글", "법령명", "법령명_한글", "lawName")
     elif source == "administrative":
-        stable = _value(element, "행정규칙ID", "행정규칙아이디")
-        version = _value(element, "행정규칙일련번호")
-        title = _value(element, "행정규칙명", "행정규칙명한글")
+        stable = _metadata_value(element, "행정규칙ID", "행정규칙아이디")
+        version = _metadata_value(element, "행정규칙일련번호")
+        title = _metadata_value(element, "행정규칙명", "행정규칙명한글")
     else:
-        stable = _value(element, "자치법규ID", "자치법규아이디")
-        version = _value(element, "자치법규일련번호")
-        title = _value(element, "자치법규명", "자치법규명한글")
+        stable = _metadata_value(element, "자치법규ID", "자치법규아이디")
+        version = _metadata_value(element, "자치법규일련번호")
+        title = _metadata_value(element, "자치법규명", "자치법규명한글")
     id_names = {"law": "법령ID", "administrative": "행정규칙ID", "ordinance": "자치법규ID"}
     version_names = {"law": "법령일련번호", "administrative": "행정규칙일련번호", "ordinance": "자치법규일련번호"}
-    stable = stable or element.get(id_names[source])
-    version = version or element.get(version_names[source])
+    headers = _children(element, {"기본정보"})
+    for header in [*headers, element]:
+        stable = stable or header.get(id_names[source])
+        version = version or header.get(version_names[source])
     return stable or version, version, title
 
 
@@ -189,6 +204,20 @@ def _article_number(unit: ET.Element) -> str | None:
     return match[1] if match else None
 
 
+def is_deleted_article(text: str) -> bool:
+    """Recognize a whole deleted-article marker, never mentions of deletion."""
+    value = str(text).strip()
+    # Official deletion markers can retain a dated amendment annotation.
+    value = re.sub(r"(?:\s*(?:<\s*\d{4}[\d\s.,/-]*>|\[\s*\d{4}[\d\s.,/-]*\]))+\s*$", "", value).strip()
+    if value in {"삭제", "(삭제)", "[삭제]"}:
+        return True
+    match = re.fullmatch(r"제[1-9]\d*조(?:의[1-9]\d*)?\s*(?:\(([^()]*)\))?\s*(.*)", value, re.DOTALL)
+    if not match:
+        return False
+    title, body = match.groups()
+    return body.strip() == "삭제" or (title == "삭제" and not body.strip())
+
+
 def _plain_content(element: ET.Element, names: set[str]) -> str:
     parts = []
     for child in element:
@@ -199,27 +228,26 @@ def _plain_content(element: ET.Element, names: set[str]) -> str:
     return "\n".join(parts)
 
 
+def _item(item: ET.Element) -> dict[str, Any]:
+    text = _plain_content(item, {"호내용", "호본문", "text"})
+    subitems = [_plain_content(sub, {"목내용", "text"})
+                for sub in _children(item, {"목", "목단위"})]
+    original = _value(item, "호번호", "item_no")
+    return {"item_no": _number(original), "original_no": original,
+            "text": "\n".join(part for part in [text, *subitems] if part)}
+
+
 def _paragraphs(unit: ET.Element) -> list[dict[str, Any]]:
     paragraphs = []
     for paragraph in _children(unit, {"항", "항단위", "paragraph"}):
-        items = []
-        for item in _children(paragraph, {"호", "호단위", "item"}):
-            text = _plain_content(item, {"호내용", "호본문", "text"})
-            subitems = [_plain_content(sub, {"목내용", "text"})
-                        for sub in _children(item, {"목", "목단위"})]
-            text = "\n".join(part for part in [text, *subitems] if part)
-            original = _value(item, "호번호", "item_no")
-            items.append({"item_no": _number(original), "original_no": original, "text": text})
+        items = [_item(item) for item in _children(paragraph, {"호", "호단위", "item"})]
         original = _value(paragraph, "항번호", "paragraph_no")
         paragraphs.append({"paragraph_no": _number(original), "original_no": original,
                            "text": _plain_content(paragraph, {"항내용", "항본문", "text"}), "items": items})
     # Some official schemas put items directly beneath an article without an 항.
     direct = _children(unit, {"호", "호단위"})
     if direct:
-        paragraphs.append({"paragraph_no": None, "text": "", "items": [
-            {"item_no": _number(_value(item, "호번호")), "original_no": _value(item, "호번호"),
-             "text": _plain_content(item, {"호내용", "text"})}
-            for item in direct]})
+        paragraphs.append({"paragraph_no": None, "text": "", "items": [_item(item) for item in direct]})
     return paragraphs
 
 
@@ -228,11 +256,13 @@ def _provisions(root: ET.Element, warnings: list[str]) -> list[dict[str, Any]]:
     for unit in root.iter():
         if _tag(unit) not in {"조문단위", "조", "article"}:
             continue
+        # Chapter/section headings can share a numeric 조문번호 with an
+        # actual article. Their explicit 전문 marker takes precedence.
+        if _value(unit, "조문여부") == "전문":
+            continue
         article_no = _article_number(unit)
         if not article_no:
-            # Chapter headings are represented as 조문단위 with 조문여부=전문.
-            if _value(unit, "조문여부") != "전문":
-                warnings.append("unparsed_article_number")
+            warnings.append("unparsed_article_number")
             continue
         paragraphs = _paragraphs(unit)
         content = _plain_content(unit, {"조문내용", "조내용", "text"})
@@ -240,8 +270,9 @@ def _provisions(root: ET.Element, warnings: list[str]) -> list[dict[str, Any]]:
         for paragraph in paragraphs:
             flattened.append(paragraph["text"])
             flattened.extend(item["text"] for item in paragraph["items"])
+        article_text = "\n".join(part for part in flattened if part)
         result.append({"article_no": article_no, "title": _value(unit, "조문제목", "조제목", "title"),
-                       "text": "\n".join(part for part in flattened if part), "paragraphs": paragraphs,
+                       "text": article_text, "deleted": is_deleted_article(article_text), "paragraphs": paragraphs,
                        "metadata": {"original_article_no": _value(unit, "조문번호", "조번호", "article_no"),
                                     "branch_no": _value(unit, "조문가지번호", "조가지번호")}})
     if result:
@@ -252,8 +283,9 @@ def _provisions(root: ET.Element, warnings: list[str]) -> list[dict[str, Any]]:
     matches = list(re.finditer(r"(?m)^\s*(제\d+조(?:의\d+)?)(?:\(([^\n)]*)\))?", text))
     for index, match in enumerate(matches):
         end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
+        article_text = text[match.start():end].strip()
         result.append({"article_no": match[1], "title": match[2] or None,
-                       "text": text[match.start():end].strip(), "paragraphs": []})
+                       "text": article_text, "deleted": is_deleted_article(article_text), "paragraphs": []})
     if result:
         warnings.append("unstructured_paragraphs")
     return result
@@ -358,6 +390,15 @@ class LawClient:
                                 chunks.append(chunk)
                             return b"".join(chunks)
                 time.sleep(wait)
+            except httpx.ProxyError as error:
+                # CONNECT failures do not produce an HTTP response. Inspect only
+                # the status marker and never publish exception URLs or OC values.
+                if re.search(r"\b403\b", str(error)):
+                    raise LawSourceError("proxy_access_denied", "환경 프록시가 법령 API 연결을 차단했습니다. 네트워크 허용 설정을 확인하세요.",
+                                         source, False, 403) from None
+                if attempt == self.retries:
+                    raise LawSourceError("network_error", "법령 API 네트워크 요청이 실패했습니다.", source, True) from None
+                time.sleep(min(4.0, .25 * 2 ** attempt))
             except httpx.HTTPError:
                 if attempt == self.retries:
                     raise LawSourceError("network_error", "법령 API 네트워크 요청이 실패했습니다.", source, True) from None
@@ -413,6 +454,7 @@ class LawClient:
         seen = set()
         for node in nodes:
             source_id, version_id, title = _identity(node, source)
+            version_identifier_available = bool(version_id)
             identifier_type = "MST" if source == "law" and version_id else "ID"
             version_id = version_id or source_id
             if not source_id or not version_id or not title:
@@ -423,13 +465,14 @@ class LawClient:
                 raise LawSourceError("duplicate_identity", "법령 목록에 중복 버전 식별자가 있습니다.", source)
             seen.add(version_id)
             warnings: list[str] = []
-            publication_date = _iso_date(_value(node, "공포일자", "발령일자", "제정일자"), "publication_date", warnings)
-            effective_date = _iso_date(_value(node, "시행일자", "시행일"), "effective_date", warnings)
+            publication_date = _iso_date(_metadata_value(node, "공포일자", "발령일자", "제정일자"), "publication_date", warnings)
+            effective_date = _iso_date(_metadata_value(node, "시행일자", "시행일"), "effective_date", warnings)
             items.append({"source": source, "source_id": source_id, "version_id": version_id, "title": self._public_field(title),
                           "publication_date": publication_date, "effective_date": effective_date,
-                          "publication_no": self._public_field(number) if (number := _value(node, "공포번호", "발령번호")) else None,
+                          "publication_no": self._public_field(number) if (number := _metadata_value(node, "공포번호", "발령번호")) else None,
                           "source_url": self._source_url(source, source_id, version_id, identifier_type),
                           "metadata": {"parse_warnings": warnings, "version_identifier_type": identifier_type,
+                                       "version_identifier_available": version_identifier_available,
                                        "provider_contract_verified": False,
                                        "fields": {_tag(child): self._public_field("".join(child.itertext()).strip()) for child in node}}})
         return {"source": source, "page": page, "total": total, "total_pages": math.ceil(total / page_size),
@@ -458,8 +501,8 @@ class LawClient:
         if not title:
             raise LawSourceError("missing_identity", "법령 본문 응답에 명칭이 누락되었습니다.", source)
         warnings: list[str] = []
-        publication_date = _iso_date(_value(root, "공포일자", "발령일자", "제정일자"), "publication_date", warnings)
-        effective_date = _iso_date(_value(root, "시행일자", "시행일"), "effective_date", warnings)
+        publication_date = _iso_date(_metadata_value(root, "공포일자", "발령일자", "제정일자"), "publication_date", warnings)
+        effective_date = _iso_date(_metadata_value(root, "시행일자", "시행일"), "effective_date", warnings)
         provisions = _provisions(root, warnings)
         supplementary, attachments = _sections(root)
         text = "\n\n".join(provision["text"] for provision in provisions if provision["text"])
@@ -475,14 +518,17 @@ class LawClient:
             warnings.append("missing_document_identity")
         if not actual_version:
             warnings.append("missing_document_version")
+        if not requested_version_known:
+            warnings.append("requested_version_unverified")
         return {"source": source, "source_id": source_id, "version_id": version_id, "title": title,
                 "publication_date": publication_date, "effective_date": effective_date,
-                "publication_no": _value(root, "공포번호", "발령번호"),
+                "publication_no": _metadata_value(root, "공포번호", "발령번호"),
                 "source_url": self._source_url(source, source_id, version_id, identifier_type), "raw": raw,
                 "raw_format": raw_format, "text": text, "provisions": provisions,
                 "metadata": {"parse_warnings": sorted(set(warnings)), "official_response": True,
                              "response_identity_verified": bool(actual_id),
-                             "response_version_verified": bool(actual_version),
+                             "response_version_verified": bool(actual_version and requested_version_known and actual_version == version_id),
+                             "response_version_id": actual_version,
                              "supplementary_provisions": supplementary, "attachments": attachments,
                              "attachment_count": len(attachments), "attachments_downloaded": False,
                              "full_legal_coverage_verified": False, "provider_contract_verified": False,

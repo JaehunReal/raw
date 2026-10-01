@@ -371,12 +371,34 @@ function App() {
       setBusy(false);
     }
   }
-  function download(p: Package) {
-    const a = document.createElement("a");
-    a.href = `${API}/packages/${encodeURIComponent(p.id)}/download`;
-    a.download = `rulecraft-${p.id}.zip`;
-    a.click();
-    setToast("문서 패키지 다운로드를 시작했습니다.");
+  async function download(p: Package) {
+    setBusy(true);
+    try {
+      const response = await apiFetch(`${API}/packages/${encodeURIComponent(p.id)}/download`);
+      if (!response.ok) {
+        const details = await response.json().catch(() => null);
+        throw new Error(typeof details?.detail === "string" ? details.detail : "문서 패키지를 다운로드하지 못했습니다.");
+      }
+      if (!response.headers.get("content-type")?.toLowerCase().startsWith("application/zip")) {
+        throw new Error("서버가 ZIP 문서를 반환하지 않았습니다. 연결 상태를 확인해 주세요.");
+      }
+      const url = URL.createObjectURL(await response.blob());
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `rulecraft-${p.id}.zip`;
+      try {
+        document.body.appendChild(anchor);
+        anchor.click();
+      } finally {
+        anchor.remove();
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+      setToast("문서 패키지 다운로드를 시작했습니다.");
+    } catch (error) {
+      setToast((error as Error).message);
+    } finally {
+      setBusy(false);
+    }
   }
   const stat = overview?.stats || {};
   return (
@@ -1286,7 +1308,7 @@ function App() {
                       </div>
                       <button
                         className="button secondary wide"
-                        disabled={p.status === "blocked"}
+                        disabled={busy || p.status === "blocked"}
                         onClick={() => download(p)}
                       >
                         <Download size={15} />
@@ -1584,7 +1606,7 @@ function App() {
                         초안 수정
                       </button>
                       <button
-                        disabled={result.status === "blocked"}
+                        disabled={busy || result.status === "blocked"}
                         className="button primary"
                         onClick={() => download(result)}
                       >

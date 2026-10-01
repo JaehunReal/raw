@@ -1,13 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
-export UV_CACHE_DIR="${UV_CACHE_DIR:-/workspace/.cache/uv}"
-export npm_config_cache="${npm_config_cache:-/workspace/.cache/npm}"
+export UV_CACHE_DIR="${UV_CACHE_DIR:-$PWD/.rulecraft/cache/uv}"
+export npm_config_cache="${npm_config_cache:-$PWD/.rulecraft/cache/npm}"
 mkdir -p .rulecraft
 
 # The supervisor owns separate server process groups. Terminal signals reach
 # the supervisor; cleanup then stops its groups and reaps its direct children.
-exec python3 - <<'PY'
+rulecraft_uv_options=(run --project backend --frozen --no-sync)
+if [[ -f .env ]]; then
+    rulecraft_uv_options+=(--env-file .env)
+fi
+exec uv "${rulecraft_uv_options[@]}" python - <<'PY'
 from contextlib import ExitStack
 import json
 from pathlib import Path
@@ -77,6 +81,9 @@ def show_logs():
 def main():
     signal.signal(signal.SIGINT, request_shutdown)
     signal.signal(signal.SIGTERM, request_shutdown)
+    if os.environ.get('RULECRAFT_API_TOKEN', '').strip() or os.environ.get('RULECRAFT_DEPLOYMENT', '').strip().lower() == 'production':
+        print('Authenticated production settings detected. Use the backend-only command in docs/macmini-setup.md; the development frontend has no authenticated gateway.', file=sys.stderr)
+        return 1
     for port in (8000, 5173):
         with socket.socket() as probe:
             # Ignore TIME_WAIT sockets left by the previous development run.
@@ -99,6 +106,8 @@ def main():
             children.append(subprocess.Popen(
                 [str(root / 'frontend/node_modules/.bin/vite'), '--host', '0.0.0.0', '--port', '5173', '--strictPort'],
                 cwd=root / 'frontend', stdout=frontend_log, stderr=subprocess.STDOUT, start_new_session=True,
+                env={key: value for key, value in os.environ.items()
+                     if not key.startswith('RULECRAFT_') and key not in {'VERCEL_TOKEN', 'RENDER_API_KEY'}},
             ))
             deadline = time.monotonic() + 30
             while not shutdown.is_set() and time.monotonic() < deadline:

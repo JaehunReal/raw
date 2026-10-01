@@ -31,7 +31,7 @@ LIMITATIONS = [
     "과거 연혁 전수 수집과 특정 시점의 법적 효력·적용성은 보증하지 않습니다.",
     "별표·별지 첨부파일 원본은 별도로 내려받지 않으며 원문 응답의 첨부 메타데이터만 보존합니다.",
     "목(가·나 등) 단위의 구조화와 모든 인용의 법적 해석은 지원 범위에 포함하지 않습니다.",
-    "목록의 공식 버전 ID가 같으면 기존 본문을 재사용합니다. 원문 재확인은 reset 모드로 실행하세요.",
+    "목록의 공식 버전 ID가 같으면 기존 본문을 재사용합니다. 버전 식별자 없는 항목은 매번 원문을 확인하며 그 밖의 원문 재확인은 reset 모드로 실행하세요.",
 ]
 
 
@@ -155,7 +155,10 @@ class LawSync:
                         break
                     try:
                         source_id, version_id = item["source_id"], item["version_id"]
-                        if resume and not reset and self.store.has_document(source, source_id, version_id):
+                        metadata = item.get("metadata", {})
+                        immutable_version = metadata.get("version_identifier_available",
+                            metadata.get("version_identifier_type") == "MST" or str(version_id) != str(source_id)) is True
+                        if resume and not reset and immutable_version and self.store.has_document(source, source_id, version_id):
                             state["reused"] += 1
                             if (str(source_id), str(version_id)) not in before_versions:
                                 # A body downloaded before an interrupted run can
@@ -291,7 +294,7 @@ class LawSync:
                 raise LawSourceError("catalogue_count_mismatch", "공식 목록 총수와 중복을 제외한 실제 목록 수가 다릅니다.", source=source)
             return items
         except LawSourceError as error:
-            state.update(status="blocked" if error.code in {"missing_credentials", "access_denied", "unsupported_source"} else "failed", phase="catalogue_failed")
+            state.update(status="blocked" if error.code in {"missing_credentials", "access_denied", "proxy_access_denied", "unsupported_source"} else "failed", phase="catalogue_failed")
             state["errors"].append(_source_error(error, source))
             persist(source)
             return None

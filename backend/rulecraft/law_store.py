@@ -24,6 +24,8 @@ from typing import Any, Iterator
 import unicodedata
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
+from .law_sources import is_deleted_article
+
 
 SOURCES = ("law", "administrative", "ordinance")
 _SECRET_KEYS = {"oc", "token", "access_token", "api_key", "apikey", "authorization", "password", "secret"}
@@ -323,7 +325,8 @@ class LawStore:
             ))
         return {"law_id": law_id, "version_id": version_id, "inserted": True}
 
-    def _raw_integrity(self, row: sqlite3.Row) -> bool:
+    def _raw_available(self, row: sqlite3.Row) -> bool:
+        """Check original-file availability without hashing corpus search pages."""
         digest = row["raw_sha256"]
         if not re.fullmatch(r"[0-9a-f]{64}", digest) or row["source"] not in SOURCES or row["raw_format"] not in {"xml", "json"}:
             return False
@@ -334,12 +337,20 @@ class LawStore:
         try:
             self._check_root()
             self._check_path(path)
-            if not stat.S_ISREG(path.stat().st_mode):
-                return False
+            original = path.stat()
+            return stat.S_ISREG(original.st_mode) and original.st_size > 0
+        except (OSError, ValueError):
+            return False
+
+    def _raw_integrity(self, row: sqlite3.Row) -> bool:
+        if not self._raw_available(row):
+            return False
+        path = self.root / row["raw_path"]
+        try:
             descriptor = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
             with os.fdopen(descriptor, "rb") as stream:
                 actual = hashlib.file_digest(stream, "sha256").hexdigest()
-            return actual == digest
+            return actual == row["raw_sha256"]
         except (OSError, ValueError):
             return False
 
@@ -590,7 +601,8 @@ class LawStore:
         ).fetchone() is not None
 
     def _document(self, connection: sqlite3.Connection, row: sqlite3.Row, as_of: str, *, summary: bool = False) -> dict:
-        verified = self._temporal_verified(connection, row, as_of)
+        raw_available = self._raw_available(row)
+        verified = raw_available and self._temporal_verified(connection, row, as_of)
         document = {key: row[key] for key in (
             "law_id", "source", "source_id", "version_id", "upstream_version_id", "title",
             "publication_date", "effective_date", "publication_no", "source_url", "raw_sha256",
@@ -598,7 +610,13 @@ class LawStore:
         )}
         document.update({"id": row["law_id"], "sha256": row["raw_sha256"], "as_of": as_of, "temporal_verified": verified,
                          "historical_complete": False, "legal_authority_verified": False,
-                         "active": bool(row["active"])})
+                         "active": bool(row["active"]), "raw_available": raw_available})
+        if summary:
+            # Availability is cheap to inspect. A present original has not had
+            # its SHA-256 checked until a full detail/citation lookup is made.
+            integrity = None if raw_available else False
+            document.update({"evidence_verified": integrity, "raw_integrity_verified": integrity,
+                             "integrity_verified": integrity})
         if not summary:
             evidence_verified = self._raw_integrity(row)
             metadata = json.loads(row["metadata_json"])
@@ -707,14 +725,20 @@ class LawStore:
         # Citation resolution always needs a known, in-force date selection;
         # catalogue browsing without a date may also expose future versions.
         where, parameters = self._selection(as_of_date, True)
+        title_key = _title_key(str(law_name))
         with self._connection() as connection:
             rows = connection.execute(f"""
-                WITH ranked AS (
+                WITH candidates AS (
+                    SELECT law_id FROM documents WHERE title_key=?
+                    UNION
+                    SELECT law_id FROM documents WHERE law_id=?
+                ), ranked AS (
                     SELECT *,ROW_NUMBER() OVER (
                         PARTITION BY law_id ORDER BY effective_date DESC,publication_date DESC,fetched_at DESC,version_id DESC
-                    ) AS rank FROM documents WHERE {where}
+                    ) AS rank FROM documents
+                    WHERE law_id IN (SELECT law_id FROM candidates) AND {where}
                 ) SELECT * FROM ranked WHERE rank=1 AND (title_key=? OR law_id=?) ORDER BY law_id
-            """, [*parameters, _title_key(str(law_name)), str(law_name)]).fetchall()
+            """, [title_key, str(law_name), *parameters, title_key, str(law_name)]).fetchall()
             if len(rows) > 1:
                 result.update({"ambiguous": True, "reason": "ambiguous_law_title",
                                "candidates": [self._document(connection, row, as_of_date, summary=True) for row in rows]})
@@ -738,7 +762,7 @@ class LawStore:
         if not law["temporal_verified"]:
             result["reason"] = "historical_snapshot_unverified"
             return result
-        if matching[0].get("deleted") or str(matching[0].get("text", "")).strip() in {"삭제", "(삭제)", "[삭제]"}:
+        if matching[0].get("deleted") or is_deleted_article(str(matching[0].get("text", ""))):
             result["reason"] = "article_deleted"
             return result
         result.update({"found": True, "temporal_verified": True})

@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 from rulecraft import adapters
 from rulecraft.graph import GraphStore
-from rulecraft.legal_grounding import add_text_impact, check_citations, collect_grounding, compact_name, extract_citations
+from rulecraft.legal_grounding import add_text_impact, check_citations, collect_grounding, compact_name, extract_citations, render_grounding_context
 from rulecraft.workflow import PackageWorkflow
 
 from tests.support import VaultTestCase, article
@@ -25,6 +25,7 @@ class FixtureLawStore:
             "publication_date": "2026-01-01", "effective_date": "2026-03-01",
             "source_url": "https://www.law.go.kr/synthetic-test-only", "sha256": "a" * 64,
             "fetched_at": "2026-09-30T00:00:00Z", "temporal_verified": True,
+            "evidence_verified": True,
             "metadata": {"synthetic_test_fixture": True},
             "provisions": [{"article_no": "제15조", "title": "가상 처리 기준",
                             "text": "[합성 테스트 원문] AI 데이터 처리는 목적과 책임자를 사전에 확인하여야 한다.",
@@ -67,6 +68,20 @@ class GroundingTests(VaultTestCase):
                         "objective": "AI 데이터 처리 기준 정비", "amendment_type": "partial",
                         "effective_date": "2026-11-01", "amendment_reason": "합성 원문 연결 검사",
                         "revised_markdown": self.markdown}
+
+    def official_fixture(self, name, provisions=None):
+        from rulecraft.law_store import LawStore
+        source = LawStore(self.vault / name)
+        document = deepcopy(self.source.law)
+        if provisions is not None:
+            document["provisions"] = provisions
+        document["text"] = "\n".join(item["text"] for item in document["provisions"])
+        document.update(raw=b"<synthetic-grounding-source-only/>", raw_format="xml")
+        saved = source.save_document(document)
+        membership = [{"source_id": document["source_id"], "version_id": saved["version_id"]}]
+        source.save_manifest("law", membership, "synthetic-grounding-run")
+        source.mark_snapshot("law", "synthetic-grounding-run", membership)
+        return source, saved
 
     def test_official_article_not_in_local_vault_is_valid_and_documents_show_dated_evidence(self):
         before = self.store.graph()
@@ -147,6 +162,99 @@ class GroundingTests(VaultTestCase):
         collect_grounding(self.store, self.node, self.request, self.source)
         self.assertTrue(self.source.calls)
         self.assertTrue(all(call[-1] == "2026-11-01" for call in self.source.calls))
+
+    def test_missing_or_tampered_original_is_excluded_from_actual_model_objective_evidence(self):
+        plain = article("RULE", 7, body="# 제7조 (반출)\n검토 절차를 정한다.", demo=True)
+        self.write("rules/seven.md", plain)
+        self.store.refresh()
+
+        class Response:
+            def json(inner_self):
+                return {"choices": [{"message": {"content": plain}}]}
+
+        for damage in ("missing", "tampered"):
+            with self.subTest(damage=damage):
+                source, saved = self.official_fixture("official-" + damage)
+                detail = source.get(saved["law_id"], as_of="2099-01-01")
+                self.assertTrue(detail["evidence_verified"])
+                original = source.root / detail["raw_path"]
+                if damage == "missing":
+                    original.unlink()
+                else:
+                    original.write_bytes(b"<synthetic-fixture-tampered/>")
+                request = {key: value for key, value in self.request.items() if key != "revised_markdown"}
+                request["effective_date"] = "2099-01-01"
+                with patch.dict(os.environ, {"RULECRAFT_LLM_BASE_URL": "http://localhost:9001/v1", "RULECRAFT_LLM_MODEL": "fixture"}), patch.object(adapters, "_request", return_value=Response()) as model_request:
+                    result = PackageWorkflow(self.store, self.vault / ("packages-" + damage), source).run(request)
+                grounding = result["verification"]["legal_coverage"]
+                self.assertTrue(result["verification"]["valid"])
+                self.assertEqual(grounding["status"], "source_unavailable")
+                self.assertEqual(grounding["sources"], [])
+                self.assertEqual(grounding["excluded_sources"][0]["reason"], "original_evidence_integrity_failure")
+                self.assertIn("official_evidence_unverified", [issue["code"] for issue in grounding["issues"]])
+                prompt = model_request.call_args.kwargs["json"]["messages"][1]["content"]
+                self.assertNotIn(self.source.law["provisions"][0]["text"], prompt)
+                self.assertIn("확보한 공식 근거가 없습니다", prompt)
+
+    def test_objective_evidence_requires_explicit_integrity_success(self):
+        node = {**self.node, "body": "# 제7조\n검토 절차를 정한다."}
+        for verified in (False, None, "true"):
+            with self.subTest(evidence_verified=verified):
+                source = FixtureLawStore(complete=True)
+                source.law["evidence_verified"] = verified
+                grounding = collect_grounding(self.store, node, {**self.request, "revised_markdown": ""}, source)
+                self.assertEqual(grounding["sources"], [])
+                self.assertEqual(grounding["status"], "source_unavailable")
+                self.assertEqual(grounding["issues"][0]["code"], "official_evidence_unverified")
+
+    def test_mixed_deleted_provisions_are_filtered_before_ranking_and_valid_deletion_policy_remains(self):
+        provisions = [
+            {"article_no": "제15조", "text": "삭제된 합성 내용", "deleted": True},
+            {"article_no": "제16조", "text": "제16조 삭제 <2026. 3. 1.>"},
+            {"article_no": "제17조", "text": "제17조 삭제 요청이 있으면 담당자가 검토하여야 한다."},
+        ]
+        source, saved = self.official_fixture("official-mixed-deletions", provisions)
+        node = {**self.node, "body": "# 제7조\n검토 절차를 정한다."}
+        grounding = collect_grounding(self.store, node, {**self.request, "objective": "삭제", "revised_markdown": "", "effective_date": "2099-01-01"}, source)
+        self.assertEqual([item["article_no"] for item in grounding["sources"]], ["제17조"])
+        self.assertEqual({item["article_no"] for item in grounding["excluded_sources"]}, {"제15조", "제16조"})
+        self.assertTrue(grounding["sources"][0]["evidence_verified"])
+        context = render_grounding_context(grounding)
+        self.assertNotIn(provisions[0]["text"], context)
+        self.assertNotIn(provisions[1]["text"], context)
+        self.assertIn(provisions[2]["text"], context)
+
+    def test_all_deleted_provisions_do_not_fall_back_to_full_law_text(self):
+        provisions = [{"article_no": "제15조", "text": "제15조 삭제 <2026. 3. 1.>"}]
+        source, saved = self.official_fixture("official-all-deleted", provisions)
+        grounding = collect_grounding(self.store, self.node, {**self.request, "objective": "삭제", "effective_date": "2099-01-01"}, source)
+        self.assertEqual(grounding["sources"], [])
+        self.assertEqual(grounding["status"], "source_unavailable")
+        self.assertTrue(grounding["unresolved_citations"])
+        self.assertIn("official_deleted_provision_excluded", [issue["code"] for issue in grounding["issues"]])
+        self.assertNotIn(provisions[0]["text"], render_grounding_context(grounding))
+
+    def test_deleted_unstructured_body_is_not_objective_evidence(self):
+        source = FixtureLawStore()
+        source.law["provisions"] = []
+        source.law["text"] = "제15조 삭제 <2026. 3. 1.>"
+        node = {**self.node, "body": "# 제7조\n검토 절차를 정한다."}
+        grounding = collect_grounding(self.store, node, {**self.request, "objective": "삭제", "revised_markdown": ""}, source)
+        self.assertEqual(grounding["sources"], [])
+        self.assertEqual(grounding["excluded_sources"][0]["reason"], "article_deleted")
+
+    def test_empty_active_article_does_not_fall_back_to_document_with_deleted_text(self):
+        source = FixtureLawStore()
+        source.law["provisions"] = [
+            {"article_no": "제15조", "text": "제15조 삭제", "deleted": True},
+            {"article_no": "제16조", "text": ""},
+        ]
+        source.law["text"] = "제15조 삭제\n전체 원문으로 우회하면 안 되는 합성 표시"
+        node = {**self.node, "body": "# 제7조\n검토 절차를 정한다."}
+        grounding = collect_grounding(self.store, node, {**self.request, "objective": "삭제", "revised_markdown": ""}, source)
+        self.assertEqual(grounding["sources"], [])
+        self.assertEqual({item["reason"] for item in grounding["excluded_sources"]}, {"article_deleted", "original_text_missing"})
+        self.assertNotIn(source.law["text"], render_grounding_context(grounding))
 
     def test_unverified_historical_snapshot_is_warning_not_false_missing_article(self):
         class HistoricalSource(FixtureLawStore):

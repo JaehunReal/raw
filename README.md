@@ -8,17 +8,19 @@
 
 국가법령정보 API 계정은 추후 Mac mini 백엔드에 설정합니다. 백엔드 인증 토큰은 Mac mini와 Vercel의 서버 환경에 같은 값으로 등록하며, 브라우저 코드에 넣지 않습니다.
 
+집의 Mac mini에서 실행할 때는 [설치·비공개 설정·연결 확인 안내](docs/macmini-setup.md)를 따르세요. 서버를 시작하기 전에 `uv run --env-file .env --project backend --frozen python scripts/check-law-api.py`로 법령·행정규칙·자치법규의 소량 목록과 본문 조회를 확인할 수 있습니다. 결과는 전체 수집 완료를 뜻하지 않으며, 저장소를 변경하지 않습니다.
+
 ## 공식 법령 전체 목록·전문 수집
 
 **공식 법령** 메뉴에서 법령·행정규칙·자치법규의 전체 목록과 전문을 수집하고, 종류별 누락·실패·진행 상황을 확인합니다. 원문은 시연 규정집과 분리된 SQLite 색인과 원본 응답으로 보관하며, 공식 식별자·버전·공포/시행 정보·출처·수집 시각·해시를 함께 저장합니다. 재실행 시 실패한 전문을 다시 수집하고 기존 버전을 보존합니다.
 
 수집한 원문을 법령명·본문·기준일로 조회하고 입안 모델과 검토 보고서의 근거로 사용합니다. 원문 변경은 등록된 기관 규정의 인용·역참조를 따라 영향 후보를 조회합니다. MCP 조회도 `source_scope: "official"`로 공식 조문을 사용할 수 있습니다. 시연 자료는 **시연**, 날짜는 **예제 작성일**로 표시합니다.
 
-실제 수집에는 국가법령정보 공동활용 API의 `RULECRAFT_LAW_OC`와 공식 사이트 HTTPS 접근이 필요합니다. 구현 시 확인한 환경에서는 식별값이 없고 접속이 프록시 `403 Forbidden`으로 차단되어 **실제 공식 원문은 0건**입니다. 합성 응답으로 수집·저장·조회·입안 흐름을 검증했으며, 이를 실제 수집 성공으로 표시하지 않습니다. [설정과 수집 실행](docs/official-laws.md)을 확인하세요.
+실제 수집에는 국가법령정보 공동활용 API의 `RULECRAFT_LAW_OC`와 공식 사이트 HTTPS 접근이 필요합니다. 현재 전달받은 OC의 비공개 파일 로드를 확인했지만, 공식 API 세 자료 범위의 요청이 이 클라우드 프록시 `403 Forbidden`으로 차단되어 **실제 공식 원문은 0건**입니다. OC 승인·유효성은 공식 응답을 받아야 확인할 수 있습니다. 합성 응답으로 수집·저장·조회·입안 흐름을 검증했으며, 이를 실제 수집 성공으로 표시하지 않습니다. [연결 검토 결과](docs/api-connection-review.md)와 [설정·수집 실행](docs/official-laws.md)을 확인하세요.
 
 ‘선택 범위 수집 완료’는 이번 API 목록과 저장한 전문의 수량이 일치한 상태입니다. 전체 연혁·첨부파일·기관별 적용성·법적 적합성이 모두 검증되었다는 뜻은 아닙니다.
 
-아래는 실제 API 응답을 확인한 화면입니다. 공식 원문 0건·설정 미완료 상태를 보여주며, [브라우저 실행 증거](docs/laws-evidence.json)와 [모바일 화면](docs/screenshots/laws-mobile.png)을 함께 보관합니다.
+아래는 OC가 등록되기 전의 실제 API 응답을 확인한 화면입니다. 당시 공식 원문 0건·설정 미완료 상태를 보여주며, [브라우저 실행 증거](docs/laws-evidence.json)와 [모바일 화면](docs/screenshots/laws-mobile.png)을 함께 보관합니다. 현재 OC 로드와 공식 API 접속 결과는 위 연결 검토 문서에 기록합니다.
 
 ![공식 법령 수집 화면 — 원문 0건, 설정 필요](docs/screenshots/laws-empty.png)
 
@@ -46,10 +48,6 @@
 Python 3.12 이상, `uv`, Node.js 22.12 이상, npm이 필요합니다. 저장소 루트에서 실행하세요. 현재 클라우드 환경에서는 Python 3.12.14와 Node.js 24.19.0으로 검증했습니다.
 
 ```bash
-# 클라우드 환경의 쓰기 가능한 캐시 경로
-export UV_CACHE_DIR=/workspace/.cache/uv
-export npm_config_cache=/workspace/.cache/npm
-
 uv sync --project backend --frozen
 npm ci --prefix frontend
 ```
@@ -59,7 +57,7 @@ npm ci --prefix frontend
 설치·빌드·테스트를 한 번에 실행하려면 `bash scripts/setup.sh`, 두 서버를 함께 시작하려면 `bash scripts/dev.sh`를 사용하세요. 시작 스크립트는 API와 지식그래프 응답을 확인하고, 종료 시 자신이 시작한 서버를 정리합니다.
 
 ```bash
-uv run --project backend uvicorn rulecraft.api:app --host 127.0.0.1 --port 8000
+uv run --env-file .env --project backend uvicorn rulecraft.api:app --host 127.0.0.1 --port 8000
 ```
 
 ```bash
@@ -67,6 +65,8 @@ npm run dev --prefix frontend -- --host 0.0.0.0 --port 5173
 ```
 
 브라우저에서 `http://localhost:5173`에 접속합니다. 개발 서버가 `/api` 요청을 백엔드에 전달합니다. API 문서는 `http://localhost:8000/docs`에서 확인할 수 있습니다. 각 클라우드 작업은 이미 격리된 환경에서 실행되므로 기존 체크아웃을 사용하며 별도 Git worktree가 필요하지 않습니다.
+
+`.env`를 사용하지 않는 개발 환경은 위 백엔드 명령의 `--env-file .env`를 생략합니다. `scripts/dev.sh`는 비공개 `.env`를 Python 백엔드에 불러옵니다. 운영 인증 설정이 있으면 개발 프런트엔드의 인증 경로와 맞지 않으므로 실행을 중단하고 Mac mini의 백엔드 전용 명령을 안내합니다. 일반 Mac에서는 `/workspace` 캐시 변수를 설정하지 않아도 되며, 스크립트 기본 캐시는 Git에서 제외된 `.rulecraft/cache`를 사용합니다.
 
 외부 접근이 필요한 개발 환경에서는 접근 범위를 확인하고 백엔드의 `--host`를 `0.0.0.0`으로 지정할 수 있습니다.
 

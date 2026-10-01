@@ -13,7 +13,9 @@ import threading
 import unittest
 from unittest.mock import patch
 
-from rulecraft.law_sources import LawSourceError
+import httpx
+
+from rulecraft.law_sources import LawClient, LawSourceError
 from rulecraft.law_store import LawStore
 from rulecraft.law_sync import LawSync
 
@@ -173,6 +175,23 @@ class LawSyncTests(unittest.TestCase):
             self.assertEqual(result["errors"][0]["code"], "sync_in_progress")
         self.assertEqual(self.store.coverage()["run_id"], "RUNNING")
 
+    def test_environment_proxy_access_denied_is_blocked_and_not_a_completed_sync(self) -> None:
+        class BlockedClient(FixtureClient):
+            def catalog(self, source: str, page: int = 1, page_size: int = 100) -> dict:
+                raise LawSourceError("proxy_access_denied", "환경 프록시가 법령 API 연결을 차단했습니다.",
+                                     source, retriable=False, status_code=403)
+        result = LawSync(self.store, BlockedClient({})).run(["law"])
+        self.assertFalse(result["complete"])
+        self.assertEqual(result["status"], "blocked")
+        state = result["sources"]["law"]
+        self.assertEqual(state["status"], "blocked")
+        self.assertEqual(state["collected"], 0)
+        self.assertIsNone(state["expected"])
+        self.assertEqual(state["errors"][0]["code"], "proxy_access_denied")
+        self.assertEqual(state["errors"][0]["status_code"], 403)
+        self.assertFalse(state["errors"][0]["retriable"])
+        self.assertFalse(self.store.coverage()["complete"])
+
     def test_reset_refetches_previously_downloaded_versions(self) -> None:
         client = FixtureClient({"law": [item("law", "A")]})
         synchronizer = LawSync(self.store, client)
@@ -180,6 +199,54 @@ class LawSyncTests(unittest.TestCase):
         synchronizer.run(["law"], reset=True)
         self.assertEqual(client.fetch_calls, ["A", "A"])
         self.assertTrue(self.store.coverage()["complete"])
+
+    def test_id_only_catalogue_refetches_changed_body_without_losing_original_evidence(self) -> None:
+        catalogue = """<LawSearch><totalCnt>1</totalCnt><law><법령ID>00123</법령ID>
+        <법령명한글>합성 ID 조회 법률</법령명한글><공포일자>20200101</공포일자>
+        <시행일자>20200201</시행일자></law></LawSearch>""".encode()
+        state = {"sequence": "987", "body": "합성 첫 원문의 의무", "full_calls": 0}
+        def handler(request):
+            if request.url.path.endswith("lawSearch.do"):
+                return httpx.Response(200, content=catalogue)
+            self.assertEqual(request.url.params["ID"], "00123")
+            self.assertNotIn("MST", request.url.params)
+            state["full_calls"] += 1
+            raw = f"""<법령><기본정보><법령ID>00123</법령ID><법령일련번호>{state['sequence']}</법령일련번호>
+            <법령명_한글>합성 ID 조회 법률</법령명_한글><공포일자>20200101</공포일자>
+            <시행일자>20200201</시행일자></기본정보><조문><조문단위><조문번호>1</조문번호>
+            <조문내용>제1조(의무) {state['body']}</조문내용></조문단위></조문></법령>""".encode()
+            return httpx.Response(200, content=raw)
+        client = LawClient(oc="synthetic-test-account", transport=httpx.MockTransport(handler), minimum_interval=0)
+        self.addCleanup(client.close)
+        first = LawSync(self.store, client).run(["law"])
+        before = self.store.get("law:00123")
+        self.assertTrue(first["complete"])
+        state.update(sequence="988", body="합성 변경 원문의 새 의무")
+        second = LawSync(self.store, client).run(["law"])
+        after = self.store.get("law:00123")
+        self.assertTrue(second["complete"])
+        self.assertEqual(state["full_calls"], 2)
+        self.assertEqual(second["sources"]["law"]["reused"], 0)
+        self.assertEqual(second["sources"]["law"]["downloaded"], 1)
+        self.assertIn("합성 변경 원문의 새 의무", after["text"])
+        self.assertEqual(after["upstream_version_id"], "00123")
+        self.assertEqual(after["metadata"]["response_version_id"], "988")
+        self.assertFalse(after["metadata"]["response_version_verified"])
+        self.assertNotEqual(before["version_id"], after["version_id"])
+        self.assertNotEqual(before["sha256"], after["sha256"])
+        self.assertEqual(self.store.get_changes()["items"][0]["change_type"], "updated")
+        self.assertTrue((self.root / before["raw_path"]).is_file())
+        self.assertTrue((self.root / after["raw_path"]).is_file())
+
+    def test_sequence_only_identity_is_reused_when_catalogue_declares_a_version(self) -> None:
+        value = item("administrative", "12", "12")
+        value["metadata"]["version_identifier_available"] = True
+        client = FixtureClient({"administrative": [value]})
+        LawSync(self.store, client).run(["administrative"])
+        repeated = LawSync(self.store, client).run(["administrative"])
+        self.assertTrue(repeated["complete"])
+        self.assertEqual(client.fetch_calls, ["12"])
+        self.assertEqual(repeated["sources"]["administrative"]["reused"], 1)
 
     def test_added_updated_removed_changes_are_hashed_and_paginated(self) -> None:
         client = FixtureClient({"law": [item("law", "A"), item("law", "B")]})

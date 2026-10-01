@@ -6,9 +6,11 @@ import base64
 import binascii
 import os
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import parse_qsl, quote, urlencode, urlparse, urlunparse
 
 import httpx
+
+from .law_sources import LawSourceError, _check_api_error, _parse_response
 
 
 class AdapterUnavailable(RuntimeError):
@@ -146,14 +148,46 @@ def search_national_law(query: str) -> dict[str, Any]:
         raise AdapterUnavailable("RULECRAFT_LAW_OC 설정이 없어 국가법령 API를 사용할 수 없습니다.")
     base = os.getenv("RULECRAFT_LAW_BASE_URL", "https://www.law.go.kr/DRF").rstrip("/")
     parsed = urlparse(base)
-    if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password or parsed.query:
+    if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password or parsed.query or parsed.fragment:
         raise AdapterUnavailable("국가법령 API URL은 인증 정보 없는 HTTPS 주소여야 합니다.")
     response = _request("GET", f"{base}/lawSearch.do", params={
         "OC": oc, "target": "law", "type": "JSON", "query": query, "display": 20,
     })
     try:
         payload = response.json()
+        root, _ = _parse_response(response.content, "law")
+        _check_api_error(root, "law")
+        catalogue = payload.get("LawSearch") if isinstance(payload, dict) else None
+        if not isinstance(catalogue, dict):
+            raise ValueError
+        total = str(catalogue.get("totalCnt", ""))
+        if not total.isascii() or not total.isdecimal():
+            raise ValueError
+        items = catalogue.get("law", [])
+        items = [items] if isinstance(items, dict) else items
+        if (not isinstance(items, list) or any(not isinstance(item, dict) for item in items)
+                or len(items) != min(20, int(total))):
+            raise ValueError
+    except LawSourceError:
+        raise AdapterUnavailable("국가법령 API가 정상 법령 목록을 반환하지 않았습니다. 계정과 응답 형식을 확인하세요.") from None
     except ValueError:
-        raise AdapterUnavailable("국가법령 API의 JSON 응답을 읽을 수 없습니다.") from None
-    return {"status": "available", "source": "국가법령정보센터", "data": payload,
+        raise AdapterUnavailable("국가법령 API의 법령 목록 JSON 응답을 읽을 수 없습니다.") from None
+
+    def public_value(value: Any) -> Any:
+        if isinstance(value, dict):
+            return {key: public_value(item) for key, item in value.items() if str(key).lower() != "oc"}
+        if isinstance(value, list):
+            return [public_value(item) for item in value]
+        if isinstance(value, str):
+            try:
+                link = urlparse(value)
+                if link.scheme in {"http", "https"} and link.hostname:
+                    query = [(key, item) for key, item in parse_qsl(link.query) if key.lower() != "oc"]
+                    value = urlunparse(link._replace(query=urlencode(query), fragment=""))
+            except ValueError:
+                value = "[invalid link]"
+            return value.replace(oc, "[redacted]").replace(quote(oc, safe=""), "[redacted]")
+        return value
+
+    return {"status": "available", "source": "국가법령정보센터", "data": public_value(payload),
             "requires_human_review": True}

@@ -21,6 +21,7 @@ import ssl
 import subprocess
 import tempfile
 import time
+import zipfile
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
 from urllib.request import urlopen
@@ -140,6 +141,55 @@ def mcp_graph(page) -> dict:
     return payload
 
 
+def authenticated_download(page, context) -> dict:
+    """Create a real package through the UI, then expire its browser session."""
+    page.locator("nav").get_by_role("button", name="워크스페이스", exact=True).click()
+    page.get_by_role("button", name="새 개정 프로젝트", exact=True).click()
+    page.get_by_role("button", name="대상 조문 선택", exact=True).click()
+    expect(page.get_by_label("개정 대상 조문")).to_have_value("KIPA-RULE-DAT-007")
+    page.get_by_role("button", name="문서 구성 확인", exact=True).click()
+    with page.expect_response(lambda response: urlparse(response.url).path == "/api/packages"
+                              and response.request.method == "POST") as generated:
+        page.get_by_role("button", name="문서 패키지 생성", exact=True).click()
+    assert generated.value.status == 201
+    package = generated.value.json()
+    assert package["status"] == "draft" and package["verification"]["valid"]
+    assert len(package["documents"]) == 7
+    download_path = f"/api/packages/{package['id']}/download"
+    downloads = []
+    page.on("download", lambda download: downloads.append(download))
+    with page.expect_response(lambda response: urlparse(response.url).path == download_path) as response, \
+            page.expect_download() as downloaded:
+        page.get_by_role("button", name="전체 문서 다운로드", exact=True).click()
+    assert response.value.status == 200
+    assert response.value.headers["content-type"].startswith("application/zip")
+    assert downloaded.value.failure() is None
+    assert downloaded.value.suggested_filename == f"rulecraft-{package['id']}.zip"
+    with zipfile.ZipFile(downloaded.value.path()) as archive:
+        assert archive.testzip() is None
+        names = set(archive.namelist())
+        assert names == {document["name"] for document in package["documents"]} | {"manifest.json"}
+        manifest = json.loads(archive.read("manifest.json"))
+        assert manifest["id"] == package["id"] and manifest["verification"]["valid"]
+        for document in package["documents"]:
+            assert archive.read(document["name"]).decode("utf-8") == document["content"]
+    expect(page.get_by_role("status")).to_contain_text("문서 패키지 다운로드를 시작했습니다.")
+    assert len(downloads) == 1
+    # Keep the existing document screen while clearing only the browser session.
+    # Its next protected download must trigger LoginGate, not save an error JSON.
+    context.clear_cookies()
+    with page.expect_response(lambda response: urlparse(response.url).path == download_path) as expired:
+        page.get_by_role("button", name="전체 문서 다운로드", exact=True).click()
+    assert expired.value.status == 401
+    expect(page.get_by_role("heading", name="워크스페이스에 로그인")).to_be_visible()
+    expect(page.get_by_role("alert")).to_contain_text("로그인 시간이 만료되었습니다.")
+    assert len(downloads) == 1, "Session errors must not become downloaded ZIP files"
+    return {"package_create_http_status": 201, "download_http_status": 200,
+            "zip_entries": len(names), "zip_content_verified": True,
+            "expired_download_http_status": 401, "expired_download_returned_to_login": True,
+            "error_response_downloaded": False}
+
+
 def main() -> None:
     if not (ROOT / "frontend/dist/index.html").is_file() or not (ROOT / "api/proxy.mjs").is_file():
         raise RuntimeError("Build the login-enabled frontend and provide api/proxy.mjs first.")
@@ -165,7 +215,7 @@ def main() -> None:
         backend_port, gateway_port = port(), port()
         backend = f"https://127.0.0.1:{backend_port}"
         gateway = f"https://127.0.0.1:{gateway_port}"
-        inherited = {name: value for name, value in os.environ.items()
+        inherited = {name: os.environ[name] for name in os.environ
                      if not name.startswith("RULECRAFT_") and name not in {"VERCEL_TOKEN", "RENDER_API_KEY", "NODE_TLS_REJECT_UNAUTHORIZED"}}
         backend_env = {**inherited, "RULECRAFT_DEPLOYMENT": "production", "RULECRAFT_API_TOKEN": token,
                        "RULECRAFT_VAULT": str(vault), "RULECRAFT_PACKAGE_DIR": str(temporary / "packages"),
@@ -222,6 +272,9 @@ def main() -> None:
                 expect(page.get_by_test_id("laws-status")).to_have_attribute("data-complete", "false")
                 assert page.get_by_test_id("laws-sync").is_disabled()
                 mcp = mcp_graph(page)
+                download_evidence = authenticated_download(page, context)
+                login(page, password)
+                expect(page.locator(".stat-card").nth(0).locator(".stat-value")).to_contain_text("12")
                 with page.expect_response(lambda response: urlparse(response.url).path == "/api/session"
                                           and response.request.method == "DELETE") as result:
                     page.get_by_role("button", name="로그아웃", exact=True).click()
@@ -256,6 +309,7 @@ def main() -> None:
                             "cookie": {"http_only": True, "secure": True, "same_site": "Strict", "path": "/api"},
                             "browser_bearer_exposed": False, "asset_secrets_exposed": False,
                             "mobile_width": 390, "mobile_overflow": False, "runtime_errors": 0,
+                            "authenticated_download": download_evidence,
                             "copied_source_unchanged": copied_source == snapshot(vault)}
             assert evidence["copied_source_unchanged"]
         finally:

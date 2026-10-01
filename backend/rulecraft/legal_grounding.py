@@ -8,6 +8,7 @@ import unicodedata
 from typing import Any
 
 from .graph import GraphStore, RELATIONS, WIKILINK_RE, _references, normalize_article
+from .law_sources import is_deleted_article
 
 
 ARTICLE_SUFFIX = r"\s*제\s*(?P<number>\d+)\s*조(?:\s*의\s*(?P<sub>\d+))?(?:\s*제\s*(?P<paragraph>\d+)\s*항)?(?:\s*제\s*(?P<item>\d+)\s*호)?"
@@ -64,6 +65,7 @@ def _summary(law: dict, article: dict | None = None, **extra: Any) -> dict:
         "effective_date": law.get("effective_date"), "publication_no": law.get("publication_no"),
         "source_url": law.get("source_url"), "sha256": law.get("sha256") or law.get("raw_sha256"),
         "fetched_at": law.get("fetched_at"),
+        "evidence_verified": law.get("evidence_verified", False),
         "temporal_verified": law.get("temporal_verified", law.get("metadata", {}).get("temporal_verified", False)),
         "article_no": (article or {}).get("article_no"),
         "article_title": (article or {}).get("title"), **extra,
@@ -149,32 +151,75 @@ def build_grounding(store: GraphStore, node: dict, objective: str, as_of: str, l
     unresolved = []
     used_chars = 0
     seen = set()
+    excluded_sources: list[dict] = []
+    excluded_keys = set()
 
-    def add_source(law: dict, article: dict | None, origin: str, **extra: Any) -> None:
+    def exclude_source(law: dict, article: dict | None, origin: str, code: str,
+                       message: str, reason: str) -> None:
+        key = (law.get("law_id"), law.get("version_id"), (article or {}).get("article_no"), reason)
+        if key in excluded_keys:
+            return
+        excluded_keys.add(key)
+        excluded_sources.append(_summary(law, article, origin=origin, reason=reason))
+        issues.append(_issue(code, message, node["path"], law_id=law.get("law_id"),
+                             article_no=(article or {}).get("article_no"), reason=reason))
+
+    def evidence_available(law: dict, origin: str) -> bool:
+        # Search summaries intentionally do not hash originals. Only get()/citation
+        # details with a successful raw integrity check may become model evidence.
+        if law.get("evidence_verified") is not True:
+            reason = ("original_evidence_integrity_failure" if law.get("evidence_verified") is False
+                      else "original_evidence_unverified")
+            exclude_source(law, None, origin, "official_evidence_unverified",
+                           "공식 원문의 보관·무결성이 확인되지 않아 입안 근거에서 제외했습니다.", reason)
+            return False
+        return True
+
+    def article_deleted(article: dict) -> bool:
+        return bool(article.get("deleted")) or is_deleted_article(str(article.get("text", "")))
+
+    def add_source(law: dict, article: dict | None, origin: str, **extra: Any) -> bool:
         nonlocal used_chars
+        if not evidence_available(law, origin):
+            return False
+        if (article and article_deleted(article)) or (article is None and is_deleted_article(str(law.get("text", "")))):
+            exclude_source(law, article, origin, "official_deleted_provision_excluded",
+                           "공식 원문의 삭제 조문은 현재 입안 근거에서 제외했습니다.", "article_deleted")
+            return False
         key = (law.get("law_id"), law.get("version_id"), (article or {}).get("article_no"))
         if key in seen or len(sources) >= MAX_SOURCES:
-            return
-        seen.add(key)
-        full_text = str((article or {}).get("text") or law.get("text") or "")
+            return True
+        # An empty structured article must never fall back to the entire law:
+        # that document can contain excluded/deleted provisions beside this one.
+        full_text = str(article.get("text") or "") if article is not None else str(law.get("text") or "")
         if not full_text.strip():
-            issues.append(_issue("official_text_missing", "공식 자료에 사용할 원문 본문이 없습니다.", node["path"], law_id=law.get("law_id")))
-            return
+            exclude_source(law, article, origin, "official_text_missing",
+                           "공식 자료에 사용할 조문 본문이 없어 근거에서 제외했습니다.", "original_text_missing")
+            return False
+        seen.add(key)
         remaining = MAX_GROUNDING_CHARS - used_chars
         passage = full_text[:max(0, min(MAX_PASSAGE_CHARS, remaining))]
         used_chars += len(passage)
         sources.append(_summary(law, article, origin=origin, passage=passage,
                                 passage_truncated=len(passage) < len(full_text), **extra))
+        return True
 
     for citation in requested:
         resolved = _resolve(law_store, citation, as_of)
+        if resolved.get("law") and not evidence_available(resolved["law"], "declared_citation"):
+            unresolved.append(citation)
+            continue
         if resolved.get("found") and resolved.get("law") and resolved.get("article"):
-            add_source(resolved["law"], resolved["article"], "declared_citation", reference=citation["reference"],
-                       local_node_id=citation.get("local_node_id"), local_demo=citation.get("local_demo", False))
+            if not add_source(resolved["law"], resolved["article"], "declared_citation", reference=citation["reference"],
+                              local_node_id=citation.get("local_node_id"), local_demo=citation.get("local_demo", False)):
+                unresolved.append(citation)
         elif resolved.get("law") and resolved.get("article") and resolved.get("reason") == "historical_snapshot_unverified":
             add_source(resolved["law"], resolved["article"], "unverified_dated_citation", reference=citation["reference"])
             unresolved.append(citation)
             issues.append(_issue("official_citation_temporal_unverified", "공식 원문은 확보했지만 요청한 기준일의 시행 상태를 확인할 스냅샷이 없습니다.", node["path"], reference=citation["reference"]))
+        elif resolved.get("law") and resolved.get("article") and resolved.get("reason") == "article_deleted":
+            add_source(resolved["law"], resolved["article"], "declared_citation", reference=citation["reference"])
+            unresolved.append(citation)
         else:
             unresolved.append(citation)
             issues.append(_issue("official_source_missing", f"기준일의 공식 원문을 확인하지 못했습니다: {citation['law_name']} {citation['article_no']}",
@@ -197,9 +242,18 @@ def build_grounding(store: GraphStore, node: dict, objective: str, as_of: str, l
                 law = None
             if not law:
                 continue
+            if not evidence_available(law, "objective_search"):
+                continue
             terms = [compact_name(term) for term in re.findall(r"[가-힣A-Za-z0-9]{2,}", objective)]
             provisions = law.get("provisions", [])
-            ranked = sorted(provisions, key=lambda article: sum(term in compact_name(str(article.get("text", ""))) for term in terms), reverse=True)
+            active_provisions = []
+            for provision in provisions:
+                if article_deleted(provision):
+                    exclude_source(law, provision, "objective_search", "official_deleted_provision_excluded",
+                                   "공식 원문의 삭제 조문은 현재 입안 근거에서 제외했습니다.", "article_deleted")
+                else:
+                    active_provisions.append(provision)
+            ranked = sorted(active_provisions, key=lambda article: sum(term in compact_name(str(article.get("text", ""))) for term in terms), reverse=True)
             for article in ranked[:2]:
                 add_source(law, article, "objective_search", search_query=query)
             if not provisions:
@@ -207,13 +261,14 @@ def build_grounding(store: GraphStore, node: dict, objective: str, as_of: str, l
     if not sources:
         status = "source_unavailable"
         issues.append(_issue("source_unavailable", "입안에 사용할 공식 원문을 확보하지 못했습니다. 로컬 시연·기관 문서는 공식 법령 근거로 승격하지 않습니다.", node["path"]))
-    elif unresolved or not coverage.get("complete") or any(not source.get("temporal_verified") for source in sources):
+    elif unresolved or excluded_sources or not coverage.get("complete") or any(not source.get("temporal_verified") for source in sources):
         status = "coverage_incomplete"
     else:
         status = "sources_available"
     if not coverage.get("complete"):
         issues.append(_issue("coverage_incomplete", "공식 법령 수집 범위가 완전하지 않습니다. 적용법 누락과 미수집 연혁은 추가 확인이 필요합니다.", node["path"]))
     return {"status": status, "as_of": as_of, "sources": sources,
+            "excluded_sources": excluded_sources,
             "requested_citations": requested, "unresolved_citations": unresolved,
             "corpus": coverage, "issues": issues,
             "official_sources_available": bool(sources), "applicable_laws_exhaustive": False,

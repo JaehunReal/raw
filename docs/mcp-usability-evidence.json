@@ -1,0 +1,128 @@
+{
+  "checked_at": "2026-10-01T16:04:00.925466+09:00",
+  "scope": "isolated local stdio client; no public MCP service or provider calls",
+  "launch": {
+    "command": "uv",
+    "args": [
+      "run",
+      "--frozen",
+      "--project",
+      "/absolute/path/to/raw/backend",
+      "rulecraft-mcp"
+    ],
+    "cwd": "unrelated temporary directory",
+    "uses_example_vault": true,
+    "law_and_model_credentials_forwarded": false,
+    "configuration_source": "docs/mcp.md JSON example"
+  },
+  "discovery": {
+    "server": "RuleCraft",
+    "server_version": "1.29.0",
+    "protocol_version": "2025-11-25",
+    "tool_names": [
+      "analyze_git_delta_impact",
+      "generate_statutory_diff",
+      "parse_form_with_vision",
+      "query_markdown_graph"
+    ],
+    "initialization_and_discovery_ms": 435.14
+  },
+  "graph": {
+    "is_error": false,
+    "node_count": 3,
+    "node_ids": [
+      "KIPA-RULE-DAT-007",
+      "LAW-DATA-012",
+      "LAW-PRIV-015"
+    ],
+    "duration_ms": 14.02
+  },
+  "impact": {
+    "is_error": false,
+    "changed": true,
+    "impacted_node_count": 7,
+    "issues": [],
+    "duration_ms": 26.94
+  },
+  "comparison": {
+    "is_error": false,
+    "columns": [
+      "현행",
+      "개정안",
+      "개정이유"
+    ],
+    "status": "draft",
+    "requires_human_review": true,
+    "duration_ms": 2.18
+  },
+  "vision": {
+    "is_error": false,
+    "status": "unavailable",
+    "code": "adapter_unavailable",
+    "markdown": null,
+    "duration_ms": 1.89,
+    "live_model_checked": false
+  },
+  "empty_official_store": {
+    "node_count": 0,
+    "issue_codes": [
+      "official_citation_unavailable"
+    ],
+    "legal_authority_verified": false,
+    "duration_ms": 5.0
+  },
+  "input_guards": {
+    "invalid_article_returns_mcp_error": true,
+    "outside_vault_path_issue": "unsafe_path"
+  },
+  "current_optional_services": {
+    "drafting_configured": false,
+    "vision_configured": false,
+    "configured_means_live_verified": false
+  },
+  "workflow": {
+    "provenance": "template",
+    "document_count": 7,
+    "stage_statuses": [
+      {
+        "name": "process",
+        "status": "completed"
+      },
+      {
+        "name": "research",
+        "status": "completed"
+      },
+      {
+        "name": "vision",
+        "status": "skipped"
+      },
+      {
+        "name": "drafting",
+        "status": "completed"
+      },
+      {
+        "name": "verification",
+        "status": "completed"
+      }
+    ],
+    "independent_llm_agents_executed": false,
+    "legal_authority_verified": false,
+    "requires_human_review": true
+  },
+  "source_unchanged": true,
+  "public_remote_mcp_endpoint": false,
+  "document_examples_verified": {
+    "configuration": true,
+    "local_graph": true,
+    "impact_diff": true,
+    "statutory_diff": true,
+    "empty_official_query": true
+  },
+  "focused_tests": {
+    "count": 20,
+    "passed": true,
+    "duration_seconds": 5.894,
+    "scope": "existing stdio, real HTTP-to-stdio bridge, workflow and synthetic national-law adapter tests"
+  },
+  "reproduction": "UV_CACHE_DIR=/path/to/writable/cache uv run --project backend --frozen python -m unittest tests.test_mcp tests.test_mcp_bridge tests.test_workflow tests.test_law_adapter -v"
+}

@@ -1,0 +1,99 @@
+{
+  "measured_at": "2026-10-01T07:00:00.799805+00:00",
+  "scope": "temporary local synthetic measurements; no remote provider calls; no writes to official corpus",
+  "external_api_latency_measured": false,
+  "actual_vault": {
+    "documents": 12,
+    "relationships": 31,
+    "cold_graph_load": {
+      "samples": 20,
+      "median_ms": 8.702,
+      "min_ms": 8.198,
+      "max_ms": 12.967
+    },
+    "refresh": {
+      "samples": 20,
+      "median_ms": 9.126,
+      "min_ms": 8.311,
+      "max_ms": 10.244
+    },
+    "in_memory_query": {
+      "samples": 100,
+      "median_ms": 0.048,
+      "min_ms": 0.045,
+      "max_ms": 0.171
+    }
+  },
+  "synthetic_graph_scale": [
+    {
+      "documents": 100,
+      "relationships": 99,
+      "input_markdown_bytes": 16136,
+      "yaml_build_from_memory": {
+        "samples": 5,
+        "median_ms": 23.049,
+        "min_ms": 21.949,
+        "max_ms": 25.63
+      },
+      "all_graph_query": {
+        "samples": 20,
+        "median_ms": 1.032,
+        "min_ms": 0.964,
+        "max_ms": 1.379
+      }
+    },
+    {
+      "documents": 1000,
+      "relationships": 999,
+      "input_markdown_bytes": 166438,
+      "yaml_build_from_memory": {
+        "samples": 5,
+        "median_ms": 224.133,
+        "min_ms": 214.1,
+        "max_ms": 241.082
+      },
+      "all_graph_query": {
+        "samples": 20,
+        "median_ms": 10.284,
+        "min_ms": 9.706,
+        "max_ms": 30.724
+      }
+    }
+  ],
+  "synthetic_law_store": {
+    "documents": 500,
+    "versions_per_document": 1,
+    "ingestion_elapsed_ms": 286.867,
+    "indexed_id_detail": {
+      "samples": 30,
+      "median_ms": 0.416,
+      "min_ms": 0.367,
+      "max_ms": 0.981
+    },
+    "substring_search_first20": {
+      "samples": 20,
+      "median_ms": 5.359,
+      "min_ms": 4.992,
+      "max_ms": 6.329
+    },
+    "raw_integrity_checked_in_detail": true,
+    "temporary_corpus_removed_on_exit": true
+  },
+  "mcp": {
+    "per_request_process_graph_query": {
+      "samples": 5,
+      "median_ms": 494.112,
+      "min_ms": 457.494,
+      "max_ms": 541.981
+    },
+    "result_nodes": 3,
+    "result_edges": 3,
+    "persistent_connection_initialization_ms": 455.236,
+    "same_connection_graph_query": {
+      "samples": 20,
+      "median_ms": 17.282,
+      "min_ms": 11.54,
+      "max_ms": 23.659
+    }
+  }
+}

@@ -6,6 +6,8 @@
 
 프런트엔드의 공개 읽기 전용 시연은 **[https://raw-ecru.vercel.app](https://raw-ecru.vercel.app)**에서 볼 수 있습니다. GitHub `main` 변경을 Vercel이 자동 배포하며, 실제 발급된 주소의 익명 접근을 확인했습니다. 실제 API 연동은 백엔드 서버의 접근 가능한 HTTPS 주소를 준비한 뒤 진행합니다.
 
+JSON·Markdown의 역할, 원문 저장, 속도 개선 우선순위와 봇의 실제 동작 범위는 [사용자 관점 점검](docs/user-experience-review.md)에 정리했습니다. 다른 MCP 클라이언트에서 사용할 때는 [MCP 연결 가이드](docs/mcp.md)의 복사 가능한 설정과 도구 예제를 참고하세요.
+
 [Vercel에 GitHub 저장소 연결](https://vercel.com/new/import?s=https%3A%2F%2Fgithub.com%2FJaehunReal%2Fraw) · [공개 시연 안내](docs/public-preview.md) · [운영 백엔드 연결 요건](docs/deployment.md)
 
 공개 시연에는 합성 규정 12개·관계 31개·검토 문서 7개와 MCP의 기록된 실행 결과가 표시됩니다. 검색·원문 열람·관계 탐색은 브라우저에서 동작하며, 저장·공식 수집·실시간 MCP는 백엔드 연결 준비를 기다립니다. 공개 시연 배포에는 API 키나 비밀번호가 필요하지 않습니다.
@@ -29,6 +31,8 @@
 ![공식 법령 수집 화면 — 원문 0건, 설정 필요](docs/screenshots/laws-empty.png)
 
 ## 웹에서 실제 MCP 실행
+
+이 절의 실행 결과는 개발 환경에서 확인한 기능입니다. 공개 Vercel의 **MCP 검증 기록**은 이전 실행 결과와 입력 예제를 보여주며, 도구를 실시간 호출하거나 외부 MCP 클라이언트의 접속 주소를 제공하지 않습니다.
 
 왼쪽 메뉴의 **MCP 도구**에서 예제를 선택하고 **실제 MCP 실행**을 누르세요. API 호스트가 공식 MCP SDK로 stdio 서버를 초기화하고 `tools/call`을 실행합니다. 각 요청이 끝나면 MCP 작업 프로세스를 정리합니다. 기존 규정 편집·문서 위저드는 REST API를 사용하며 같은 그래프·문서 엔진을 공유합니다.
 
@@ -93,6 +97,8 @@ uv run --project backend rulecraft-mcp
 ```
 
 MCP 서버는 표준 stdio 프로토콜을 사용하며 그래프 조회, 변경 영향도 분석, 신구조문대비표 생성과 선택적 Vision 도구를 제공합니다. MCP 클라이언트의 실행 명령을 `uv`, 인수를 `run --project /absolute/path/to/raw/backend rulecraft-mcp`로 설정하고 같은 저장소 환경 변수를 전달하세요.
+
+[MCP 연결 가이드](docs/mcp.md)에는 설치, 클라이언트 JSON 설정, 실제 호출 예제와 오류 해결 방법이 있습니다. `source_scope: "official"`은 저장된 공식 원문을 조회합니다. OC를 설정하는 것만으로 원문이 수집되거나 공식 조회 결과가 채워지지는 않습니다.
 
 외부 모델과 LLaVA OCR은 기본 연결되어 있지 않습니다. 기본 입안은 검토용 템플릿을 사용합니다. 공식 법령 수집에는 위 설정이 필요하며, 모델과 OCR은 [선택적 서비스 설정](docs/adapters.md)을 따라 연결할 수 있습니다.
 

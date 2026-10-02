@@ -2,6 +2,14 @@
   "name": "rulecraft-deployment",
   "private": true,
   "type": "module",
-  "engines": { "node": "24.x" },
-  "scripts": { "test:proxy": "node --test tests/proxy.test.mjs" }
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "test:proxy": "node --test tests/proxy.test.mjs",
+    "test:official": "node --test tests/official.test.mjs"
+  },
+  "dependencies": {
+    "pg": "^8.23.1"
+  }
 }

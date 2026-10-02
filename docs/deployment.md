@@ -1,6 +1,8 @@
 # 백엔드와 Vercel 연결
 
-프런트엔드는 Vercel에 배포하며, **운영 백엔드 구축은 대기 상태입니다.** 현재 구현의 [공개 읽기 전용 시연](https://raw-ecru.vercel.app)이 배포되어 있으며 [시연 안내](public-preview.md)에 범위를 설명합니다. 실제 API 연결은 백엔드 서버와 외부 HTTPS 접근을 준비한 뒤 진행합니다.
+프런트엔드는 Vercel에 배포합니다. 공개 대시보드의 공식 법령 조회는 [PostgreSQL 직접 연결](postgresql-vercel.md)을 사용하며, 별도 Python API 없이 저장 건수·목록·본문을 읽습니다. 데이터베이스의 외부 접속·인증·TLS·공개 전용 뷰가 실제로 준비되어야 연결이 완료됩니다.
+
+이 문서의 나머지 설정은 규정 편집·문서 생성·MCP 실행을 위한 Python API 경로입니다. 운영 백엔드 구축은 대기 상태이며 Render 리소스를 만들지 않습니다. [공개 화면 안내](public-preview.md)에 두 경로의 범위를 설명합니다.
 
 공개 연결을 만들기 전에 비공개 설정·영구 저장 위치와 로컬 API·실제 MCP를 확인합니다. 공식 API 소량 조회는 별도로 확인해야 합니다.
 
@@ -14,7 +16,7 @@ Python 3.12 이상과 `uv`로 API를 직접 실행하거나 Docker 컨테이너�
 
 SQLite 색인·공식 원문·수집 체크포인트, 편집 규정집, 생성 패키지가 서버 재시작 후에도 남도록 저장 위치와 백업을 정해야 합니다. Docker 구성의 기본 저장 경로는 `/var/data`이며 직접 실행할 때는 `RULECRAFT_VAULT`, `RULECRAFT_LAW_DIR`, `RULECRAFT_PACKAGE_DIR`에 영구 저장 경로를 지정합니다. 실제 서버에서 저장·백업·복구를 확인해야 합니다. API는 한 프로세스에서 수집 작업과 MCP 자식 프로세스를 운영합니다. 재시작으로 중단된 수집은 사용자가 다시 시작하고, 저장된 버전과 체크포인트를 재사용합니다.
 
-현재 저장 구현은 SQLite입니다. PostgreSQL 전환은 별도 구현·데이터 이전·호환 검증이 필요하며 아직 완료하지 않았습니다.
+저장소에 포함된 Python 수집기는 SQLite를 사용합니다. 사용자가 별도로 수집 중인 PostgreSQL은 Vercel의 읽기 전용 뷰로 연결합니다. 이 연결은 기존 수집기의 PostgreSQL 전환이나 데이터 이전을 수행하지 않습니다.
 
 공식 법령 수집에 필요한 `RULECRAFT_LAW_OC`는 **백엔드 프로세스 환경**에 등록합니다. Vercel이나 브라우저에는 등록하지 않습니다. 계정 승인과 서버에서 공식 API에 실제로 접근 가능한지는 별도 확인해야 합니다. [공식 수집 설정과 범위](official-laws.md)를 참고하세요.
 
@@ -33,7 +35,7 @@ health 응답은 `/api/health`에서 확인하고, 나머지 API는 백엔드 �
 
 외부에서 실행되는 Vercel 함수는 백엔드 서버의 `localhost`, `127.0.0.1` 또는 사설 IP에 직접 연결할 수 없습니다. 외부에서 접근 가능한 **실제 HTTPS 원점 주소**를 확보해야 합니다. 터널, 리버스 프록시 또는 다른 네트워크 구성을 사용할지는 서버 준비 시 결정합니다. 아직 백엔드 도메인이나 호스트 이름을 정하지 않았습니다.
 
-Vercel의 GitHub 프로젝트를 사용할 때는 저장소 **JaehunReal/raw**의 루트(`.`)를 Root Directory로 설정합니다. 루트의 `vercel.json`이 설치·빌드 명령과 `frontend/dist` 출력을 지정하고, 로그인/API 함수도 함께 포함합니다. 기본 빌드는 공개 시연 화면이며 `/api`를 호출하지 않습니다. 실제 HTTPS 백엔드를 연결할 때 `VITE_PUBLIC_PREVIEW=false`로 재배포해 운영 로그인 화면으로 전환합니다.
+Vercel의 GitHub 프로젝트를 사용할 때는 저장소 **JaehunReal/raw**의 루트(`.`)를 Root Directory로 설정합니다. 루트의 `vercel.json`이 설치·빌드 명령과 `frontend/dist` 출력을 지정하고, PostgreSQL 조회 함수와 로그인/API 함수를 함께 포함합니다. 기본 공개 화면은 `/api/official/*`의 읽기 요청만 사용합니다. 규정 편집 등을 위한 실제 HTTPS 백엔드를 연결할 때 `VITE_PUBLIC_PREVIEW=false`로 재배포해 운영 로그인 화면으로 전환합니다.
 
 | Vercel 서버 환경 변수 | 준비 후 등록할 값 |
 | --- | --- |

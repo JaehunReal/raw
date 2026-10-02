@@ -1,4 +1,4 @@
-"""Verify built public preview assets without a backend or screenshots.
+"""Verify public preview and read-only official data UI without screenshots.
 
 Build the public frontend first, then run with the Playwright interpreter:
     python tests/browser_public_preview_smoke.py
@@ -17,7 +17,7 @@ import json
 import os
 from pathlib import Path
 import threading
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 from zoneinfo import ZoneInfo
 
 from playwright.sync_api import expect, sync_playwright
@@ -32,10 +32,78 @@ TABS = (
 
 
 class StaticHandler(SimpleHTTPRequestHandler):
+    def __init__(self, *args, official_fixture=None, **kwargs):
+        self.official_fixture = official_fixture
+        super().__init__(*args, **kwargs)
+
     def log_message(self, *args) -> None:
         pass
 
+    def send_json(self, payload, status=200):
+        encoded = json.dumps(payload).encode()
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(encoded)))
+        self.end_headers()
+        self.wfile.write(encoded)
+
     def do_GET(self) -> None:
+        address = urlparse(self.path)
+        fixture = self.official_fixture
+        if fixture is not None and address.path.startswith("/api/official/"):
+            fixture["requests"].append(address.path)
+            state = fixture["state"]
+            if address.path == "/api/official/status":
+                if state == "connected":
+                    empty = fixture.get("empty", False)
+                    totals = {"stored_documents": 0 if empty else 2, "stored_versions": 0 if empty else 3,
+                              "last_stored_at": None if empty else "2026-10-02T00:00:00Z"}
+                    sources = [{"source": source, "stored_documents": 0 if empty or source == "ordinance" else 1,
+                                "stored_versions": 0 if empty or source == "ordinance" else (2 if source == "law" else 1)}
+                               for source in ("law", "administrative", "ordinance")]
+                    self.send_json({"storage": "postgresql", "connection": "connected",
+                                    "checked_at": "2026-10-02T01:00:00Z", "totals": totals, "sources": sources})
+                else:
+                    self.send_json({"storage": "postgresql", "connection": state}, 503)
+                return
+            if address.path == "/api/official/laws":
+                if fixture.get("fail_list_once"):
+                    fixture["fail_list_once"] = False
+                    self.send_json({"code": "database_unavailable"}, 503)
+                    return
+                params = parse_qs(address.query)
+                items = [] if fixture.get("empty") else fixture["items"]
+                query = params.get("q", [""])[0]
+                source = params.get("source", [""])[0]
+                items = [item for item in items if (not source or item["source"] == source)
+                         and (not query or query in item["title"])]
+                offset = int(params.get("offset", ["0"])[0])
+                self.send_json({"items": items[offset:offset + 2], "total": len(items), "limit": 2, "offset": offset})
+                return
+            if address.path == "/api/official/document":
+                if fixture.get("fail_document_once"):
+                    fixture["fail_document_once"] = False
+                    self.send_json({"code": "document_not_found"}, 404)
+                    return
+                params = parse_qs(address.query)
+                item = next((item for item in fixture["items"] if all(
+                    item[key] == params.get(key, [""])[0] for key in ("source", "law_id", "version_id"))), None)
+                if item is not None:
+                    self.send_json({"document": {**item, "raw_text": fixture["raw_text"]}})
+                else:
+                    self.send_json({"code": "document_not_found"}, 404)
+                return
+            self.send_json({"code": "not_found"}, 404)
+            return
+        if urlparse(self.path).path == "/api/official/status":
+            payload = json.dumps({"storage": "postgresql", "connection": "not_configured",
+                                  "code": "database_not_configured", "checked_at": "2026-10-02T00:00:00Z"}).encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(payload)))
+            self.end_headers()
+            self.wfile.write(payload)
+            return
         if urlparse(self.path).path.startswith("/api/"):
             payload = json.dumps({"detail": "Authentication required"}).encode()
             self.send_response(401)
@@ -48,10 +116,11 @@ class StaticHandler(SimpleHTTPRequestHandler):
 
 
 @contextmanager
-def static_server(directory: Path):
+def static_server(directory: Path, official_fixture=None):
     if not (directory / "index.html").is_file():
         raise RuntimeError(f"Missing frontend build: {directory}")
-    server = ThreadingHTTPServer(("127.0.0.1", 0), partial(StaticHandler, directory=str(directory)))
+    server = ThreadingHTTPServer(("127.0.0.1", 0), partial(
+        StaticHandler, directory=str(directory), official_fixture=official_fixture))
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     try:
@@ -87,7 +156,7 @@ def monitor(page, base: str) -> dict:
         if address.netloc != urlparse(base).netloc:
             evidence["external_requests"].append(request.url)
         if address.path.startswith("/api/"):
-            evidence["api_requests"].append(address.path)
+            evidence["api_requests"].append({"path": address.path, "method": request.method})
 
     page.on("request", requested)
     return evidence
@@ -95,6 +164,11 @@ def monitor(page, base: str) -> dict:
 
 def assert_clean(evidence: dict) -> None:
     for key, failures in evidence.items():
+        if key == "api_requests":
+            assert all(item["method"] == "GET" and item["path"] in (
+                "/api/official/status", "/api/official/laws", "/api/official/document")
+                       for item in failures), f"Unexpected public API requests: {failures}"
+            continue
         assert failures == [], f"Public preview {key}: {failures}"
 
 
@@ -118,7 +192,7 @@ def verify_preview(browser, base: str, snapshot: dict) -> dict:
     expect(page.get_by_test_id("preview-notice")).to_contain_text("예제")
     expect(page.get_by_test_id("preview-node-count")).to_contain_text("12")
     expect(page.get_by_test_id("preview-edge-count")).to_contain_text("31")
-    expect(page.get_by_test_id("preview-official-count")).to_contain_text("0")
+    expect(page.get_by_test_id("preview-official-count")).to_contain_text("미확인")
     expect(page.locator("nav").get_by_role("button")).to_have_count(len(TABS))
 
     navigate(page, "규정 예제 저장소")
@@ -165,9 +239,13 @@ def verify_preview(browser, base: str, snapshot: dict) -> dict:
 
     navigate(page, "공식 법령 현황")
     status = page.get_by_test_id("preview-law-status")
-    expect(status).to_contain_text("공식 원문 저장 0건")
+    expect(page.get_by_test_id("official-connection")).to_have_text("데이터 저장소 연결 대기")
+    expect(page.get_by_test_id("official-total-documents")).to_have_text("미확인")
+    expect(page.get_by_test_id("official-total-versions")).to_have_text("미확인")
+    expect(page.get_by_test_id("official-storage-status")).to_contain_text("0건이라는 뜻이 아닙니다")
+    expect(page.get_by_test_id("official-search")).to_have_count(0)
+    expect(status).to_contain_text("과거 연결 검증 기록")
     expect(status).to_contain_text("샘플은 저장하지 않았습니다")
-    expect(status).to_contain_text("전국 수집과 전체 법적 적용성 검토는 아직 수행하지 않았습니다")
     expect(status).to_contain_text("실시간 상태 아님")
     provider = snapshot["verification"].get("provider") or {}
     recorded_sources = {record["source"]: record for record in provider.get("sources", [])}
@@ -182,7 +260,7 @@ def verify_preview(browser, base: str, snapshot: dict) -> dict:
         source_card = page.get_by_test_id(f"preview-law-source-{source}")
         result = page.get_by_test_id(f"preview-law-result-{source}")
         catalogue = page.get_by_test_id(f"preview-law-catalogue-{source}")
-        expect(source_card).to_contain_text("0건 저장")
+        expect(source_card).to_contain_text("과거 표본 검증")
         record = recorded_sources.get(source)
         if record is None:
             expect(result).to_have_text("검증 기록 없음")
@@ -199,7 +277,7 @@ def verify_preview(browser, base: str, snapshot: dict) -> dict:
             expect(catalogue).to_contain_text(f"샘플 {record.get('catalogue_sample_count', 0)}건")
         else:
             expect(result).to_contain_text("목록 미확인")
-            expect(catalogue).to_contain_text("전국 수집 미실행")
+            expect(catalogue).to_contain_text("당시 목록 미확인")
         sample = page.get_by_test_id(f"preview-law-sample-{source}")
         identity = page.get_by_test_id(f"preview-law-identity-{source}")
         if full_verified:
@@ -244,6 +322,9 @@ def verify_preview(browser, base: str, snapshot: dict) -> dict:
         assert isinstance(json.loads(page.locator(".preview-tool-reader pre").text_content()), dict)
     for tab in TABS:
         navigate(page, tab)
+        assert not page.locator("body").inner_text().lower().count("mac mini")
+        assert "맥미니" not in page.locator("body").inner_text()
+        assert "백엔드" not in page.locator("body").inner_text()
         no_overflow(page, f"desktop {tab}")
     assert_clean(requests)
     context.close()
@@ -270,12 +351,15 @@ def verify_preview(browser, base: str, snapshot: dict) -> dict:
     return {"mode": "public_read_only_demo", "tabs_verified": list(TABS),
             "source_documents_verified": len(nodes), "relations_verified": len(edges),
             "package_documents_verified": len(documents), "source_markdown_matches_tracked_demo": True,
-            "official_documents": 0, "provider_sources_displayed": displayed_sources,
+            "official_documents": None, "official_connection": "not_configured",
+            "provider_sources_displayed": displayed_sources,
             "provider_recorded_at": provider.get("checked_at"),
             "provider_verification_does_not_claim_storage_or_full_coverage": True,
             "past_mcp_tools_displayed": 4, "past_mcp_nodes_displayed": 3,
             "mobile_width": 390, "mobile_overflow": False, "runtime_errors": 0,
-            "console_errors": 0, "failed_requests": 0, "api_requests": 0, "external_requests": 0}
+            "console_errors": 0, "failed_requests": 0,
+            "api_requests": len(requests["api_requests"]) + len(mobile_requests["api_requests"]),
+            "public_api_methods": ["GET"], "external_requests": 0}
 
 
 def verify_login(browser, directory: Path) -> dict:
@@ -300,6 +384,147 @@ def verify_login(browser, directory: Path) -> dict:
             "public_preview_not_rendered": True, "mobile_overflow": False}
 
 
+def official_fixture(state="connected", **overrides):
+    common = {"effective_date": "2026-10-01", "publication_date": "2026-09-01",
+              "raw_sha256": "a" * 64, "stored_at": "2026-10-02T00:00:00Z"}
+    fixture = {"state": state, "requests": [],
+               "raw_text": '<script>window.rulecraftUnexpected = true</script>\n제1조(목적) 저장 원문 검증용 본문.',
+               "items": [
+                   {**common, "source": "law", "law_id": "100", "version_id": "v1",
+                    "title": "검증 법령", "source_url": "https://www.law.go.kr/법령/검증법령"},
+                   {**common, "source": "law", "law_id": "100", "version_id": "v2",
+                    "title": "검증 법령 <script>window.rulecraftUnexpected = true</script>",
+                    "source_url": "javascript:alert(1)"},
+                   {**common, "source": "administrative", "law_id": "200", "version_id": "a1",
+                    "title": "검증 행정규칙", "source_url": "https://untrusted.example.invalid/document"},
+               ]}
+    fixture.update(overrides)
+    return fixture
+
+
+def verify_official_data_ui(browser, directory: Path) -> dict:
+    fixture = official_fixture()
+    with static_server(directory, fixture) as base:
+        context = browser.new_context(viewport={"width": 1440, "height": 1100})
+        page = context.new_page()
+        requests = monitor(page, base)
+        page.goto(base, wait_until="networkidle")
+        expect(page.get_by_test_id("preview-official-count")).to_have_text("2")
+        navigate(page, "공식 법령 현황")
+        expect(page.get_by_test_id("official-connection")).to_have_text("PostgreSQL 연결됨")
+        expect(page.get_by_test_id("official-total-documents")).to_have_text("2건")
+        expect(page.get_by_test_id("official-total-versions")).to_have_text("3개")
+        expect(page.get_by_test_id("official-source-law")).to_contain_text("1건 · 2개 버전")
+        expect(page.get_by_test_id("official-source-ordinance")).to_contain_text("0건 · 0개 버전")
+        expect(page.get_by_test_id("official-checked-at")).to_contain_text("한국 시간")
+        expect(page.get_by_test_id("official-last-stored")).to_contain_text("최근 원문 저장")
+        expect(page.get_by_test_id("official-last-stored")).not_to_contain_text("미확인")
+        rows = page.get_by_test_id("official-law-row")
+        expect(rows).to_have_count(2)
+        rows.nth(0).click()
+        expect(page.get_by_test_id("official-raw-text")).to_have_text(fixture["raw_text"])
+        reader = page.get_by_test_id("official-document-reader")
+        expect(reader).to_contain_text("a" * 64)
+        expect(reader).to_contain_text("v1")
+        expect(reader.get_by_role("link", name="국가법령정보센터 출처")).to_have_attribute(
+            "href", "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B2%80%EC%A6%9D%EB%B2%95%EB%A0%B9")
+        assert page.evaluate("window.rulecraftUnexpected") is None
+        rows.nth(1).click()
+        expect(reader).to_contain_text("v2")
+        expect(reader.get_by_role("link")).to_have_count(0)
+        assert page.evaluate("window.rulecraftUnexpected") is None
+        page.get_by_role("button", name="다음", exact=True).click()
+        expect(rows).to_have_count(1)
+        expect(rows).to_contain_text("검증 행정규칙")
+        rows.click()
+        expect(reader).to_contain_text("a1")
+        expect(reader.get_by_role("link")).to_have_count(0)
+        page.get_by_role("button", name="이전", exact=True).click()
+        expect(rows).to_have_count(2)
+        search = page.get_by_test_id("official-search")
+        count_before_typing = len(fixture["requests"])
+        search.fill("일치하지않음")
+        assert len(fixture["requests"]) == count_before_typing, "Typing must not flood the data service."
+        page.locator(".official-search-form").get_by_role("button", name="검색", exact=True).click()
+        expect(rows).to_have_count(0)
+        expect(page.get_by_test_id("official-list-results")).to_contain_text("조건에 맞는 저장 원문이 없습니다")
+        search.fill("")
+        page.get_by_label("자료 유형", exact=True).select_option("administrative")
+        expect(rows).to_have_count(1)
+        expect(rows).to_contain_text("검증 행정규칙")
+        page.get_by_label("자료 유형", exact=True).select_option("ordinance")
+        expect(rows).to_have_count(0)
+        expect(page.get_by_test_id("official-total-documents")).to_have_text("2건")
+        assert_clean(requests)
+        context.close()
+
+        mobile = browser.new_context(viewport={"width": 390, "height": 844}, is_mobile=True)
+        mobile_page = mobile.new_page()
+        mobile_page.goto(base, wait_until="networkidle")
+        navigate(mobile_page, "공식 법령 현황")
+        mobile_page.get_by_test_id("official-law-row").nth(1).click()
+        expect(mobile_page.get_by_test_id("official-raw-text")).to_have_text(fixture["raw_text"])
+        no_overflow(mobile_page, "mobile official document/hash")
+        mobile.close()
+
+    empty = official_fixture(empty=True)
+    with static_server(directory, empty) as base:
+        context = browser.new_context()
+        page = context.new_page()
+        page.goto(base, wait_until="networkidle")
+        expect(page.get_by_test_id("preview-official-count")).to_have_text("0")
+        navigate(page, "공식 법령 현황")
+        expect(page.get_by_test_id("official-connection")).to_have_text("PostgreSQL 연결됨")
+        expect(page.get_by_test_id("official-total-documents")).to_have_text("0건")
+        expect(page.get_by_test_id("official-list-results")).to_contain_text("공식 원문이 아직 없습니다")
+        context.close()
+
+    for state, label in (("unavailable", "데이터 저장소 응답 확인 필요"),
+                         ("incompatible_schema", "저장 데이터 구조 확인 필요")):
+        broken = official_fixture(state)
+        with static_server(directory, broken) as base:
+            context = browser.new_context()
+            page = context.new_page()
+            runtime = []
+            page.on("pageerror", lambda error: runtime.append(str(error)))
+            page.goto(base, wait_until="networkidle")
+            expect(page.get_by_test_id("preview-official-count")).to_have_text("미확인")
+            navigate(page, "공식 법령 현황")
+            expect(page.get_by_test_id("official-connection")).to_have_text(label)
+            expect(page.get_by_test_id("official-total-documents")).to_have_text("미확인")
+            expect(page.get_by_test_id("official-search")).to_have_count(0)
+            broken["state"] = "connected"
+            page.get_by_role("button", name="다시 확인", exact=True).click()
+            expect(page.get_by_test_id("official-connection")).to_have_text("PostgreSQL 연결됨")
+            expect(page.get_by_test_id("official-law-row")).to_have_count(2)
+            assert runtime == []
+            context.close()
+
+    failures = official_fixture(fail_list_once=True, fail_document_once=True)
+    with static_server(directory, failures) as base:
+        context = browser.new_context()
+        page = context.new_page()
+        runtime = []
+        page.on("pageerror", lambda error: runtime.append(str(error)))
+        page.goto(base, wait_until="networkidle")
+        navigate(page, "공식 법령 현황")
+        expect(page.get_by_test_id("official-list-results")).to_contain_text("불러오지 못했습니다")
+        page.get_by_role("button", name="목록 다시 불러오기").click()
+        expect(page.get_by_test_id("official-law-row")).to_have_count(2)
+        page.get_by_test_id("official-law-row").nth(0).click()
+        expect(page.get_by_test_id("official-document-reader")).to_contain_text("불러오지 못했습니다")
+        page.get_by_role("button", name="원문 다시 불러오기").click()
+        expect(page.get_by_test_id("official-raw-text")).to_have_text(failures["raw_text"])
+        assert runtime == []
+        context.close()
+    return {"fixture_http_api": True, "live_database_verified": False, "connected_counts": True,
+            "confirmed_empty_database_zero": True, "unknown_counts_on_connection_failure": True,
+            "search_source_filter_pagination": True, "version_hash_source_raw_text_reader": True,
+            "untrusted_source_urls_blocked": True, "raw_text_html_escaped": True,
+            "manual_retry_after_status_list_document_errors": True, "mobile_width": 390,
+            "public_api_methods": ["GET"], "screenshots_created": False}
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dist", type=Path, default=ROOT / "frontend/dist")
@@ -312,6 +537,7 @@ def main() -> None:
         try:
             with static_server(args.dist) as base:
                 evidence = verify_preview(browser, base, snapshot)
+            evidence["official_data_ui"] = verify_official_data_ui(browser, args.dist)
             if args.login_dist is not None:
                 evidence["production_login"] = verify_login(browser, args.login_dist)
         finally:

@@ -5,6 +5,7 @@ import {
   PlugZap, Search, ShieldCheck, Sparkles, CircleAlert, Clock3,
 } from "lucide-react";
 import previewSnapshot from "./preview-snapshot.json";
+import OfficialLaws, { checkedAt, connectionLabel, displayCount, useOfficialStatus } from "./OfficialLaws";
 import "./public-preview.css";
 
 type PreviewNode = {
@@ -193,6 +194,7 @@ function PreviewGraph({ selected, onSelect }: { selected: string; onSelect: (id:
 }
 
 export default function PublicPreview() {
+  const official = useOfficialStatus();
   const defaultNode = graph.nodes.find((node) => node.id === "KIPA-RULE-DAT-007") || graph.nodes[0];
   const [view, setView] = useState<View>("dashboard");
   const [search, setSearch] = useState("");
@@ -219,9 +221,9 @@ export default function PublicPreview() {
         <span className="brand-mark"><BookOpen size={23} /></span><span>RuleCraft<span className="brand-dot">.</span></span>
       </a>
       <span className="brand-sub">규정의 연결, 행정의 다음.</span>
-      <div className="organization"><span className="org-avatar">예</span><span><strong>공개 예제 워크스페이스</strong><small>읽기 전용 · 합성 자료</small></span><LockKeyhole size={14} /></div>
+      <div className="organization"><span className="org-avatar">규</span><span><strong>공개 워크스페이스</strong><small>공식 원문 · 규정 예제</small></span><LockKeyhole size={14} /></div>
       <div className="nav-label">프로젝트 둘러보기</div>
-      <nav aria-label="공개 시연 메뉴">{navigation.map((item) => <button key={item.id}
+      <nav aria-label="공개 워크스페이스 메뉴">{navigation.map((item) => <button key={item.id}
         className={`nav-item ${view === item.id ? "active" : ""}`} onClick={() => setView(item.id)}
         aria-current={view === item.id ? "page" : undefined}><item.icon size={19} /><span>{item.label}</span></button>)}</nav>
       <div className="sidebar-bottom preview-sidebar-bottom">
@@ -230,16 +232,16 @@ export default function PublicPreview() {
       </div>
     </aside>
     <div className="main-wrap">
-      <header className="topbar"><div className="breadcrumb"><span>공개 시연</span><ChevronRight size={13} /><strong>{navigation.find((item) => item.id === view)?.label}</strong></div>
+      <header className="topbar"><div className="breadcrumb"><span>공개 워크스페이스</span><ChevronRight size={13} /><strong>{navigation.find((item) => item.id === view)?.label}</strong></div>
         <span className="preview-mode"><EyeLabel /> 읽기 전용</span></header>
       <main>
-        <div className="preview-notice" data-testid="preview-notice"><LockKeyhole size={18} /><div><strong>공개 읽기 전용 시연</strong><p>규정과 문서는 합성 예제입니다. 이 화면에서는 실제 API·MCP 실행과 편집·저장을 제공하지 않습니다.</p></div></div>
+        <div className="preview-notice" data-testid="preview-notice"><LockKeyhole size={18} /><div><strong>공개 읽기 전용 워크스페이스</strong><p>공식 법령은 연결된 저장소에서 조회합니다. 규정 관계와 검토 문서는 합성 예제이며, 편집·저장과 MCP 실행은 제공하지 않습니다.</p></div></div>
         {view === "dashboard" && <>
           <Heading eyebrow="규정 검토 워크스페이스" title="무엇을 확인할 수 있나요?" description="규정 검색부터 개정 검토 문서까지, 예제로 직접 살펴보세요." />
           <section className="preview-status-overview" aria-label="실제 데이터와 공개 화면 상태">
             <button className={`preview-status-card ${fullDocumentVerified === lawSources.length ? "verified" : "pending"}`} onClick={() => setView("laws")}><span className="preview-status-heading"><CheckCircle2 size={19} />공식 API 검증 기록<ArrowUpRight size={16} /></span><strong>{fullDocumentVerified} / {lawSources.length}<small>종 전문 샘플 확인</small></strong><p>법령·행정규칙·자치법규를 소량 조회한 결과입니다. 유형별 확인 범위를 살펴보세요.</p><span className="preview-status-caption"><Clock3 size={12} />기록된 결과 · 실시간 조회 아님</span></button>
-            <button className="preview-status-card pending" onClick={() => setView("laws")}><span className="preview-status-heading"><BookOpen size={19} />보관된 공식 원문<ArrowUpRight size={16} /></span><strong>0<small>건 저장</small></strong><p>연결 확인용 샘플은 저장하지 않았습니다. 전체 법령 반영은 아직 완료되지 않았습니다.</p><span className="preview-status-caption">연결 확인과 원문 저장은 별개입니다.</span></button>
-            <div className="preview-status-card preview"><span className="preview-status-heading"><LockKeyhole size={19} />지금 보고 있는 화면</span><strong className="preview-status-text">읽기 전용 예제</strong><p>검색·관계 탐색은 바로 체험할 수 있습니다. 실제 API 호출·AI 분석·편집·저장은 제공하지 않습니다.</p><span className="preview-status-caption">공식 원문과 구별되는 합성 자료</span></div>
+            <button className={`preview-status-card ${official.status.phase === "connected" ? "verified" : "pending"}`} onClick={() => setView("laws")}><span className="preview-status-heading"><BookOpen size={19} />보관된 공식 원문<ArrowUpRight size={16} /></span><strong>{displayCount(official.status)}<small>{official.status.phase === "connected" ? "건 저장" : "저장 건수"}</small></strong><p>{connectionLabel(official.status)}. 저장소에서 확인한 원문과 버전을 살펴보세요.</p><span className="preview-status-caption">{official.status.phase === "connected" ? `조회 시각: ${checkedAt(official.status.data?.checked_at)}` : "연결 확인 전에는 저장 건수를 표시하지 않습니다."}</span></button>
+            <div className="preview-status-card preview"><span className="preview-status-heading"><LockKeyhole size={19} />지금 보고 있는 화면</span><strong className="preview-status-text">읽기 전용 조회</strong><p>공식 원문과 합성 예제를 구분해 살펴보세요. 관계 탐색과 검토 문서는 예제로 체험할 수 있습니다.</p><span className="preview-status-caption">공식 원문 · 합성 규정 예제</span></div>
           </section>
           <section className="preview-hero"><div><span className="pill light"><Sparkles size={12} /> 합성 예제로 체험하기</span><h2>조문 하나에서,<br /><span>검토할 문서까지.</span></h2><p>규정을 읽고, 연결된 근거와 변경 시<br />함께 살펴볼 문서를 찾아보세요.</p><button onClick={() => openNode(defaultNode.id)}>예제 조문부터 시작하기 <ArrowRight size={16} /></button></div>
             <div className="preview-workflow" aria-label="예제 체험 순서">{[
@@ -251,7 +253,7 @@ export default function PublicPreview() {
           <div className="stats-grid preview-stats">{[
             { label: "읽어볼 예제 규정", value: graph.nodes.length, unit: "개 문서", detail: "합성 조문·서식 검색", icon: Library, style: "sage", target: "vault", test: "preview-node-count" },
             { label: "탐색할 규정 연결", value: graph.edges.length, unit: "개 관계", detail: "인용·위임 관계 살펴보기", icon: Network, style: "blue", target: "graph", test: "preview-edge-count" },
-            { label: "공식 원문 저장", value: 0, unit: "건", detail: "연결 검증 샘플은 저장하지 않음", icon: BookOpen, style: "sand", target: "laws", test: "preview-official-count" },
+            { label: "공식 원문 저장", value: displayCount(official.status), unit: official.status.phase === "connected" ? "건" : "", detail: connectionLabel(official.status), icon: BookOpen, style: "sand", target: "laws", test: "preview-official-count" },
             { label: "MCP 도구 검증 기록", value: mcp?.mcp_tools?.tool_count || 4, unit: "개 도구", detail: "도구별 기능과 확인 범위", icon: PlugZap, style: "lavender", target: "mcp", test: "preview-tool-count" },
           ].map((stat) => <button key={stat.label} className="stat-card" onClick={() => setView(stat.target as View)}><div className="stat-top"><span>{stat.label}</span><span className={`stat-icon ${stat.style}`}><stat.icon size={18} /></span></div><div className="stat-value"><span className="preview-stat-number" data-testid={stat.test}>{stat.value}</span><span>{stat.unit}</span></div><div className="stat-foot"><span className="stat-foot-dot" />{stat.detail}</div></button>)}</div>
           <div className="preview-columns"><section className="panel"><div className="panel-heading"><div><h3>예제 규정 둘러보기 <span className="count-tag">{graph.nodes.length}</span></h3><p>원문 형식과 조문 간 관계를 직접 확인하세요.</p></div><button className="text-button" onClick={() => setView("vault")}>전체 보기 <ChevronRight size={14} /></button></div><div className="preview-recent-list">{[defaultNode, ...graph.nodes.filter((node) => node.id !== defaultNode.id)].slice(0, 4).map((node) => <button key={node.id} onClick={() => openNode(node.id)}><span className="preview-doc-icon"><FileText size={18} /></span><span><strong>{node.title}</strong><small>{node.rule_name} · {article(node)}</small></span><span className="pill neutral">합성 예제</span><ChevronRight size={15} /></button>)}</div></section>
@@ -273,24 +275,25 @@ export default function PublicPreview() {
         </>}
         {view === "packages" && <>
           <Heading eyebrow="검토 문서 예제" title="개정 검토에 필요한 문서를 한곳에." description="합성 조문으로 미리 만든 7개 문서 예제입니다. 새 문서를 생성하거나 저장하지 않습니다." />
-          <div className="preview-inline-note"><ShieldCheck size={18} /><p>공식 근거 원문은 미수집입니다. 아래 문서는 선택한 예제 조문 1개의 검토용 초안이며, 법적 검토·승인·공포를 마친 결과가 아닙니다.</p></div>
+          <div className="preview-inline-note"><ShieldCheck size={18} /><p>아래 문서는 합성 예제 조문 1개의 검토용 초안입니다. 공식 원문 저장소와 연결해 생성한 결과가 아니며, 법적 검토·승인·공포를 마친 결과가 아닙니다.</p></div>
           <div className="preview-package-layout"><section className="panel preview-package-list"><div className="panel-heading"><div><h3>데이터 반출 조문 검토 예제</h3><p>공공데이터제공지침 · 제7조</p></div></div>{snapshot.package_example.documents.map((document, index) => <button key={document.name} data-testid={`preview-package-doc-${index}`} className={documentIndex === index ? "selected" : ""} onClick={() => setDocumentIndex(index)} aria-pressed={documentIndex === index}><span className="preview-document-number">{String(index + 1).padStart(2, "0")}</span><span><strong>{document.name.replace(/^\d+_/, "").replace(/\.md$/, "")}</strong><small>Markdown · 검토용 합성 예제</small></span><ChevronRight size={15} /></button>)}</section><section className="panel preview-package-reader" data-testid="preview-package-reader"><div className="preview-reader-header"><span className="pill warning">합성 예제 · 검토용 초안</span><h2>{selectedDocument?.name.replace(/^\d+_/, "").replace(/\.md$/, "")}</h2><p>미리 만든 문서를 읽기 전용으로 보여줍니다.</p></div><pre>{selectedDocument?.content}</pre></section></div>
         </>}
         {view === "laws" && <>
-          <Heading eyebrow="공식 법령 API 검증 기록" title="공식 법령 API 검증 기록을 확인하세요." description="기록된 소량 목록·전문 표본 조회 결과입니다. 이 읽기 전용 화면은 실제 API를 새로 호출하지 않습니다." />
+          <Heading eyebrow="공식 법령 저장소" title="보관된 법령과 버전을 확인하세요." description="법령·행정규칙·자치법규의 저장 원문을 검색하고, 버전·출처·해시를 함께 확인합니다." />
+          <OfficialLaws status={official.status} retry={official.retry} />
           <section className="panel preview-law-status" data-testid="preview-law-status">
             <div className="preview-law-summary"><span className="preview-law-icon"><BookOpen size={26} /></span><div>
               <span className="pill warning" data-testid="preview-provider-summary">{providerSummary}</span>
-              <h2>공식 원문 저장 0건 · 전체 반영 미완료</h2>
-              <p>자료 유형 {lawSources.length}종 중 목록 {catalogueVerified}종, 전문 샘플 {fullDocumentVerified}종의 응답을 확인한 기록입니다. 연결 검증 샘플은 저장하지 않았습니다. 전국 수집과 전체 법적 적용성 검토는 아직 수행하지 않았습니다.</p>
+              <h2>공식 API의 과거 연결 검증 기록</h2>
+              <p>자료 유형 {lawSources.length}종 중 목록 {catalogueVerified}종, 전문 샘플 {fullDocumentVerified}종의 응답을 확인한 기록입니다. 이 검증 당시 샘플은 저장하지 않았습니다. 현재 저장소의 건수와 수집 범위는 위 조회 결과에서 확인하세요.</p>
             </div></div>
             <div className="preview-law-sources">{providerRecords.map(({ id, label, recorded }) =>
               <div key={id} data-testid={`preview-law-source-${id}`} style={{ overflowWrap: "anywhere" }}>
-                <BookOpen size={18} /><strong>{label}</strong><span>0건 저장</span>
+                <BookOpen size={18} /><strong>{label}</strong><span>과거 표본 검증</span>
                 <em data-testid={`preview-law-result-${id}`}>{providerStatus(recorded)}</em>
                 <small data-testid={`preview-law-catalogue-${id}`}>{recorded?.catalogue_verified
                   ? `목록 총 ${recorded.catalogue_total?.toLocaleString("ko-KR") ?? "미확인"}건 · 샘플 ${recorded.catalogue_sample_count ?? 0}건`
-                  : "목록 미확인 · 전국 수집 미실행"}</small>
+                  : "당시 목록 미확인"}</small>
                 {recorded?.full_document_verified && <>
                   <small data-testid={`preview-law-sample-${id}`}>전문 샘플: {recorded.sample_title || "제목 미기록"} · 조문 {recorded.article_count?.toLocaleString("ko-KR") ?? "미확인"}개</small>
                   <small data-testid={`preview-law-identity-${id}`}>응답 식별자 {recorded.response_identity_verified ? "확인" : "미확인"} · 요청 버전 {recorded.response_version_verified ? "확인" : "미확인"}</small>
@@ -308,7 +311,7 @@ export default function PublicPreview() {
           <div className="preview-mcp-layout"><div className="preview-tool-cards">{tools.map((tool, index) => <button key={tool.name} className={`panel ${index === toolIndex ? "selected" : ""}`} onClick={() => setToolIndex(index)} aria-pressed={index === toolIndex}><span className="preview-tool-icon"><tool.icon size={21} /></span><strong>{tool.title}</strong><small>{tool.name}</small><p>{tool.description}</p><span className={`pill ${index === 3 ? "warning" : "neutral"}`}>{index === 3 ? "이미지 모델 미연결" : "도구 구현 · 공개 실행 없음"}</span></button>)}</div><section className="panel preview-tool-reader"><div className="preview-reader-header"><span className="pill neutral">요청 형식 예제 · 읽기 전용</span><h2>{chosenTool.title}</h2><p>아래 JSON은 형식 예제이며 요청을 전송하지 않습니다.</p></div><pre>{JSON.stringify(chosenTool.parameters, null, 2)}</pre>{toolIndex === 0 ? <div className="preview-record-result"><h3>기록된 관계 조회 결과</h3><dl><div><dt>HTTP 상태</dt><dd>{mcp?.mcp_graph?.http_status || 200}</dd></div><div><dt>반환 노드</dt><dd>{mcp?.mcp_graph?.nodes || 3}개 합성 조문</dd></div><div><dt>검증 대상</dt><dd>데이터 반출 조문과 상위법 예제</dd></div></dl><p>이 결과는 공식 법령 API 연결 성공이나 법적 적용성 확인을 뜻하지 않습니다.</p></div> : <div className="preview-record-result"><h3>{toolIndex === 3 ? "이미지 분석 모델 미연결" : "현재 시연 범위"}</h3><p>{toolIndex === 3 ? "기본 구성에서는 이미지를 분석하지 않고 모델 미연결 상태를 반환합니다. 이 화면에서는 입력 형식만 확인할 수 있습니다." : "공개 화면에서는 도구 설명과 입력 형식만 제공합니다."}</p></div>}</section></div>
           <div className="preview-mcp-links"><a className="text-button preview-evidence-link" href={`${repository}/blob/main/docs/mcp.md`} target="_blank" rel="noreferrer">내 MCP 클라이언트에서 사용하기 <ArrowUpRight size={14} /></a><a className="text-button preview-evidence-link" href={`${repository}/blob/main/docs/api-connection-evidence.json`} target="_blank" rel="noreferrer">전체 공개 검증 기록 보기 <ArrowUpRight size={14} /></a></div>
         </>}
-        <footer className="preview-footer"><span>RuleCraft · 공개 합성 예제</span><a href={`${repository}/blob/main/docs/api-connection-evidence.json`} target="_blank" rel="noreferrer">검증 기록 <ArrowUpRight size={12} /></a></footer>
+        <footer className="preview-footer"><span>RuleCraft · 공식 원문 조회와 합성 규정 예제</span><a href={`${repository}/blob/main/docs/api-connection-evidence.json`} target="_blank" rel="noreferrer">검증 기록 <ArrowUpRight size={12} /></a></footer>
       </main>
     </div>
   </div>;

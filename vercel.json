@@ -1,13 +1,15 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "installCommand": "npm ci --prefix frontend --no-audit --no-fund",
+  "installCommand": "npm ci --no-audit --no-fund && npm ci --prefix frontend --no-audit --no-fund",
   "buildCommand": "VITE_REQUIRE_LOGIN=true VITE_PUBLIC_PREVIEW=${VITE_PUBLIC_PREVIEW:-true} npm run build --prefix frontend",
   "outputDirectory": "frontend/dist",
   "functions": {
-    "api/proxy.mjs": { "maxDuration": 60 }
+    "api/proxy.mjs": { "maxDuration": 60 },
+    "api/official.mjs": { "maxDuration": 15 }
   },
   "rewrites": [
+    { "source": "/api/official/:route", "destination": "/api/official?route=:route" },
     { "source": "/api/:path*", "destination": "/api/proxy?path=:path*" },
     { "source": "/((?!api/|assets/).*)", "destination": "/index.html" }
   ],

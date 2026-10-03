@@ -26,8 +26,8 @@ from playwright.sync_api import expect, sync_playwright
 ROOT = Path(__file__).resolve().parents[1]
 CHROMIUM = os.getenv("RULECRAFT_CHROMIUM_PATH", "/usr/bin/chromium")
 TABS = (
-    "워크스페이스", "규정 예제 저장소", "규정 관계 그래프", "변경 영향 예제",
-    "문서 패키지 예제", "공식 법령 현황", "MCP 검증 기록",
+    "서비스 소개 · 시작하기", "규정 예제 저장소", "규정 관계 그래프", "변경 영향 예제",
+    "문서 패키지 예제", "공식 법령 현황", "MCP 사용 안내",
 )
 
 
@@ -310,7 +310,11 @@ def verify_preview(browser, base: str, snapshot: dict) -> dict:
             "source", "catalogue_verified", "catalogue_total", "catalogue_sample_count",
             "full_document_verified", "sample_title", "article_count", "response_identity_verified",
             "response_version_verified", "parse_warnings", "error") if key in record})
-    navigate(page, "MCP 검증 기록")
+    navigate(page, "MCP 사용 안내")
+    expect(page.get_by_test_id("mcp-guide")).to_be_visible()
+    page.get_by_role("button", name="신구조문대비표 만들기", exact=True).click()
+    expect(page.get_by_test_id("mcp-request")).to_contain_text("대비표 초안")
+    page.get_by_text("도구별 기술 설명과 과거 검증 기록 보기", exact=True).click()
     mcp = page.get_by_test_id("preview-mcp-record")
     expect(mcp).to_contain_text("4")
     expect(mcp).to_contain_text("3")

@@ -1,9 +1,10 @@
-import { useMemo, useState, type KeyboardEvent } from "react";
+import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
 import {
   ArrowRight, ArrowUpRight, BookOpen, CheckCircle2, ChevronRight,
   FileText, Files, GitBranch, LayoutDashboard, Library, LockKeyhole, Network,
   PlugZap, Search, ShieldCheck, Sparkles, CircleAlert, Clock3,
 } from "lucide-react";
+import { ServiceOverview, McpGuide } from "./ServiceGuide";
 import previewSnapshot from "./preview-snapshot.json";
 import OfficialLaws, { checkedAt, connectionLabel, displayCount, useOfficialStatus } from "./OfficialLaws";
 import "./public-preview.css";
@@ -59,13 +60,13 @@ const providerSummary = fullDocumentVerified === lawSources.length ? "3종 목�
   : evidence.provider ? "샘플 연결 미확인" : "API 검증 기록 없음";
 type View = "dashboard" | "vault" | "graph" | "impact" | "packages" | "laws" | "mcp";
 const navigation = [
-  { id: "dashboard", label: "워크스페이스", icon: LayoutDashboard },
+  { id: "dashboard", label: "서비스 소개 · 시작하기", icon: LayoutDashboard },
   { id: "vault", label: "규정 예제 저장소", icon: Library },
   { id: "graph", label: "규정 관계 그래프", icon: Network },
   { id: "impact", label: "변경 영향 예제", icon: GitBranch },
   { id: "packages", label: "문서 패키지 예제", icon: Files },
   { id: "laws", label: "공식 법령 현황", icon: BookOpen },
-  { id: "mcp", label: "MCP 검증 기록", icon: PlugZap },
+  { id: "mcp", label: "MCP 사용 안내", icon: PlugZap },
 ] as const;
 const tools = [
   { name: "query_markdown_graph", title: "조문 관계 탐색", icon: Network,
@@ -197,6 +198,7 @@ export default function PublicPreview() {
   const official = useOfficialStatus();
   const defaultNode = graph.nodes.find((node) => node.id === "KIPA-RULE-DAT-007") || graph.nodes[0];
   const [view, setView] = useState<View>("dashboard");
+  useEffect(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, [view]);
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState(defaultNode.id);
   const [sourceView, setSourceView] = useState(false);
@@ -237,19 +239,13 @@ export default function PublicPreview() {
       <main>
         <div className="preview-notice" data-testid="preview-notice"><LockKeyhole size={18} /><div><strong>공개 읽기 전용 워크스페이스</strong><p>공식 법령은 연결된 저장소에서 조회합니다. 규정 관계와 검토 문서는 합성 예제이며, 편집·저장과 MCP 실행은 제공하지 않습니다.</p></div></div>
         {view === "dashboard" && <>
-          <Heading eyebrow="규정 검토 워크스페이스" title="무엇을 확인할 수 있나요?" description="규정 검색부터 개정 검토 문서까지, 예제로 직접 살펴보세요." />
+          <ServiceOverview onNavigate={setView} />
+          <div className="guide-section-heading service-guide"><span className="guide-kicker">자료와 기능의 현재 상태</span><h2>공식 자료와 예제를 구분해 확인하세요.</h2><p className="guide-caption">공식 원문 연결 상태와 공개 화면에서 사용할 수 있는 기능입니다.</p></div>
           <section className="preview-status-overview" aria-label="실제 데이터와 공개 화면 상태">
             <button className={`preview-status-card ${fullDocumentVerified === lawSources.length ? "verified" : "pending"}`} onClick={() => setView("laws")}><span className="preview-status-heading"><CheckCircle2 size={19} />공식 API 검증 기록<ArrowUpRight size={16} /></span><strong>{fullDocumentVerified} / {lawSources.length}<small>종 전문 샘플 확인</small></strong><p>법령·행정규칙·자치법규를 소량 조회한 결과입니다. 유형별 확인 범위를 살펴보세요.</p><span className="preview-status-caption"><Clock3 size={12} />기록된 결과 · 실시간 조회 아님</span></button>
             <button className={`preview-status-card ${official.status.phase === "connected" ? "verified" : "pending"}`} onClick={() => setView("laws")}><span className="preview-status-heading"><BookOpen size={19} />보관된 공식 원문<ArrowUpRight size={16} /></span><strong>{displayCount(official.status)}<small>{official.status.phase === "connected" ? "건 저장" : "저장 건수"}</small></strong><p>{connectionLabel(official.status)}. 저장소에서 확인한 원문과 버전을 살펴보세요.</p><span className="preview-status-caption">{official.status.phase === "connected" ? `조회 시각: ${checkedAt(official.status.data?.checked_at)}` : "연결 확인 전에는 저장 건수를 표시하지 않습니다."}</span></button>
             <div className="preview-status-card preview"><span className="preview-status-heading"><LockKeyhole size={19} />지금 보고 있는 화면</span><strong className="preview-status-text">읽기 전용 조회</strong><p>공식 원문과 합성 예제를 구분해 살펴보세요. 관계 탐색과 검토 문서는 예제로 체험할 수 있습니다.</p><span className="preview-status-caption">공식 원문 · 합성 규정 예제</span></div>
           </section>
-          <section className="preview-hero"><div><span className="pill light"><Sparkles size={12} /> 합성 예제로 체험하기</span><h2>조문 하나에서,<br /><span>검토할 문서까지.</span></h2><p>규정을 읽고, 연결된 근거와 변경 시<br />함께 살펴볼 문서를 찾아보세요.</p><button onClick={() => openNode(defaultNode.id)}>예제 조문부터 시작하기 <ArrowRight size={16} /></button></div>
-            <div className="preview-workflow" aria-label="예제 체험 순서">{[
-              { number: "01", title: "규정 읽기", description: "조문 내용과 원본 확인", icon: Library, target: "vault" },
-              { number: "02", title: "관계 탐색", description: "상위법·지침·서식 연결", icon: Network, target: "graph" },
-              { number: "03", title: "변경 영향 확인", description: "연결된 검토 대상 찾기", icon: GitBranch, target: "impact" },
-              { number: "04", title: "검토 문서 읽기", description: "미리 만든 7개 문서 초안", icon: Files, target: "packages" },
-            ].map((step) => <button key={step.number} onClick={() => setView(step.target as View)}><span className="preview-step-number">{step.number}</span><step.icon size={19} /><span><strong>{step.title}</strong><small>{step.description}</small></span><ArrowRight size={15} /></button>)}</div></section>
           <div className="stats-grid preview-stats">{[
             { label: "읽어볼 예제 규정", value: graph.nodes.length, unit: "개 문서", detail: "합성 조문·서식 검색", icon: Library, style: "sage", target: "vault", test: "preview-node-count" },
             { label: "탐색할 규정 연결", value: graph.edges.length, unit: "개 관계", detail: "인용·위임 관계 살펴보기", icon: Network, style: "blue", target: "graph", test: "preview-edge-count" },
@@ -306,10 +302,14 @@ export default function PublicPreview() {
           <a className="text-button preview-evidence-link" href={`${repository}/blob/main/docs/api-connection-review.md`} target="_blank" rel="noreferrer">API 검토 기록 <ArrowUpRight size={15} /></a>
         </>}
         {view === "mcp" && <>
+          <Heading eyebrow="MCP 사용 안내" title="AI 도구에서 RuleCraft 사용하기" description="처음 연결하는 방법과 업무별 요청 예제를 살펴보세요." />
+          <McpGuide />
+          <details className="guide-admin"><summary>도구별 기술 설명과 과거 검증 기록 보기</summary><div>
           <Heading eyebrow="MCP 도구 검증 기록" title="구현된 도구와 연동 검증을 확인하세요." description="내부 테스트 환경에서 수행한 실제 stdio MCP 검증 기록입니다. 현재 공개 화면의 실시간 연결 상태가 아닙니다." />
           <section className="preview-mcp-record" data-testid="preview-mcp-record"><PlugZap size={24} /><div><strong>2026-10-01 실제 MCP 내부 검증 완료</strong><p>도구 {mcp?.mcp_tools?.tool_count || 4}개 확인 · 조문 관계 조회 {mcp?.mcp_graph?.nodes || 3}개 노드 · stdio 전송</p><small>{recordedAt(mcp?.checked_at)} (한국 시간) · 임시 인증 API와 실제 자식 프로세스 사용</small></div><span className="pill sage">과거 검증 기록</span></section>
           <div className="preview-mcp-layout"><div className="preview-tool-cards">{tools.map((tool, index) => <button key={tool.name} className={`panel ${index === toolIndex ? "selected" : ""}`} onClick={() => setToolIndex(index)} aria-pressed={index === toolIndex}><span className="preview-tool-icon"><tool.icon size={21} /></span><strong>{tool.title}</strong><small>{tool.name}</small><p>{tool.description}</p><span className={`pill ${index === 3 ? "warning" : "neutral"}`}>{index === 3 ? "이미지 모델 미연결" : "도구 구현 · 공개 실행 없음"}</span></button>)}</div><section className="panel preview-tool-reader"><div className="preview-reader-header"><span className="pill neutral">요청 형식 예제 · 읽기 전용</span><h2>{chosenTool.title}</h2><p>아래 JSON은 형식 예제이며 요청을 전송하지 않습니다.</p></div><pre>{JSON.stringify(chosenTool.parameters, null, 2)}</pre>{toolIndex === 0 ? <div className="preview-record-result"><h3>기록된 관계 조회 결과</h3><dl><div><dt>HTTP 상태</dt><dd>{mcp?.mcp_graph?.http_status || 200}</dd></div><div><dt>반환 노드</dt><dd>{mcp?.mcp_graph?.nodes || 3}개 합성 조문</dd></div><div><dt>검증 대상</dt><dd>데이터 반출 조문과 상위법 예제</dd></div></dl><p>이 결과는 공식 법령 API 연결 성공이나 법적 적용성 확인을 뜻하지 않습니다.</p></div> : <div className="preview-record-result"><h3>{toolIndex === 3 ? "이미지 분석 모델 미연결" : "현재 시연 범위"}</h3><p>{toolIndex === 3 ? "기본 구성에서는 이미지를 분석하지 않고 모델 미연결 상태를 반환합니다. 이 화면에서는 입력 형식만 확인할 수 있습니다." : "공개 화면에서는 도구 설명과 입력 형식만 제공합니다."}</p></div>}</section></div>
           <div className="preview-mcp-links"><a className="text-button preview-evidence-link" href={`${repository}/blob/main/docs/mcp.md`} target="_blank" rel="noreferrer">내 MCP 클라이언트에서 사용하기 <ArrowUpRight size={14} /></a><a className="text-button preview-evidence-link" href={`${repository}/blob/main/docs/api-connection-evidence.json`} target="_blank" rel="noreferrer">전체 공개 검증 기록 보기 <ArrowUpRight size={14} /></a></div>
+          </div></details>
         </>}
         <footer className="preview-footer"><span>RuleCraft · 공식 원문 조회와 합성 규정 예제</span><a href={`${repository}/blob/main/docs/api-connection-evidence.json`} target="_blank" rel="noreferrer">검증 기록 <ArrowUpRight size={12} /></a></footer>
       </main>

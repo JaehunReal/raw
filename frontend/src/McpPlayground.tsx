@@ -16,6 +16,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import "./mcp.css";
+import { McpGuide } from "./ServiceGuide";
 import { apiFetch } from "./apiFetch";
 
 type DemoNode = {
@@ -223,6 +224,7 @@ export default function McpPlayground({
           MCP 연결 확인
         </button>
       </div>
+      <McpGuide />
       <section
         className={`mcp-connection ${connection ? "connected" : ""}`}
         data-testid="mcp-connection"

@@ -155,6 +155,23 @@ export function createOfficialHandler({ environment = () => process.env, createP
     try { parameters = requestParameters(req); }
     catch { return json(res, 400, { code: "invalid_request", detail: "조회 조건을 확인해 주세요." }, head); }
     if (!parameters.route) return json(res, 404, { code: "route_not_found", detail: "지원하지 않는 조회 경로입니다." }, head);
+    const env = environment();
+    if (env.RULECRAFT_OFFICIAL_GATEWAY_URL) {
+      try {
+        const upstream = new URL(env.RULECRAFT_OFFICIAL_GATEWAY_URL);
+        if (upstream.protocol !== 'https:' || upstream.username || upstream.password || upstream.pathname !== '/' || upstream.search || upstream.hash
+          || !env.RULECRAFT_GATEWAY_TOKEN) throw new Error('invalid_gateway');
+        upstream.pathname = `/api/official/${parameters.route}`;
+        upstream.search = new URL(req.url, 'https://local.invalid').search;
+        upstream.searchParams.delete('route');
+        const response = await fetch(upstream, {method:'GET', redirect:'error',
+          headers:{Authorization:`Bearer ${env.RULECRAFT_GATEWAY_TOKEN}`},signal:AbortSignal.timeout(10000)});
+        const reader = response.body.getReader(); let length=0; const chunks=[];
+        while (true) {const {done,value}=await reader.read();if(done)break;length+=value.length;
+          if(length>MAX_DOCUMENT_BYTES){await reader.cancel();throw new Error('oversize');} chunks.push(Buffer.from(value));}
+        return json(res,response.status,JSON.parse(Buffer.concat(chunks).toString('utf8')),head);
+      } catch {return json(res,503,disconnected('unavailable','gateway_unavailable','맥의 법령 조회 서버에 연결하지 못했습니다.'),head);}
+    }
     let configuration;
     try { configuration = databaseConfiguration(environment()); }
     catch { return json(res, 503, disconnected("unavailable", "database_configuration_invalid", "데이터베이스의 보안 연결 설정을 확인해 주세요."), head); }

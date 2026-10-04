@@ -33,5 +33,10 @@ async def official_document(source: Literal['law','administrative','ordinance'],
     """검색 결과의 정확한 식별자로 본문·출처·원문 해시를 조회합니다. 현재 법적 효력을 보증하지 않습니다."""
     return await query('document', {'source':source,'law_id':law_id,'version_id':version_id})
 
+@mcp.tool(annotations=annotations)
+async def official_graph(source: Literal['law','administrative','ordinance'], law_id: str, version_id: str) -> dict:
+    """정확한 저장 버전의 법령명 인용·시행 근거 관계와 원문 증거를 조회합니다. 인용을 위임으로 간주하지 않습니다."""
+    return await query('graph', {'source':source,'law_id':law_id,'version_id':version_id})
+
 if __name__ == '__main__':
     mcp.run(transport='stdio')

@@ -16,7 +16,7 @@ http.createServer(async (req,res) => {
     res.writeHead(401,{'Content-Type':'application/json'});res.end('{"code":"unauthorized"}');return;
   }
   const url = new URL(req.url,'http://localhost');
-  if (!/^\/api\/official\/(status|laws|document)$/.test(url.pathname)) {
+  if (!/^\/api\/official\/(status|laws|document|graph)$/.test(url.pathname)) {
     res.writeHead(404);res.end();return;
   }
   req.query = {route:url.pathname.split('/').pop()};

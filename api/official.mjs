@@ -111,16 +111,16 @@ function requestParameters(req) {
   const rewritten = req.query?.route ?? url.searchParams.get("route");
   if (Array.isArray(rewritten) || url.searchParams.getAll("route").length > 1) throw new TypeError();
   const route = rewritten ?? url.pathname.replace(/^\/api\/official\/?/, "");
-  if (!["status", "laws", "document"].includes(route)) return { route: null };
+  if (!["status", "laws", "document", "graph"].includes(route)) return { route: null };
   url.searchParams.delete("route");
   const allowed = route === "laws" ? ["q", "source", "limit", "offset"]
-    : route === "document" ? ["source", "law_id", "version_id"] : [];
+    : ["document", "graph"].includes(route) ? ["source", "law_id", "version_id"] : [];
   for (const key of url.searchParams.keys()) {
     if (!allowed.includes(key) || url.searchParams.getAll(key).length !== 1) throw new TypeError();
   }
   const source = url.searchParams.get("source") || null;
   if (source !== null && !SOURCES.includes(source)) throw new TypeError();
-  if (route === "document") {
+  if (["document", "graph"].includes(route)) {
     const lawId = url.searchParams.get("law_id"), versionId = url.searchParams.get("version_id");
     if (!source || !lawId || !versionId || lawId.length > 200 || versionId.length > 200
       || /[\x00-\x1f\x7f]/.test(lawId + versionId)) throw new TypeError();
@@ -221,6 +221,21 @@ export function createOfficialHandler({ environment = () => process.env, createP
         const result = await client.query(`SELECT ${COLUMNS} FROM ${relation} WHERE ${where} ORDER BY title, source, law_id, version_id LIMIT $${values.length - 1} OFFSET $${values.length}`, values);
         if (result.rows.length > parameters.limit) throw new SchemaError();
         payload = { items: result.rows.map(metadata), total, limit: parameters.limit, offset: parameters.offset };
+      } else if (parameters.route === "graph") {
+        const roots = await client.query(`SELECT ${COLUMNS} FROM ${relation} WHERE source=$1 AND law_id=$2 AND version_id=$3`, [parameters.source,parameters.lawId,parameters.versionId]);
+        if (!roots.rows.length) return json(res,404,{code:'document_not_found'},head);
+        const found = await client.query(`SELECT * FROM public.rulecraft_official_relations WHERE (source=$1 AND law_id=$2 AND version_id=$3) OR (target_source=$1 AND target_law_id=$2) ORDER BY (kind='implementation_basis') DESC,(source=$1 AND law_id=$2 AND version_id=$3) DESC,source,law_id,version_id DESC LIMIT 61`,[parameters.source,parameters.lawId,parameters.versionId]);
+        const root=metadata(roots.rows[0]); const nodes=[root],edges=[],seen=new Set();
+        for (const edge of found.rows.slice(0,60)) {
+          const outgoing=edge.source===root.source && edge.law_id===root.law_id;
+          const source=outgoing?edge.target_source:edge.source, id=outgoing?edge.target_law_id:edge.law_id;
+          const key=source+':'+id;if(seen.has(key))continue;
+          const related=await client.query(`SELECT ${COLUMNS} FROM ${relation} WHERE source=$1 AND law_id=$2 ${outgoing?'':'AND version_id=$3'} ORDER BY stored_at DESC,version_id DESC LIMIT 1`,outgoing?[source,id]:[source,id,edge.version_id]);
+          if(!related.rows.length)continue;
+          seen.add(key);const node=metadata(related.rows[0]);nodes.push(node);
+          edges.push({from:outgoing?root.law_id:node.law_id,to:outgoing?node.law_id:root.law_id,kind:edge.kind,evidence:edge.evidence,source_version_id:edge.version_id,source_sha256:edge.source_sha256});
+        }
+        payload={root:root.law_id,nodes,edges,truncated:found.rows.length>60,notice:'원문에 명시된 법령명 인용 관계입니다. 시행 근거는 법령명과 원문 인용이 함께 확인된 경우에 표시합니다. 인용만으로 상하위·위임 관계를 확정하지 않습니다. 연결 대상 버전의 동시 효력은 별도 확인이 필요합니다.'};
       } else {
         const result = await client.query(
           `SELECT ${COLUMNS}, octet_length(raw_text) AS raw_bytes, CASE WHEN octet_length(raw_text) <= $4 THEN raw_text ELSE NULL END AS raw_text FROM ${relation} WHERE source = $1 AND law_id = $2 AND version_id = $3 LIMIT 2`,

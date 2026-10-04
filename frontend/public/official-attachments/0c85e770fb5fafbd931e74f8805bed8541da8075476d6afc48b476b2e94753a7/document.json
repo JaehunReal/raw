@@ -1,0 +1,520 @@
+{
+  "source_sha256": "0c85e770fb5fafbd931e74f8805bed8541da8075476d6afc48b476b2e94753a7",
+  "source_url": "https://law.go.kr/flDownload.do?flSeq=169195253",
+  "segments": [
+    {
+      "source_page_range": [
+        1,
+        1
+      ],
+      "path": "pages-1-1/document.json",
+      "document": {
+        "schema_name": "DoclingDocument",
+        "version": "1.10.0",
+        "name": "0c85e770fb5fafbd931e74f8805bed8541da8075476d6afc48b476b2e94753a7",
+        "origin": {
+          "mimetype": "application/pdf",
+          "binary_hash": 5238942777328751527,
+          "filename": "0c85e770fb5fafbd931e74f8805bed8541da8075476d6afc48b476b2e94753a7.pdf"
+        },
+        "furniture": {
+          "self_ref": "#/furniture",
+          "children": [],
+          "content_layer": "furniture",
+          "name": "_root_",
+          "label": "unspecified"
+        },
+        "body": {
+          "self_ref": "#/body",
+          "children": [
+            {
+              "$ref": "#/texts/0"
+            },
+            {
+              "$ref": "#/texts/1"
+            },
+            {
+              "$ref": "#/texts/2"
+            },
+            {
+              "$ref": "#/texts/3"
+            },
+            {
+              "$ref": "#/texts/4"
+            },
+            {
+              "$ref": "#/texts/5"
+            },
+            {
+              "$ref": "#/texts/6"
+            },
+            {
+              "$ref": "#/texts/7"
+            },
+            {
+              "$ref": "#/texts/8"
+            },
+            {
+              "$ref": "#/texts/9"
+            },
+            {
+              "$ref": "#/texts/10"
+            },
+            {
+              "$ref": "#/texts/11"
+            },
+            {
+              "$ref": "#/texts/12"
+            },
+            {
+              "$ref": "#/texts/13"
+            },
+            {
+              "$ref": "#/texts/14"
+            }
+          ],
+          "content_layer": "body",
+          "name": "_root_",
+          "label": "unspecified"
+        },
+        "groups": [],
+        "texts": [
+          {
+            "self_ref": "#/texts/0",
+            "parent": {
+              "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "section_header",
+            "prov": [
+              {
+                "page_no": 1,
+                "bbox": {
+                  "l": 71.56245763473633,
+                  "t": 759.3237523205839,
+                  "r": 286.8533968675,
+                  "b": 746.2184075925097,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "charspan": [
+                  0,
+                  21
+                ]
+              }
+            ],
+            "orig": "고용노동부고시 제 2026 - 65 호",
+            "text": "고용노동부고시 제 2026 - 65 호",
+            "level": 1
+          },
+          {
+            "self_ref": "#/texts/1",
+            "parent": {
+              "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+              {
+                "page_no": 1,
+                "bbox": {
+                  "l": 95.03883554347655,
+                  "t": 697.580097832,
+                  "r": 497.29618087320307,
+                  "b": 682.6540158049785,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "charspan": [
+                  0,
+                  32
+                ]
+              }
+            ],
+            "orig": "개인형퇴직연금제도로의 이전 예외사유 해당금액 고시 개정고시",
+            "text": "개인형퇴직연금제도로의 이전 예외사유 해당금액 고시 개정고시"
+          },
+          {
+            "self_ref": "#/texts/2",
+            "parent": {
+              "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "section_header",
+            "prov": [
+              {
+                "page_no": 1,
+                "bbox": {
+                  "l": 75.91921480500001,
+                  "t": 625.6877061299999,
+                  "r": 414.91154944187497,
+                  "b": 612.744686035125,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "charspan": [
+                  0,
+                  28
+                ]
+              }
+            ],
+            "orig": "Ⅰ. 개인형퇴직연금제도로의 이전 예외사유 해당 금액",
+            "text": "Ⅰ. 개인형퇴직연금제도로의 이전 예외사유 해당 금액",
+            "level": 1
+          },
+          {
+            "self_ref": "#/texts/3",
+            "parent": {
+              "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+              {
+                "page_no": 1,
+                "bbox": {
+                  "l": 72.37252696875,
+                  "t": 593.829282917,
+                  "r": 523.98713981,
+                  "b": 548.5170347222031,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "charspan": [
+                  0,
+                  77
+                ]
+              }
+            ],
+            "orig": "「근로자퇴직급여 보장법 시행령」제3조의2제1항제2호 및 제9조제3호 에서 \"퇴직급여액이 고용노동부장관이 정하는 금액 이하인 경우\"란 300",
+            "text": "「근로자퇴직급여 보장법 시행령」제3조의2제1항제2호 및 제9조제3호 에서 \"퇴직급여액이 고용노동부장관이 정하는 금액 이하인 경우\"란 300"
+          },
+          {
+            "self_ref": "#/texts/4",
+            "parent": {
+              "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+              {
+                "page_no": 1,
+                "bbox": {
+                  "l": 72.198876080625,
+                  "t": 529.1701519008593,
+                  "r": 248.174419335,
+                  "b": 516.29046197,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "charspan": [
+                  0,
+                  15
+                ]
+              }
+            ],
+            "orig": "만원 이하인 경우를 말한다.",
+            "text": "만원 이하인 경우를 말한다."
+          },
+          {
+            "self_ref": "#/texts/5",
+            "parent": {
+              "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "section_header",
+            "prov": [
+              {
+                "page_no": 1,
+                "bbox": {
+                  "l": 73.54774005,
+                  "t": 496.998145765,
+                  "r": 150.601974719375,
+                  "b": 484.19186623187494,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "charspan": [
+                  0,
+                  7
+                ]
+              }
+            ],
+            "orig": "Ⅱ. 행정사항",
+            "text": "Ⅱ. 행정사항",
+            "level": 1
+          },
+          {
+            "self_ref": "#/texts/6",
+            "parent": {
+              "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "section_header",
+            "prov": [
+              {
+                "page_no": 1,
+                "bbox": {
+                  "l": 78.79201786,
+                  "t": 464.859229092,
+                  "r": 135.422431428125,
+                  "b": 452.04067797,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "charspan": [
+                  0,
+                  6
+                ]
+              }
+            ],
+            "orig": "1. 시행일",
+            "text": "1. 시행일",
+            "level": 2
+          },
+          {
+            "self_ref": "#/texts/7",
+            "parent": {
+              "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+              {
+                "page_no": 1,
+                "bbox": {
+                  "l": 79.684828991875,
+                  "t": 432.642517438,
+                  "r": 304.184064335,
+                  "b": 419.79591697,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "charspan": [
+                  0,
+                  19
+                ]
+              }
+            ],
+            "orig": "이 고시는 공포한 날부터 시행한다.",
+            "text": "이 고시는 공포한 날부터 시행한다."
+          },
+          {
+            "self_ref": "#/texts/8",
+            "parent": {
+              "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "section_header",
+            "prov": [
+              {
+                "page_no": 1,
+                "bbox": {
+                  "l": 78.300884035,
+                  "t": 400.531650111,
+                  "r": 135.06285130625,
+                  "b": 387.749913755625,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "charspan": [
+                  0,
+                  6
+                ]
+              }
+            ],
+            "orig": "2. 적용례",
+            "text": "2. 적용례",
+            "level": 2
+          },
+          {
+            "self_ref": "#/texts/9",
+            "parent": {
+              "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+              {
+                "page_no": 1,
+                "bbox": {
+                  "l": 79.23754640125,
+                  "t": 368.4258229008594,
+                  "r": 523.4829630537499,
+                  "b": 323.383766923875,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "charspan": [
+                  0,
+                  42
+                ]
+              }
+            ],
+            "orig": "이 고시는 시행 후 최초로 급여를 지급할 사유가 발생한 경우부터 적용 한다.",
+            "text": "이 고시는 시행 후 최초로 급여를 지급할 사유가 발생한 경우부터 적용 한다."
+          },
+          {
+            "self_ref": "#/texts/10",
+            "parent": {
+              "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "section_header",
+            "prov": [
+              {
+                "page_no": 1,
+                "bbox": {
+                  "l": 78.14652769,
+                  "t": 304.0090557650001,
+                  "r": 195.92965392000002,
+                  "b": 291.19751697950005,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "charspan": [
+                  0,
+                  12
+                ]
+              }
+            ],
+            "orig": "3. 재검토기한(3년)",
+            "text": "3. 재검토기한(3년)",
+            "level": 2
+          },
+          {
+            "self_ref": "#/texts/11",
+            "parent": {
+              "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+              {
+                "page_no": 1,
+                "bbox": {
+                  "l": 78.82652330004883,
+                  "t": 272.220755917,
+                  "r": 523.48581151,
+                  "b": 162.5616174238886,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "charspan": [
+                  0,
+                  129
+                ]
+              }
+            ],
+            "orig": "고용노동부장관은 이 고시에 대하여 「훈령․예규 등의 발령 및 관리 에 관한 규정」에 따라 2027년 1월 1일 기준으로 3년마다(매 3년이 되 는 해의 1월 1일전까지를 말한다) 그 타당성을 검토하여 개선 등의 조 치를 해야 한다.",
+            "text": "고용노동부장관은 이 고시에 대하여 「훈령․예규 등의 발령 및 관리 에 관한 규정」에 따라 2027년 1월 1일 기준으로 3년마다(매 3년이 되 는 해의 1월 1일전까지를 말한다) 그 타당성을 검토하여 개선 등의 조 치를 해야 한다."
+          },
+          {
+            "self_ref": "#/texts/12",
+            "parent": {
+              "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "section_header",
+            "prov": [
+              {
+                "page_no": 1,
+                "bbox": {
+                  "l": 262.647770354375,
+                  "t": 143.17268797548445,
+                  "r": 329.862732518125,
+                  "b": 130.37188683024988,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "charspan": [
+                  0,
+                  3
+                ]
+              }
+            ],
+            "orig": "부 칙",
+            "text": "부 칙",
+            "level": 1
+          },
+          {
+            "self_ref": "#/texts/13",
+            "parent": {
+              "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+              {
+                "page_no": 1,
+                "bbox": {
+                  "l": 72.728598991875,
+                  "t": 112.47241843799998,
+                  "r": 332.128919335,
+                  "b": 99.62581796999996,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "charspan": [
+                  0,
+                  25
+                ]
+              }
+            ],
+            "orig": "이 고시는 2026년 9월 1일부터 시행한다.",
+            "text": "이 고시는 2026년 9월 1일부터 시행한다."
+          },
+          {
+            "self_ref": "#/texts/14",
+            "parent": {
+              "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "furniture",
+            "label": "page_footer",
+            "prov": [
+              {
+                "page_no": 1,
+                "bbox": {
+                  "l": 285.085495,
+                  "t": 55.844864410000014,
+                  "r": 309.99335593,
+                  "b": 45.89573741000004,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "charspan": [
+                  0,
+                  5
+                ]
+              }
+            ],
+            "orig": "- 1 -",
+            "text": "- 1 -"
+          }
+        ],
+        "pictures": [],
+        "tables": [],
+        "key_value_items": [],
+        "form_items": [],
+        "pages": {
+          "1": {
+            "size": {
+              "width": 595.0,
+              "height": 841.0
+            },
+            "image": {
+              "mimetype": "image/png",
+              "dpi": 108,
+              "size": {
+                "width": 893.0,
+                "height": 1262.0
+              },
+              "uri": "pages-1-1/images/page_000001_64355d8987399db1df474c793953a88ad814e45aff06e33bfd0a5660a5552b87.png"
+            },
+            "page_no": 1
+          }
+        }
+      }
+    }
+  ]
+}

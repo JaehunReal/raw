@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-04T21:03:36.756764+00:00",
+  "generated_at": "2026-10-04T22:33:55.758515+00:00",
   "scope": "본문 보완 대상에서 확인한 첨부 자료 일부입니다. 전체 첨부 목록은 아닙니다.",
   "items": [
     {
@@ -3033,11 +3033,15 @@
       "source": "administrative",
       "source_id": "40345",
       "version_id": "2100000284960",
-      "role": "body_candidate",
+      "role": "body",
       "format": "pdf",
       "original_url": "https://law.go.kr/flDownload.do?flSeq=169195253",
       "sha256": "0c85e770fb5fafbd931e74f8805bed8541da8075476d6afc48b476b2e94753a7",
-      "conversion": null
+      "conversion": {
+        "markdown": "/official-attachments/0c85e770fb5fafbd931e74f8805bed8541da8075476d6afc48b476b2e94753a7/document.md",
+        "json": "/official-attachments/0c85e770fb5fafbd931e74f8805bed8541da8075476d6afc48b476b2e94753a7/document.json",
+        "bundle": "/official-attachments/0c85e770fb5fafbd931e74f8805bed8541da8075476d6afc48b476b2e94753a7/bundle.zip"
+      }
     },
     {
       "id": "c4a30c51f63f3e2202ee5add0866f79a8054be14dea1ce4fdb7cab949b3619d7",

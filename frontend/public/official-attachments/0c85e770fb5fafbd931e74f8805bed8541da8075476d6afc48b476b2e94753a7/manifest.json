@@ -1,0 +1,40 @@
+{
+  "status": "complete",
+  "source_sha256": "0c85e770fb5fafbd931e74f8805bed8541da8075476d6afc48b476b2e94753a7",
+  "source_url": "https://law.go.kr/flDownload.do?flSeq=169195253",
+  "source": "administrative",
+  "source_id": "40345",
+  "version_id": "2100000284960",
+  "converter": "docling",
+  "converter_version": "2.133.0",
+  "ocr_languages": [
+    "ko",
+    "en"
+  ],
+  "pipeline_revision": 1,
+  "counts": {
+    "pages": 1,
+    "tables": 0,
+    "pictures": 0,
+    "footnotes": 0
+  },
+  "files": {
+    "document.md": "91a1a2848a3d5ef17a0f548ae9c73140dbc64dd13b2678d28129e7be2bfd203d",
+    "document.json": "2a681ed640af7c65eb5fc09f1ac63d6cd2d528fa31d11eb3a46f0c6b88d153ea",
+    "pages-1-1/document.md": "d3d3282a5746deef33dd5525fa509abff0e98e6b1e43457f848e756671ccc5b6",
+    "pages-1-1/page-1.png": "db5eefd8370bf901b6ab5f3beb55385c1c9eb8de6a7f68f6f7597d9afba1c801",
+    "pages-1-1/document.json": "f4e95d81415a6b97b41a37d150d5f6c47f93077a9c41d31f782ce9578ae9f7e2",
+    "pages-1-1/images/page_000001_64355d8987399db1df474c793953a88ad814e45aff06e33bfd0a5660a5552b87.png": "db5eefd8370bf901b6ab5f3beb55385c1c9eb8de6a7f68f6f7597d9afba1c801"
+  },
+  "converted_at": "2026-10-04T04:28:05.735697+00:00",
+  "seconds": 3.61,
+  "review_required": true,
+  "footnote_links_verified": false,
+  "corrections": [
+    {
+      "at": "2026-10-04T22:04:04.100286+00:00",
+      "previous_manifest_sha256": "cc0ab676fad4b669a81505d035ab4f089cc88242ba5ea9c9812b61e4d84e6cf0",
+      "reason": "Visual review: restore supplementary heading misclassified as formula, distinguish numbered headings from prose, join split monetary phrase in Markdown. JSON retains original text fragments in reading order."
+    }
+  ]
+}

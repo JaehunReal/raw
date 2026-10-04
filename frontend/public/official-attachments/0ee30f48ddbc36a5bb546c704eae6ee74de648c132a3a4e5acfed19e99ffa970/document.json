@@ -1,0 +1,446 @@
+{
+  "source_sha256": "0ee30f48ddbc36a5bb546c704eae6ee74de648c132a3a4e5acfed19e99ffa970",
+  "source_url": "https://law.go.kr/flDownload.do?flSeq=160627065",
+  "segments": [
+    {
+      "source_page_range": [
+        1,
+        1
+      ],
+      "path": "pages-1-1/document.json",
+      "document": {
+        "schema_name": "DoclingDocument",
+        "version": "1.10.0",
+        "name": "0ee30f48ddbc36a5bb546c704eae6ee74de648c132a3a4e5acfed19e99ffa970",
+        "origin": {
+          "mimetype": "application/pdf",
+          "binary_hash": 12465631297726818672,
+          "filename": "0ee30f48ddbc36a5bb546c704eae6ee74de648c132a3a4e5acfed19e99ffa970.pdf"
+        },
+        "furniture": {
+          "self_ref": "#/furniture",
+          "children": [],
+          "content_layer": "furniture",
+          "name": "_root_",
+          "label": "unspecified"
+        },
+        "body": {
+          "self_ref": "#/body",
+          "children": [
+            {
+              "$ref": "#/texts/0"
+            },
+            {
+              "$ref": "#/texts/1"
+            },
+            {
+              "$ref": "#/texts/2"
+            },
+            {
+              "$ref": "#/texts/3"
+            },
+            {
+              "$ref": "#/texts/4"
+            },
+            {
+              "$ref": "#/texts/5"
+            },
+            {
+              "$ref": "#/texts/6"
+            },
+            {
+              "$ref": "#/groups/0"
+            },
+            {
+              "$ref": "#/texts/10"
+            },
+            {
+              "$ref": "#/texts/11"
+            }
+          ],
+          "content_layer": "body",
+          "name": "_root_",
+          "label": "unspecified"
+        },
+        "groups": [
+          {
+            "self_ref": "#/groups/0",
+            "parent": {
+              "$ref": "#/body"
+            },
+            "children": [
+              {
+                "$ref": "#/texts/7"
+              },
+              {
+                "$ref": "#/texts/8"
+              },
+              {
+                "$ref": "#/texts/9"
+              }
+            ],
+            "content_layer": "body",
+            "name": "list",
+            "label": "list"
+          }
+        ],
+        "texts": [
+          {
+            "self_ref": "#/texts/0",
+            "parent": {
+              "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+              {
+                "page_no": 1,
+                "bbox": {
+                  "l": 56.60932,
+                  "t": 770.337584107,
+                  "r": 263.857,
+                  "b": 756.32693578,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "charspan": [
+                  0,
+                  21
+                ]
+              }
+            ],
+            "orig": "산업통상부 고시 제2025 - 038호",
+            "text": "산업통상부 고시 제2025 - 038호"
+          },
+          {
+            "self_ref": "#/texts/1",
+            "parent": {
+              "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+              {
+                "page_no": 1,
+                "bbox": {
+                  "l": 70.641715,
+                  "t": 724.72707,
+                  "r": 538.26828,
+                  "b": 707.8974624,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "charspan": [
+                  0,
+                  39
+                ]
+              }
+            ],
+            "orig": "｢광산피해의 방지 및 복구에 관한 법률 시행령｣ 제26조 제2항에 의한",
+            "text": "｢광산피해의 방지 및 복구에 관한 법률 시행령｣ 제26조 제2항에 의한"
+          },
+          {
+            "self_ref": "#/texts/2",
+            "parent": {
+              "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+              {
+                "page_no": 1,
+                "bbox": {
+                  "l": 56.60932,
+                  "t": 697.577101107,
+                  "r": 538.26828,
+                  "b": 658.39396278,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "charspan": [
+                  0,
+                  83
+                ]
+              }
+            ],
+            "orig": "부담금을 분할납부하는 때 적용하는 이자율 및 같은법 시행령 제27조 및 제29조에 의한 부담금을 반환할 때 적용하는 이자율을 다음과 같이 고시합니다.",
+            "text": "부담금을 분할납부하는 때 적용하는 이자율 및 같은법 시행령 제27조 및 제29조에 의한 부담금을 반환할 때 적용하는 이자율을 다음과 같이 고시합니다."
+          },
+          {
+            "self_ref": "#/texts/3",
+            "parent": {
+              "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+              {
+                "page_no": 1,
+                "bbox": {
+                  "l": 433.775510925,
+                  "t": 622.059631107,
+                  "r": 538.26828,
+                  "b": 608.04898278,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "charspan": [
+                  0,
+                  12
+                ]
+              }
+            ],
+            "orig": "2025년 12월31일",
+            "text": "2025년 12월31일"
+          },
+          {
+            "self_ref": "#/texts/4",
+            "parent": {
+              "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+              {
+                "page_no": 1,
+                "bbox": {
+                  "l": 440.281385,
+                  "t": 596.8871411069999,
+                  "r": 538.269599285,
+                  "b": 582.87649278,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "charspan": [
+                  0,
+                  7
+                ]
+              }
+            ],
+            "orig": "산업통상부장관",
+            "text": "산업통상부장관"
+          },
+          {
+            "self_ref": "#/texts/5",
+            "parent": {
+              "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "section_header",
+            "prov": [
+              {
+                "page_no": 1,
+                "bbox": {
+                  "l": 129.5298,
+                  "t": 524.126658107,
+                  "r": 465.3484596425,
+                  "b": 510.11600977999996,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "charspan": [
+                  0,
+                  27
+                ]
+              }
+            ],
+            "orig": "부담금의 분할납부 및 반환시 적용하는 이자율 고시",
+            "text": "부담금의 분할납부 및 반환시 적용하는 이자율 고시",
+            "level": 1
+          },
+          {
+            "self_ref": "#/texts/6",
+            "parent": {
+              "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+              {
+                "page_no": 1,
+                "bbox": {
+                  "l": 56.60932,
+                  "t": 473.781678107,
+                  "r": 538.2689396425001,
+                  "b": 384.25355978,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "charspan": [
+                  0,
+                  149
+                ]
+              }
+            ],
+            "orig": "(부담금의 분할납부 및 반환시 적용하는 이자율) 「광산피해의 방지 및 복구에 관한 법률 시행령」제26조 제2항에 의한 부담금을 분할납부하는 때의 적용 하는 이자율 및 같은법 시행령 제27조 및 제29조에 의한 부담금을 반환할 때의 적용하는 이자율은 다음 각호와 같다.",
+            "text": "(부담금의 분할납부 및 반환시 적용하는 이자율) 「광산피해의 방지 및 복구에 관한 법률 시행령」제26조 제2항에 의한 부담금을 분할납부하는 때의 적용 하는 이자율 및 같은법 시행령 제27조 및 제29조에 의한 부담금을 반환할 때의 적용하는 이자율은 다음 각호와 같다."
+          },
+          {
+            "self_ref": "#/texts/7",
+            "parent": {
+              "$ref": "#/groups/0"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "list_item",
+            "prov": [
+              {
+                "page_no": 1,
+                "bbox": {
+                  "l": 63.56555,
+                  "t": 347.9192281069999,
+                  "r": 244.25974093500002,
+                  "b": 332.099396963,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "charspan": [
+                  0,
+                  19
+                ]
+              }
+            ],
+            "orig": "ㅇ 적정이자율 : 2.37%(연리)",
+            "text": "ㅇ 적정이자율 : 2.37%(연리)",
+            "enumerated": false,
+            "marker": ""
+          },
+          {
+            "self_ref": "#/texts/8",
+            "parent": {
+              "$ref": "#/groups/0"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "list_item",
+            "prov": [
+              {
+                "page_no": 1,
+                "bbox": {
+                  "l": 63.56555,
+                  "t": 322.74673810699994,
+                  "r": 386.070765,
+                  "b": 308.73608977999993,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "charspan": [
+                  0,
+                  36
+                ]
+              }
+            ],
+            "orig": "ㅇ 적용기간 : 2026년 1월 1일 - 2026년 12월 31일",
+            "text": "ㅇ 적용기간 : 2026년 1월 1일 - 2026년 12월 31일",
+            "enumerated": false,
+            "marker": ""
+          },
+          {
+            "self_ref": "#/texts/9",
+            "parent": {
+              "$ref": "#/groups/0"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "list_item",
+            "prov": [
+              {
+                "page_no": 1,
+                "bbox": {
+                  "l": 63.56555,
+                  "t": 297.5742481069999,
+                  "r": 538.26828,
+                  "b": 256.581926963,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "charspan": [
+                  0,
+                  59
+                ]
+              }
+            ],
+            "orig": "ㅇ 다만, 부담금 분할납부시 소기업에 한하여 향후 1년간 이자율 50% 완화 (2026년 1.19% 적용)",
+            "text": "ㅇ 다만, 부담금 분할납부시 소기업에 한하여 향후 1년간 이자율 50% 완화 (2026년 1.19% 적용)",
+            "enumerated": false,
+            "marker": ""
+          },
+          {
+            "self_ref": "#/texts/10",
+            "parent": {
+              "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "section_header",
+            "prov": [
+              {
+                "page_no": 1,
+                "bbox": {
+                  "l": 279.92829,
+                  "t": 222.0567781069999,
+                  "r": 314.94931,
+                  "b": 208.04612978,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "charspan": [
+                  0,
+                  3
+                ]
+              }
+            ],
+            "orig": "부 칙",
+            "text": "부 칙",
+            "level": 1
+          },
+          {
+            "self_ref": "#/texts/11",
+            "parent": {
+              "$ref": "#/body"
+            },
+            "children": [],
+            "content_layer": "body",
+            "label": "text",
+            "prov": [
+              {
+                "page_no": 1,
+                "bbox": {
+                  "l": 56.60932,
+                  "t": 171.71179810699994,
+                  "r": 410.834344125,
+                  "b": 155.89196696299996,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "charspan": [
+                  0,
+                  34
+                ]
+              }
+            ],
+            "orig": "제1조(시행일) 이 고시는 2026년 1월 1일부터 시행한다.",
+            "text": "제1조(시행일) 이 고시는 2026년 1월 1일부터 시행한다."
+          }
+        ],
+        "pictures": [],
+        "tables": [],
+        "key_value_items": [],
+        "form_items": [],
+        "pages": {
+          "1": {
+            "size": {
+              "width": 595.0,
+              "height": 841.0
+            },
+            "image": {
+              "mimetype": "image/png",
+              "dpi": 108,
+              "size": {
+                "width": 893.0,
+                "height": 1262.0
+              },
+              "uri": "pages-1-1/images/page_000001_ffddb00be4b42a173592c1859457b8792d266263d376cbae167682221c1c8d57.png"
+            },
+            "page_no": 1
+          }
+        }
+      }
+    }
+  ]
+}

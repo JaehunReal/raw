@@ -404,3 +404,19 @@ button.preview-status-card:hover { border-color: #91ad8a; box-shadow: 0 3px 12px
   .preview-record-result dl > div { gap: 10px; }
   .preview-footer { font-size: 10px; gap: 10px; }
 }
+.attachment-library { margin: 24px 0; }
+.attachment-policy { display: flex; align-items: flex-start; gap: 12px; padding: 16px; background: #f0f5f1; border-radius: 12px; }
+.attachment-policy svg { flex-shrink: 0; margin-top: 3px; }
+.attachment-policy p { margin: 0; line-height: 1.7; }
+.attachment-scope { font-size: 12px; color: #59675f; line-height: 1.7; }
+.attachment-search { display: flex; gap: 10px; align-items: center; border: 1px solid #cbd7ce; border-radius: 10px; padding: 10px 14px; }
+.attachment-search input { width: 100%; min-width: 0; border: 0; background: transparent; font: inherit; padding: 4px; }
+.attachment-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.attachment-cards article { min-width: 0; padding: 20px; border: 1px solid #dfe6df; border-radius: 12px; }
+.attachment-cards h3 { margin: 14px 0 8px; line-height: 1.5; }
+.attachment-cards p, .attachment-cards code { overflow-wrap: anywhere; line-height: 1.7; }
+.attachment-name, .attachment-role { color: #59675f; font-size: 13px; }
+.attachment-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin: 16px 0; }
+.attachment-cards details { margin-top: 16px; font-size: 12px; }
+.attachment-cards summary { cursor: pointer; padding: 8px 0; }
+@media (max-width: 760px) { .attachment-cards { grid-template-columns: 1fr; } }

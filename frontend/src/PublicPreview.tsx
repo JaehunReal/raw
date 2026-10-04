@@ -7,6 +7,7 @@ import {
 import { ServiceOverview, McpGuide } from "./ServiceGuide";
 import previewSnapshot from "./preview-snapshot.json";
 import OfficialLaws, { checkedAt, connectionLabel, displayCount, useOfficialStatus } from "./OfficialLaws";
+import AttachmentLibrary from "./AttachmentLibrary";
 import "./public-preview.css";
 
 type PreviewNode = {
@@ -277,6 +278,7 @@ export default function PublicPreview() {
         {view === "laws" && <>
           <Heading eyebrow="공식 법령 저장소" title="보관된 법령과 버전을 확인하세요." description="법령·행정규칙·자치법규의 저장 원문을 검색하고, 버전·출처·해시를 함께 확인합니다." />
           <OfficialLaws status={official.status} retry={official.retry} />
+          <AttachmentLibrary />
           <section className="panel preview-law-status" data-testid="preview-law-status">
             <div className="preview-law-summary"><span className="preview-law-icon"><BookOpen size={26} /></span><div>
               <span className="pill warning" data-testid="preview-provider-summary">{providerSummary}</span>

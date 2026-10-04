@@ -1,0 +1,40 @@
+{
+  "status": "complete",
+  "source_sha256": "0e15b63e24b4bf4e443ef571b364268a8f0161b6c025dd34a1ba5469f64444eb",
+  "source_url": "https://law.go.kr/flDownload.do?flSeq=167587609",
+  "source": "administrative",
+  "source_id": "97897",
+  "version_id": "2100000283296",
+  "converter": "docling",
+  "converter_version": "2.133.0",
+  "ocr_languages": [
+    "ko",
+    "en"
+  ],
+  "pipeline_revision": 1,
+  "counts": {
+    "pages": 1,
+    "tables": 0,
+    "pictures": 0,
+    "footnotes": 0
+  },
+  "files": {
+    "document.md": "90cb49e24f63204bd5c19217701aece6ea4f422ee6057b342dfaab9eefa024d0",
+    "document.json": "dad64e772f96b3da3d70dfecb8b66c2e92592e127413a7c40b18dcea2e6388ef",
+    "pages-1-1/document.md": "8573cf736767647d16caf6626e2eaae2be84aacdee9332377256a8c066346ca0",
+    "pages-1-1/page-1.png": "fd0894bba83d71c0c2fc265b8034d75846ddeb5690cada16cd2cb24b54ff179a",
+    "pages-1-1/document.json": "0e2694dbb6902383926ba03e2b80efd787aa2f1d2ec75124a4d6d66e8de3c3ec",
+    "pages-1-1/images/page_000001_7fc961b3af2e9941b1081e610f3fc1c87f7577f414d78bdc08c6518c51db1c9c.png": "fd0894bba83d71c0c2fc265b8034d75846ddeb5690cada16cd2cb24b54ff179a"
+  },
+  "converted_at": "2026-10-04T04:28:17.186137+00:00",
+  "seconds": 3.58,
+  "review_required": true,
+  "footnote_links_verified": false,
+  "corrections": [
+    {
+      "at": "2026-10-04T15:34:27.872533+00:00",
+      "previous_manifest_sha256": "f038e4b6a38daff543feaeeb9d952bc256de67f5a546ab96857b0cfcab438824",
+      "reason": "Visual comparison: section 3 was incorrectly nested in a list; restored heading and split list in MD and Docling JSON. Original wording and provenance preserved."
+    }
+  ]
+}

@@ -30,8 +30,8 @@ export function ServiceOverview({ onNavigate }: { onNavigate: (view: Destination
     </section>
     <section className="guide-section" aria-labelledby="workflow-heading"><div className="guide-section-heading"><span className="guide-kicker">업무는 이렇게 시작합니다</span><h2 id="workflow-heading">찾기 → 연결 확인 → 검토 준비</h2></div>
       <div className="guide-steps">{[
-        { n: "01", icon: BookOpen, title: "검토할 규정을 찾습니다", text: "공식 법령에서 원문을 조회하거나, 규정 예제로 조문 읽기를 체험하세요.", action: "규정 예제 열기", view: "vault" },
-        { n: "02", icon: Network, title: "함께 볼 근거를 찾습니다", text: "조문을 선택해 상위 근거와 연결된 지침·서식을 확인하세요.", action: "관계도 체험하기", view: "graph" },
+        { n: "01", icon: BookOpen, title: "검토할 규정을 찾습니다", text: "공식 법령 저장소에서 법령·행정규칙·자치법규의 원문을 검색하세요.", action: "공식 법령 찾기", view: "laws" },
+        { n: "02", icon: Network, title: "함께 볼 근거를 찾습니다", text: "선택한 공식 원문에서 명시된 법령 인용과 시행 근거를 확인하세요.", action: "공식 관계 확인하기", view: "laws" },
         { n: "03", icon: FileCheck2, title: "검토 결과를 준비합니다", text: "선택한 공식 원문의 버전·출처·연결 관계를 확인하고 검토 항목을 정리하세요.", action: "공식 원문 검토하기", view: "laws" },
       ].map(step => <article key={step.n}><div className="guide-step-top"><span>{step.n}</span><step.icon size={25} /></div><h3>{step.title}</h3><p>{step.text}</p><button onClick={() => onNavigate(step.view as Destination)}>{step.action}<ArrowRight size={16} /></button></article>)}</div>
     </section>

@@ -22,3 +22,8 @@ test('full address resolves, deleted destination does not',()=>{
  assert.ok(references(u,units)[0].target);
  assert.equal(references(u,units.map(n=>({...n,deleted:true})))[0].reason,'삭제된 조문');
 });
+
+test('an unsupported branched item never links to its parent number',()=>{
+ const u=units.find(n=>n.paragraph==='1'&&!n.item);
+ assert.equal(references({...u,text:'제1호의2 적용'},units)[0].target,undefined);
+});

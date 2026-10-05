@@ -34,7 +34,8 @@ export function references(unit:Unit,units:Unit[]):Reference[]{
   const matches=units.filter(n=>n.article===(a||unit.article)&&n.paragraph===p&&n.item===i&&n.subitem===s);
   const ownHeading=prefix.trim()===''&&matches.some(n=>n.id===unit.id);
   if(ownHeading)continue;
-  const reason=external?'문맥 확인 필요':matches.length>1?'대상 중복':!matches.length?'대상 미확인':matches[0].deleted?'삭제된 조문':undefined;
+  const unsupportedBranch=/^\s*의\s*\d/.test(unit.text.slice(m.index!+m[0].length));
+  const reason=(external||unsupportedBranch)?'문맥 확인 필요':matches.length>1?'대상 중복':!matches.length?'대상 미확인':matches[0].deleted?'삭제된 조문':undefined;
   result.push({text:m[0],start:m.index!,end:m.index!+m[0].length,...(reason?{reason}:{target:matches[0].id})});
  }
  return result;

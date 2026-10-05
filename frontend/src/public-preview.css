@@ -488,3 +488,8 @@ button.preview-status-card:hover { border-color: #91ad8a; box-shadow: 0 3px 12px
 .external-citation section { padding:16px; border-left:3px solid #6a9077; background:#f3f8f4; margin-top:12px; }
 .external-citation h5 { font-size:15px; margin:0; }
 .external-citation details { overflow-wrap:anywhere; font-size:12px; }
+.topic-relations { padding:20px; margin:20px 0; }
+.topic-relations>p,.topic-basis p { font-size:13px; line-height:1.8; color:#516459; }
+.topic-basis { padding:18px; margin-left:16px; border-left:3px solid #97b29e; }
+.topic-relations pre { white-space:pre-wrap; overflow-wrap:anywhere; line-height:1.8; font:inherit; font-size:14px; }
+.topic-relations details p { overflow-wrap:anywhere; }

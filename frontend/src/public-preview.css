@@ -482,3 +482,9 @@ button.preview-status-card:hover { border-color: #91ad8a; box-shadow: 0 3px 12px
 .provision-unit pre { white-space:pre-wrap; overflow-wrap:anywhere; font:inherit; font-size:14px; line-height:1.8; }
 .provision-references { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:12px; font-size:12px; }
 .provision-references button { cursor:pointer; padding:7px 10px; border:1px solid #8fad99; color:#254c34; border-radius:6px; background:#edf6ee; }
+.external-citation { margin-top:12px; border-top:1px dashed #c8d8cc; padding-top:12px; }
+.external-citation p { font-size:12px; line-height:1.7; color:#53665b; }
+.external-citation .button { display:block; margin:8px 0; text-align:left; white-space:normal; }
+.external-citation section { padding:16px; border-left:3px solid #6a9077; background:#f3f8f4; margin-top:12px; }
+.external-citation h5 { font-size:15px; margin:0; }
+.external-citation details { overflow-wrap:anywhere; font-size:12px; }

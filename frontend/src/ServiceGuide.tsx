@@ -32,7 +32,7 @@ export function ServiceOverview({ onNavigate }: { onNavigate: (view: Destination
       <div className="guide-steps">{[
         { n: "01", icon: BookOpen, title: "검토할 규정을 찾습니다", text: "공식 법령에서 원문을 조회하거나, 규정 예제로 조문 읽기를 체험하세요.", action: "규정 예제 열기", view: "vault" },
         { n: "02", icon: Network, title: "함께 볼 근거를 찾습니다", text: "조문을 선택해 상위 근거와 연결된 지침·서식을 확인하세요.", action: "관계도 체험하기", view: "graph" },
-        { n: "03", icon: FileCheck2, title: "검토 결과를 정리합니다", text: "변경 영향과 대비표 등 문서 예제를 살펴보고 검토 항목을 이해하세요.", action: "검토 문서 예제 보기", view: "packages" },
+        { n: "03", icon: FileCheck2, title: "검토 결과를 준비합니다", text: "선택한 공식 원문의 버전·출처·연결 관계를 확인하고 검토 항목을 정리하세요.", action: "공식 원문 검토하기", view: "laws" },
       ].map(step => <article key={step.n}><div className="guide-step-top"><span>{step.n}</span><step.icon size={25} /></div><h3>{step.title}</h3><p>{step.text}</p><button onClick={() => onNavigate(step.view as Destination)}>{step.action}<ArrowRight size={16} /></button></article>)}</div>
     </section>
     <section className="guide-section guide-ways" aria-labelledby="ways-heading"><div><span className="guide-kicker">사용 방법 두 가지</span><h2 id="ways-heading">웹에서 둘러보고,<br />연결된 AI에서 요청하세요.</h2></div><article><Monitor /><h3>웹페이지에서 직접 보기</h3><p>공식 원문 조회와 예제 탐색을 메뉴로 사용합니다. 별도의 MCP 설정 없이 시작할 수 있습니다.</p><button onClick={() => onNavigate("laws")}>공식 원문 조회 <ArrowRight size={15} /></button></article><article><PlugZap /><h3>AI 도구에서 MCP로 요청하기</h3><p>담당자가 RuleCraft를 연결한 AI 도구에서, 원하는 업무를 문장으로 요청합니다.</p><button onClick={() => onNavigate("mcp")}>연결과 요청 방법 <ArrowRight size={15} /></button></article></section>

@@ -199,6 +199,23 @@ button.preview-status-card:hover { border-color: #91ad8a; box-shadow: 0 3px 12px
 .preview-law-sources small[data-warning-code] { padding: 7px 9px; border-radius: 5px; background: #fff4dc; color: #78571c; }
 .preview-record-time { font-size: 11px; color: #5b7250; margin-top: 20px; line-height: 1.9; }
 
+.official-review { margin-top: 24px; padding: 20px; border: 1px solid #d0dfd6; border-radius: 12px; background: #f8fbf8; }
+.official-review-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.official-review-heading h3 { margin: 10px 0 0; font-size: 18px; }
+.official-review-heading > svg { color: #47745a; }
+.official-review-heading .pill { display: inline-flex; align-items: center; gap: 5px; }
+.official-review-intro { color: var(--guide-muted, #64756d); line-height: 1.7; }
+.official-review-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 16px 0; }
+.official-review-grid > div { display: flex; gap: 8px; align-items: flex-start; padding: 12px; border: 1px solid #d9e3db; border-radius: 8px; background: #fff; }
+.official-review-grid svg { color: #47745a; flex-shrink: 0; margin-top: 2px; }
+.official-review-grid span { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #66756c; }
+.official-review-grid strong { color: #30493a; font-size: 13px; line-height: 1.45; }
+.official-review-checklist { margin: 16px 0 0; padding-left: 22px; color: #3f5647; line-height: 1.8; }
+.official-review-note { display: block; margin-top: 12px; color: #886e34; }
+.official-review .spin { animation: official-review-spin .9s linear infinite; }
+@keyframes official-review-spin { to { transform: rotate(360deg); } }
+@media (max-width: 800px) { .official-review-grid { grid-template-columns: 1fr; } }
+
 .preview-mcp-record { display: flex; gap: 15px; align-items: center; background: #edf4e5; border: 1px solid #cedfbd; border-radius: 10px; padding: 24px; margin-bottom: 22px; color: #466c2e; }
 .preview-mcp-record > div { flex: 1; min-width: 0; }
 .preview-mcp-record strong { font-size: 16px; font-weight: 600; line-height: 1.7; }

@@ -1,0 +1,9 @@
+{
+  "source_sha256": "0411a7517cc3bf2a746592facbf257b9b4b4510346c39a4fc86aa040a89ceeb7",
+  "manifest_sha256": "d890b857900020d4e0d0ff156f3ebcf09a043942d501c62f2af864d5b3ea0b6d",
+  "reviewed_at": "2026-10-05T09:34:20.476694+00:00",
+  "role": "body",
+  "conversion_verified": true,
+  "reviewer": "Codex full-page visual comparison",
+  "notes": "원문 전체 1쪽 대조. 진혼→진흥, 연락처의 순서, 고시명 누락을 교정하고 표 4개 셀의 값과 날짜를 대조함. 각주 없음. 원문 중복 2번 및 제18조2 표기는 그대로 보존. 고시 전문으로 확인."
+}

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-04T22:33:55.758515+00:00",
+  "generated_at": "2026-10-05T09:34:26.188871+00:00",
   "scope": "본문 보완 대상에서 확인한 첨부 자료 일부입니다. 전체 첨부 목록은 아닙니다.",
   "items": [
     {
@@ -568,7 +568,7 @@
       "source": "administrative",
       "source_id": "60633",
       "version_id": "2100000100850",
-      "role": "body_candidate",
+      "role": "body",
       "format": "pdf",
       "original_url": "https://law.go.kr/flDownload.do?flSeq=31855224",
       "sha256": "597297ccb3f85d5fdd3209bf9f98ce4ebd6b0cdcab28e82fd3da4df24ca7f366",
@@ -1698,19 +1698,6 @@
       "format": "hwpx",
       "original_url": "https://law.go.kr/flDownload.do?flSeq=148511015",
       "sha256": "b494369e74a9113b73140dabccadad90c14b3cb07c21df4b9d60cb7d58936698",
-      "conversion": null
-    },
-    {
-      "id": "986ed9dbf058807fbe82f838f7504fc77c3dd24002a2d8b354cf1e0381ef0de8",
-      "title": "KS Q ISO/IEC 17043 해설서",
-      "name": "조문별제개정이유서_KS Q ISO IEC 17043 해설서.pdf",
-      "source": "administrative",
-      "source_id": "76977",
-      "version_id": "2100000253220",
-      "role": "body_candidate",
-      "format": "pdf",
-      "original_url": "https://law.go.kr/flDownload.do?flSeq=148511019",
-      "sha256": "062b76b4e445ee253fe5bd41e7d43fe32ae6a2e61bb4f71ba8edff7d6bec7961",
       "conversion": null
     },
     {
@@ -3512,19 +3499,6 @@
       "conversion": null
     },
     {
-      "id": "e3fed99dc58cbc919b2c562abd7cfcb8401b28e3f6814d04fadd18bc1d683a08",
-      "title": "경주국립공원 구역 및 계획 변경·결정, 지형도면 등의 변경 고시",
-      "name": "조문별제개정이유서(경주국립공원).pdf",
-      "source": "administrative",
-      "source_id": "85265",
-      "version_id": "2100000228572",
-      "role": "body_candidate",
-      "format": "pdf",
-      "original_url": "https://law.go.kr/flDownload.do?flSeq=132805575",
-      "sha256": "0a220bbadf82c99743170ba913eb95476eacb99fd79d4f0eacfe8b4b48754123",
-      "conversion": null
-    },
-    {
       "id": "17f74431303c63c7662aaccfcff433fec87609a72e9c78fa5c90f8d01740529d",
       "title": "경주국립공원 구역 및 계획 변경·결정, 지형도면 등의 변경 고시",
       "name": "환경부고시제2023-195호(경주국립공원 구역 및 계획 변경·결정,  지형도면 등의 변경 고시).pdf",
@@ -3548,19 +3522,6 @@
       "format": "hwpx",
       "original_url": "https://law.go.kr/flDownload.do?flSeq=132810129",
       "sha256": "7faadc67c75ee1a9ca0d71e3e568b650ea158257455ba63370521385f6545aec",
-      "conversion": null
-    },
-    {
-      "id": "d2be40f0d1d3a906cb20b643493f2ccff0325e972290d3ba745fb256dc76a1c8",
-      "title": "계룡산국립공원 구역 및 계획 변경·결정, 지형도면 등의 변경 고시",
-      "name": "조문별제개정이유서(계룡산국립공원).pdf",
-      "source": "administrative",
-      "source_id": "85281",
-      "version_id": "2100000228608",
-      "role": "body_candidate",
-      "format": "pdf",
-      "original_url": "https://law.go.kr/flDownload.do?flSeq=132810133",
-      "sha256": "07474b51db529b11922c583ade7c2b5205adf4b70fb48a733429350d7ec0572b",
       "conversion": null
     },
     {
@@ -4896,11 +4857,15 @@
       "source": "administrative",
       "source_id": "83973",
       "version_id": "2100000217401",
-      "role": "body_candidate",
+      "role": "body",
       "format": "pdf",
       "original_url": "https://law.go.kr/flDownload.do?flSeq=123024669",
       "sha256": "0411a7517cc3bf2a746592facbf257b9b4b4510346c39a4fc86aa040a89ceeb7",
-      "conversion": null
+      "conversion": {
+        "markdown": "/official-attachments/0411a7517cc3bf2a746592facbf257b9b4b4510346c39a4fc86aa040a89ceeb7/document.md",
+        "json": "/official-attachments/0411a7517cc3bf2a746592facbf257b9b4b4510346c39a4fc86aa040a89ceeb7/document.json",
+        "bundle": "/official-attachments/0411a7517cc3bf2a746592facbf257b9b4b4510346c39a4fc86aa040a89ceeb7/bundle.zip"
+      }
     },
     {
       "id": "2cd012fd1dbce7704d3a6dbbb85f3f175b03ccbbefbfb1be875b48dcf4754642",
@@ -4909,11 +4874,15 @@
       "source": "administrative",
       "source_id": "83973",
       "version_id": "2100000217401",
-      "role": "body_candidate",
+      "role": "body",
       "format": "pdf",
       "original_url": "https://law.go.kr/flDownload.do?flSeq=123024671",
       "sha256": "0411a7517cc3bf2a746592facbf257b9b4b4510346c39a4fc86aa040a89ceeb7",
-      "conversion": null
+      "conversion": {
+        "markdown": "/official-attachments/0411a7517cc3bf2a746592facbf257b9b4b4510346c39a4fc86aa040a89ceeb7/document.md",
+        "json": "/official-attachments/0411a7517cc3bf2a746592facbf257b9b4b4510346c39a4fc86aa040a89ceeb7/document.json",
+        "bundle": "/official-attachments/0411a7517cc3bf2a746592facbf257b9b4b4510346c39a4fc86aa040a89ceeb7/bundle.zip"
+      }
     },
     {
       "id": "8268f86634e257a64f297d9ac8440ac40ed29a1247ebddebff28a7110fd2b25d",
@@ -5026,7 +4995,7 @@
       "source": "administrative",
       "source_id": "83317",
       "version_id": "2100000215285",
-      "role": "body_candidate",
+      "role": "body",
       "format": "pdf",
       "original_url": "https://law.go.kr/flDownload.do?flSeq=120430647",
       "sha256": "07efb768ebf9fe1de08fdd74faae9a0d4d63b6fa8f9e6214f32c83eced315029",
@@ -5039,7 +5008,7 @@
       "source": "administrative",
       "source_id": "83317",
       "version_id": "2100000215285",
-      "role": "body_candidate",
+      "role": "body",
       "format": "pdf",
       "original_url": "https://law.go.kr/flDownload.do?flSeq=120430649",
       "sha256": "07efb768ebf9fe1de08fdd74faae9a0d4d63b6fa8f9e6214f32c83eced315029",
@@ -5234,7 +5203,7 @@
       "source": "administrative",
       "source_id": "93394",
       "version_id": "2100000261648",
-      "role": "body_candidate",
+      "role": "body",
       "format": "pdf",
       "original_url": "https://law.go.kr/flDownload.do?flSeq=154322729",
       "sha256": "06253853545775d8b64dc6fb51cca9184fe79d4fcaa93ad9167bce7a23496354",
@@ -5247,7 +5216,7 @@
       "source": "administrative",
       "source_id": "93394",
       "version_id": "2100000261648",
-      "role": "body_candidate",
+      "role": "body",
       "format": "pdf",
       "original_url": "https://law.go.kr/flDownload.do?flSeq=154322731",
       "sha256": "06253853545775d8b64dc6fb51cca9184fe79d4fcaa93ad9167bce7a23496354",
@@ -5329,19 +5298,6 @@
       "format": "hwpx",
       "original_url": "https://law.go.kr/flDownload.do?flSeq=148906207",
       "sha256": "677558305276adbdcd57925cc48461215718f20ed88beb2e1bc52a5bce84a011",
-      "conversion": null
-    },
-    {
-      "id": "e46dd68c64503769f3bbe938a58c1d8eefd8e2ba89c4a8e20273050c8bc63e04",
-      "title": "국가무형유산 명예보유자 인정(매듭장, 문배주)",
-      "name": "(양식)조문별제개정이유서_행정규칙.pdf",
-      "source": "administrative",
-      "source_id": "91837",
-      "version_id": "2100000254208",
-      "role": "body_candidate",
-      "format": "pdf",
-      "original_url": "https://law.go.kr/flDownload.do?flSeq=148906211",
-      "sha256": "0afc8d73f221f2699e3c5bc652a3901e7648667628822fea4e322bcd3ee38bee",
       "conversion": null
     },
     {
@@ -6476,19 +6432,6 @@
       "conversion": null
     },
     {
-      "id": "39599901981531f55845f9963eb089fae8f475aaceef3152ae29160680324c83",
-      "title": "국민권익위원회 온라인행정심판시스템 데이터세트관리기준표",
-      "name": "(고시 제2024-4호) 고시문.pdf",
-      "source": "administrative",
-      "source_id": "89726",
-      "version_id": "2100000244012",
-      "role": "body_candidate",
-      "format": "pdf",
-      "original_url": "https://law.go.kr/flDownload.do?flSeq=142302989",
-      "sha256": "0cb88ceafe5a5e5506cbada7ba6be1c33a6099e85a9a0f19fc524395f1ceb203",
-      "conversion": null
-    },
-    {
       "id": "44de702e018c58e1c89ec3477f779dd4780d152082a6ebd04e5b411fda6948f5",
       "title": "국민권익위원회 온라인행정심판시스템 데이터세트관리기준표",
       "name": "(고시 제2024-4호) 국민권익위원회 온라인행정심판시스템 관리기준표.pdf",
@@ -6694,19 +6637,6 @@
       "format": "pdf",
       "original_url": "https://law.go.kr/flDownload.do?flSeq=112880745",
       "sha256": "c0daf1aad3968404c7326543c7b9498c025aa7018405b334f4a0223ab7b7b533",
-      "conversion": null
-    },
-    {
-      "id": "9394afae4860b97ec11d675456e5f36b067caf351d9b46e6c267b4b6d1a7dbcd",
-      "title": "국제과학비즈니스벨트 및 지구의 지정에 따른 지형도면",
-      "name": "국제과학비즈니스벨트_및_지구_지형도면.pdf",
-      "source": "administrative",
-      "source_id": "43720",
-      "version_id": "2100000000687",
-      "role": "body_candidate",
-      "format": "pdf",
-      "original_url": "https://law.go.kr/flDownload.do?flSeq=16367633",
-      "sha256": "726b5377131d1c6c7e85a67599c3dda8d5177173a4ade90add7bd62f14203aac",
       "conversion": null
     },
     {
@@ -8062,19 +7992,6 @@
       "conversion": null
     },
     {
-      "id": "65d65078f5ba306515d7e246a7ba26d34551164d1eca74e04f94b770bec2e1b5",
-      "title": "덕유산국립공원 구역 및 계획 변경·결정, 지형도면 등의 변경 고시",
-      "name": "조문별제개정이유서(덕유산국립공원).pdf",
-      "source": "administrative",
-      "source_id": "51961",
-      "version_id": "2100000228576",
-      "role": "body_candidate",
-      "format": "pdf",
-      "original_url": "https://law.go.kr/flDownload.do?flSeq=132809409",
-      "sha256": "04f5a0901f30cb35e04b57aa1d168f047a7fd82d72688845c916b60f1d481e28",
-      "conversion": null
-    },
-    {
       "id": "4afc8623bf500ffb06dd6136a0afece37e514bcb49ddeaaedecb3f542b515375",
       "title": "덕유산국립공원 구역 및 계획 변경·결정, 지형도면 등의 변경 고시",
       "name": "환경부고시제2023-197호(덕유산국립공원 구역 및 계획 변경·결정, 지형도면 등의 변경 고시).pdf",
@@ -8150,19 +8067,6 @@
       "format": "pdf",
       "original_url": "https://law.go.kr/flDownload.do?flSeq=152419239",
       "sha256": "9c5655b2ad176d7157698ad80fda37fd5c8cbbfdd82d36636f17ab8fb2aaaafc",
-      "conversion": null
-    },
-    {
-      "id": "d0ef0bb201f02e47dfb8716f6a155e42c69d5a92f2497b60c4655d7f0197fcb8",
-      "title": "도심항공교통실증사업자 지정에 관한 기준",
-      "name": "조문별제개정이유서_도심항공교통실증사업자 지정에 관한 기준.pdf",
-      "source": "administrative",
-      "source_id": "92991",
-      "version_id": "2100000259606",
-      "role": "body_candidate",
-      "format": "pdf",
-      "original_url": "https://law.go.kr/flDownload.do?flSeq=152419241",
-      "sha256": "fe2711622de350b1875f0dd40132c212b483e36e2fae9c2c9bfd626782b9a6ff",
       "conversion": null
     },
     {
@@ -8315,7 +8219,7 @@
       "source": "administrative",
       "source_id": "70536",
       "version_id": "2100000185908",
-      "role": "body_candidate",
+      "role": "body",
       "format": "pdf",
       "original_url": "https://law.go.kr/flDownload.do?flSeq=55420767",
       "sha256": "0128ba19e3dcb83db2d3d2c9672b28966b22ffde5a500b5b87e29bef6793e958",
@@ -8413,19 +8317,6 @@
       "conversion": null
     },
     {
-      "id": "dac5519debb66e37e3b4b841e1411293113f0ac8815c3b305e7e54005a1997ec",
-      "title": "동해안권경제자유구역 북평지구 개발계획 변경 고시",
-      "name": "행정입법지원센터조문별제개정이유서(북평지구개발계획변경).pdf",
-      "source": "administrative",
-      "source_id": "51624",
-      "version_id": "2100000222194",
-      "role": "body_candidate",
-      "format": "pdf",
-      "original_url": "https://law.go.kr/flDownload.do?flSeq=145704435",
-      "sha256": "0aa0558e05c6fce4d61f4e744553afdb282d1da9ab0211b677eec0c7a0abc1e5",
-      "conversion": null
-    },
-    {
       "id": "e4e9929bc28d1e4d08b559fc3cc602e879fc44dc35a152c35a4cb2369060afd3",
       "title": "동해안권경제자유구역 옥계첨단소재융합산업지구 개발계획 변경 고시",
       "name": "동해안권경제자유구역옥계첨단소재융합산업지구개발계획변경고시관련규제심사확인서.hwpx",
@@ -8462,19 +8353,6 @@
       "format": "hwpx",
       "original_url": "https://law.go.kr/flDownload.do?flSeq=135049903",
       "sha256": "2f7593265474f2238e435afff12456fc8ed93e4e29ec6e1a8a23c4af9ee413e9",
-      "conversion": null
-    },
-    {
-      "id": "2b1cbf9c4559b0126c3461a96cc13bb405bc81fcb9bb6b144fe4cb14cc42f414",
-      "title": "동해안권경제자유구역 옥계첨단소재융합산업지구 개발계획 변경 고시",
-      "name": "옥계지구개발계획변경고시관련조문별제개정이유서.pdf",
-      "source": "administrative",
-      "source_id": "87209",
-      "version_id": "2100000231988",
-      "role": "body_candidate",
-      "format": "pdf",
-      "original_url": "https://law.go.kr/flDownload.do?flSeq=135049907",
-      "sha256": "1151529dd5b5184222356d7a724a0da41e0dd38aa4994ce2177511494b068da1",
       "conversion": null
     },
     {
@@ -10308,19 +10186,6 @@
       "format": "hwp",
       "original_url": "https://law.go.kr/flDownload.do?flSeq=149981471",
       "sha256": "94aa4308bf69b7f2720d38fdc882a087eea3cd609587893d937674dc9dca897b",
-      "conversion": null
-    },
-    {
-      "id": "e039563f8ed4dbc858af1a4479d3be009f87b50bd6548469888ecb64ae65546e",
-      "title": "산업융합 신제품의 적합성 인증 기준 및 인증심사기준(LED 진입각지시등)",
-      "name": "241231_산업융합신제품의 적합성인증 설명자료.pdf",
-      "source": "administrative",
-      "source_id": "92336",
-      "version_id": "2100000256480",
-      "role": "body_candidate",
-      "format": "pdf",
-      "original_url": "https://law.go.kr/flDownload.do?flSeq=149981475",
-      "sha256": "00c980b9022ebfdc7deef95457113005bd9ebf6b91e31a2f613c5ab0354ebbce",
       "conversion": null
     },
     {
@@ -17049,19 +16914,6 @@
       "conversion": null
     },
     {
-      "id": "1304f469ba7fd6a6153fd634b3921a6d1de36a286a1573150157f07e8eaf05f5",
-      "title": "전원개발사업실시계획 변경신고 수리(음성천연가스발전소 154kV 송전선로 건설사업)",
-      "name": "조문별 제¸개정 이유서(음성천연가스발전소 154kV 송전선로).pdf",
-      "source": "administrative",
-      "source_id": "80181",
-      "version_id": "2100000242068",
-      "role": "body_candidate",
-      "format": "pdf",
-      "original_url": "https://law.go.kr/flDownload.do?flSeq=140920183",
-      "sha256": "12ab0a96186ad4fe48ac89bf01462de7eb71d6c5f5edb196783b63a04a769119",
-      "conversion": null
-    },
-    {
       "id": "e57a8354d1764f3de2ec554f597ee155129d8766c86f75540a6bd12f8e587e00",
       "title": "전원개발사업실시계획 변경신고 수리[500kV HVDC 동해안-신가평 송전선로 건설사업(동부-2구간) 등 2건]",
       "name": "산업통상자원부고시제2025-80호(전원개발사업실시계획 승인(변경)).pdf",
@@ -18635,19 +18487,6 @@
       "conversion": null
     },
     {
-      "id": "623dc17a43808a2d53f19d2938023218bc3ad6cdef2344b2662eb66fa579c86d",
-      "title": "주왕산국립공원 구역 및 계획 변경·결정, 지형도면 등의 변경 고시",
-      "name": "(양식)조문별제개정이유서(주왕산국립공원).pdf",
-      "source": "administrative",
-      "source_id": "85271",
-      "version_id": "2100000222756",
-      "role": "body_candidate",
-      "format": "pdf",
-      "original_url": "https://law.go.kr/flDownload.do?flSeq=127703391",
-      "sha256": "09359a9bd3e5cc011981c7962182925500f85c726d4fb20bd0b701bdeacc3f60",
-      "conversion": null
-    },
-    {
       "id": "e23a2f5ebe4d7374201fc162c7375ae6decba918b5a17791d8984cf5f905e38c",
       "title": "주왕산국립공원 구역 및 계획 변경·결정, 지형도면 등의 변경 고시",
       "name": "환경부고시제2023-33호(주왕산국립공원 구역 및 계획 변경·결정, 지형도면 등의 변경 고시).pdf",
@@ -19967,7 +19806,7 @@
       "source": "administrative",
       "source_id": "94041",
       "version_id": "2100000264500",
-      "role": "body_candidate",
+      "role": "body",
       "format": "pdf",
       "original_url": "https://law.go.kr/flDownload.do?flSeq=156403363",
       "sha256": "2411ba7b20720ba9ff6d0784514b0a86e78540032bbaec880265845a6301fb27",
@@ -21521,6 +21360,19 @@
       "conversion": null
     },
     {
+      "id": "986ed9dbf058807fbe82f838f7504fc77c3dd24002a2d8b354cf1e0381ef0de8",
+      "title": "KS Q ISO/IEC 17043 해설서",
+      "name": "조문별제개정이유서_KS Q ISO IEC 17043 해설서.pdf",
+      "source": "administrative",
+      "source_id": "76977",
+      "version_id": "2100000253220",
+      "role": "attachment",
+      "format": "pdf",
+      "original_url": "https://law.go.kr/flDownload.do?flSeq=148511019",
+      "sha256": "062b76b4e445ee253fe5bd41e7d43fe32ae6a2e61bb4f71ba8edff7d6bec7961",
+      "conversion": null
+    },
+    {
       "id": "61130446a70aef294958f47b3ed29f109a014059b98a406769bdba841b66ff18",
       "title": "KTX광명역 연계 철도산업 활성화 조례",
       "name": "[별표] 이용지원 대상자 및 할인기준",
@@ -21885,6 +21737,32 @@
       "conversion": null
     },
     {
+      "id": "e3fed99dc58cbc919b2c562abd7cfcb8401b28e3f6814d04fadd18bc1d683a08",
+      "title": "경주국립공원 구역 및 계획 변경·결정, 지형도면 등의 변경 고시",
+      "name": "조문별제개정이유서(경주국립공원).pdf",
+      "source": "administrative",
+      "source_id": "85265",
+      "version_id": "2100000228572",
+      "role": "attachment",
+      "format": "pdf",
+      "original_url": "https://law.go.kr/flDownload.do?flSeq=132805575",
+      "sha256": "0a220bbadf82c99743170ba913eb95476eacb99fd79d4f0eacfe8b4b48754123",
+      "conversion": null
+    },
+    {
+      "id": "d2be40f0d1d3a906cb20b643493f2ccff0325e972290d3ba745fb256dc76a1c8",
+      "title": "계룡산국립공원 구역 및 계획 변경·결정, 지형도면 등의 변경 고시",
+      "name": "조문별제개정이유서(계룡산국립공원).pdf",
+      "source": "administrative",
+      "source_id": "85281",
+      "version_id": "2100000228608",
+      "role": "attachment",
+      "format": "pdf",
+      "original_url": "https://law.go.kr/flDownload.do?flSeq=132810133",
+      "sha256": "07474b51db529b11922c583ade7c2b5205adf4b70fb48a733429350d7ec0572b",
+      "conversion": null
+    },
+    {
       "id": "27321756c403cb7d2c0fdac2fdfe5fdfa71f050e1b84ebe8df390b40aab757d9",
       "title": "고령군 식품진흥기금 설치 운용 조례 시행규칙",
       "name": "【별지 제2호서식】 사   업   계   획   서",
@@ -22116,6 +21994,45 @@
       "format": "attachment",
       "original_url": "https://www.law.go.kr/flDownload.do?gubun=ELIS&flSeq=169159405&flNm=%5B%EB%B3%84%ED%91%9C%5D+%EC%A0%90%EC%9A%A9%EB%A3%8C.%EC%82%AC%EC%9A%A9%EB%A3%8C%EC%9D%98+%EC%82%B0%EC%A0%95%EB%B0%A9%EC%8B%9D",
       "sha256": "454c8b701729b6a9f4a2bcb69e8261deed7b632584e26bc79c3152c9e0aac54d",
+      "conversion": null
+    },
+    {
+      "id": "e46dd68c64503769f3bbe938a58c1d8eefd8e2ba89c4a8e20273050c8bc63e04",
+      "title": "국가무형유산 명예보유자 인정(매듭장, 문배주)",
+      "name": "(양식)조문별제개정이유서_행정규칙.pdf",
+      "source": "administrative",
+      "source_id": "91837",
+      "version_id": "2100000254208",
+      "role": "attachment",
+      "format": "pdf",
+      "original_url": "https://law.go.kr/flDownload.do?flSeq=148906211",
+      "sha256": "0afc8d73f221f2699e3c5bc652a3901e7648667628822fea4e322bcd3ee38bee",
+      "conversion": null
+    },
+    {
+      "id": "39599901981531f55845f9963eb089fae8f475aaceef3152ae29160680324c83",
+      "title": "국민권익위원회 온라인행정심판시스템 데이터세트관리기준표",
+      "name": "(고시 제2024-4호) 고시문.pdf",
+      "source": "administrative",
+      "source_id": "89726",
+      "version_id": "2100000244012",
+      "role": "attachment",
+      "format": "pdf",
+      "original_url": "https://law.go.kr/flDownload.do?flSeq=142302989",
+      "sha256": "0cb88ceafe5a5e5506cbada7ba6be1c33a6099e85a9a0f19fc524395f1ceb203",
+      "conversion": null
+    },
+    {
+      "id": "9394afae4860b97ec11d675456e5f36b067caf351d9b46e6c267b4b6d1a7dbcd",
+      "title": "국제과학비즈니스벨트 및 지구의 지정에 따른 지형도면",
+      "name": "국제과학비즈니스벨트_및_지구_지형도면.pdf",
+      "source": "administrative",
+      "source_id": "43720",
+      "version_id": "2100000000687",
+      "role": "attachment",
+      "format": "pdf",
+      "original_url": "https://law.go.kr/flDownload.do?flSeq=16367633",
+      "sha256": "726b5377131d1c6c7e85a67599c3dda8d5177173a4ade90add7bd62f14203aac",
       "conversion": null
     },
     {
@@ -22457,6 +22374,36 @@
       "conversion": null
     },
     {
+      "id": "65d65078f5ba306515d7e246a7ba26d34551164d1eca74e04f94b770bec2e1b5",
+      "title": "덕유산국립공원 구역 및 계획 변경·결정, 지형도면 등의 변경 고시",
+      "name": "조문별제개정이유서(덕유산국립공원).pdf",
+      "source": "administrative",
+      "source_id": "51961",
+      "version_id": "2100000228576",
+      "role": "attachment",
+      "format": "pdf",
+      "original_url": "https://law.go.kr/flDownload.do?flSeq=132809409",
+      "sha256": "04f5a0901f30cb35e04b57aa1d168f047a7fd82d72688845c916b60f1d481e28",
+      "conversion": null
+    },
+    {
+      "id": "d0ef0bb201f02e47dfb8716f6a155e42c69d5a92f2497b60c4655d7f0197fcb8",
+      "title": "도심항공교통실증사업자 지정에 관한 기준",
+      "name": "조문별제개정이유서_도심항공교통실증사업자 지정에 관한 기준.pdf",
+      "source": "administrative",
+      "source_id": "92991",
+      "version_id": "2100000259606",
+      "role": "attachment",
+      "format": "pdf",
+      "original_url": "https://law.go.kr/flDownload.do?flSeq=152419241",
+      "sha256": "fe2711622de350b1875f0dd40132c212b483e36e2fae9c2c9bfd626782b9a6ff",
+      "conversion": {
+        "markdown": "/official-attachments/fe2711622de350b1875f0dd40132c212b483e36e2fae9c2c9bfd626782b9a6ff/document.md",
+        "json": "/official-attachments/fe2711622de350b1875f0dd40132c212b483e36e2fae9c2c9bfd626782b9a6ff/document.json",
+        "bundle": "/official-attachments/fe2711622de350b1875f0dd40132c212b483e36e2fae9c2c9bfd626782b9a6ff/bundle.zip"
+      }
+    },
+    {
       "id": "f3ec4b287857f112e2a51d9e20e446a097523a33b1091ae6abac8443dcc73b64",
       "title": "동두천시 사무위임 조례",
       "name": "별표",
@@ -22467,6 +22414,32 @@
       "format": "attachment",
       "original_url": "https://www.law.go.kr/flDownload.do?gubun=ELIS&flSeq=160325175&flNm=%EB%B3%84%ED%91%9C",
       "sha256": "50923afbf4f7c7307080b5ec750c1c28531f6d0bddffa4191c65b6fa2b172a43",
+      "conversion": null
+    },
+    {
+      "id": "dac5519debb66e37e3b4b841e1411293113f0ac8815c3b305e7e54005a1997ec",
+      "title": "동해안권경제자유구역 북평지구 개발계획 변경 고시",
+      "name": "행정입법지원센터조문별제개정이유서(북평지구개발계획변경).pdf",
+      "source": "administrative",
+      "source_id": "51624",
+      "version_id": "2100000222194",
+      "role": "attachment",
+      "format": "pdf",
+      "original_url": "https://law.go.kr/flDownload.do?flSeq=145704435",
+      "sha256": "0aa0558e05c6fce4d61f4e744553afdb282d1da9ab0211b677eec0c7a0abc1e5",
+      "conversion": null
+    },
+    {
+      "id": "2b1cbf9c4559b0126c3461a96cc13bb405bc81fcb9bb6b144fe4cb14cc42f414",
+      "title": "동해안권경제자유구역 옥계첨단소재융합산업지구 개발계획 변경 고시",
+      "name": "옥계지구개발계획변경고시관련조문별제개정이유서.pdf",
+      "source": "administrative",
+      "source_id": "87209",
+      "version_id": "2100000231988",
+      "role": "attachment",
+      "format": "pdf",
+      "original_url": "https://law.go.kr/flDownload.do?flSeq=135049907",
+      "sha256": "1151529dd5b5184222356d7a724a0da41e0dd38aa4994ce2177511494b068da1",
       "conversion": null
     },
     {
@@ -22545,6 +22518,19 @@
       "format": "attachment",
       "original_url": "https://www.law.go.kr/flDownload.do?gubun=ELIS&flSeq=169832297&flNm=%5B%EB%B3%84%ED%91%9C+7%5D",
       "sha256": "be214e0addba4f8ecf8077fc0f9b78642ac212e7023bd46873d69928d5cf4f5e",
+      "conversion": null
+    },
+    {
+      "id": "e039563f8ed4dbc858af1a4479d3be009f87b50bd6548469888ecb64ae65546e",
+      "title": "산업융합 신제품의 적합성 인증 기준 및 인증심사기준(LED 진입각지시등)",
+      "name": "241231_산업융합신제품의 적합성인증 설명자료.pdf",
+      "source": "administrative",
+      "source_id": "92336",
+      "version_id": "2100000256480",
+      "role": "attachment",
+      "format": "pdf",
+      "original_url": "https://law.go.kr/flDownload.do?flSeq=149981475",
+      "sha256": "00c980b9022ebfdc7deef95457113005bd9ebf6b91e31a2f613c5ab0354ebbce",
       "conversion": null
     },
     {
@@ -25496,6 +25482,32 @@
       "format": "attachment",
       "original_url": "https://www.law.go.kr/flDownload.do?gubun=ELIS&flSeq=167698717&flNm=%5B%EB%B3%84%EC%A7%80+2%5D+%EC%9D%B4%EC%9A%A9%EB%A3%8C+%EA%B0%90%EB%A9%B4+%EA%B8%B0%EC%A5%B0",
       "sha256": "1754bd9d3744cb5566d18f451c0c78a16107f38f6456c43486fd0fec7c5e7dd9",
+      "conversion": null
+    },
+    {
+      "id": "1304f469ba7fd6a6153fd634b3921a6d1de36a286a1573150157f07e8eaf05f5",
+      "title": "전원개발사업실시계획 변경신고 수리(음성천연가스발전소 154kV 송전선로 건설사업)",
+      "name": "조문별 제¸개정 이유서(음성천연가스발전소 154kV 송전선로).pdf",
+      "source": "administrative",
+      "source_id": "80181",
+      "version_id": "2100000242068",
+      "role": "attachment",
+      "format": "pdf",
+      "original_url": "https://law.go.kr/flDownload.do?flSeq=140920183",
+      "sha256": "12ab0a96186ad4fe48ac89bf01462de7eb71d6c5f5edb196783b63a04a769119",
+      "conversion": null
+    },
+    {
+      "id": "623dc17a43808a2d53f19d2938023218bc3ad6cdef2344b2662eb66fa579c86d",
+      "title": "주왕산국립공원 구역 및 계획 변경·결정, 지형도면 등의 변경 고시",
+      "name": "(양식)조문별제개정이유서(주왕산국립공원).pdf",
+      "source": "administrative",
+      "source_id": "85271",
+      "version_id": "2100000222756",
+      "role": "attachment",
+      "format": "pdf",
+      "original_url": "https://law.go.kr/flDownload.do?flSeq=127703391",
+      "sha256": "09359a9bd3e5cc011981c7962182925500f85c726d4fb20bd0b701bdeacc3f60",
       "conversion": null
     },
     {

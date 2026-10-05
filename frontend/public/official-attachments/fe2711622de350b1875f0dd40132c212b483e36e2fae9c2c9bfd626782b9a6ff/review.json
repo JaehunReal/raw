@@ -1,0 +1,15 @@
+{
+  "source_sha256": "fe2711622de350b1875f0dd40132c212b483e36e2fae9c2c9bfd626782b9a6ff",
+  "manifest_sha256": "23bac3c7ccfaae70bcda822e3c976131197bf126ed0f2cc76eeaf57ac5c26339",
+  "reviewed_at": "2026-10-05T08:34:38.396397+00:00",
+  "role": "attachment",
+  "conversion_verified": true,
+  "reviewer": "Codex full-page visual comparison",
+  "scope": "PDF全1頁の見出し・本文・日付・順序を画像と照合。表・脚注なし。",
+  "corrections": [
+    "시행일 24. 4. 25. 복구",
+    "도심항공교통 등 용어 오인식 교정",
+    "문장 순서와 제목 계층 복구"
+  ],
+  "publication": "not_deployed"
+}

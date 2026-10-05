@@ -238,14 +238,14 @@ export function createOfficialHandler({ environment = () => process.env, createP
         payload={root:root.law_id,nodes,edges,truncated:found.rows.length>60,notice:'원문에 명시된 법령명 인용 관계입니다. 시행 근거는 법령명과 원문 인용이 함께 확인된 경우에 표시합니다. 인용만으로 상하위·위임 관계를 확정하지 않습니다. 연결 대상 버전의 동시 효력은 별도 확인이 필요합니다.'};
       } else {
         const result = await client.query(
-          `SELECT ${COLUMNS}, octet_length(raw_text) AS raw_bytes, CASE WHEN octet_length(raw_text) <= $4 THEN raw_text ELSE NULL END AS raw_text FROM ${relation} WHERE source = $1 AND law_id = $2 AND version_id = $3 LIMIT 2`,
+          `SELECT ${COLUMNS}, provisions_json, octet_length(raw_text) AS raw_bytes, CASE WHEN octet_length(raw_text) <= $4 THEN raw_text ELSE NULL END AS raw_text FROM ${relation} WHERE source = $1 AND law_id = $2 AND version_id = $3 LIMIT 2`,
           [parameters.source, parameters.lawId, parameters.versionId, MAX_DOCUMENT_BYTES]);
         if (result.rows.length > 1) throw new SchemaError();
         if (!result.rows.length) { status = 404; payload = { code: "document_not_found", detail: "저장된 원문을 찾을 수 없습니다." }; }
         else {
           const row = result.rows[0];
           if (safeCount(row.raw_bytes) > MAX_DOCUMENT_BYTES) { status = 413; payload = { code: "document_too_large", detail: "이 원문은 웹 조회 용량을 초과합니다." }; }
-          else payload = { document: { ...metadata(row), raw_text: safeText(row.raw_text, MAX_DOCUMENT_BYTES) } };
+          else payload = { document: { ...metadata(row), raw_text: safeText(row.raw_text, MAX_DOCUMENT_BYTES), provisions: row.provisions_json ? JSON.parse(row.provisions_json) : [] } };
         }
       }
       await client.query("COMMIT"); transaction = false;

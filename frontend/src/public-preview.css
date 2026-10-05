@@ -472,3 +472,13 @@ button.preview-status-card:hover { border-color: #91ad8a; box-shadow: 0 3px 12px
 .relation-card summary,.relation-scope summary { cursor:pointer; color:#486253; }
 .relation-scope { margin-top:18px; font-size:13px; line-height:1.7; }
 .relation-workspace button:focus-visible,.relation-workspace input:focus-visible,.relation-workspace summary:focus-visible { outline:3px solid #678873; outline-offset:3px; }
+.official-provisions { margin:24px 0; }
+.official-provisions>p { color:#5c6b62; font-size:13px; line-height:1.7; }
+.official-provisions select { max-width:100%; padding:10px; margin:8px; border:1px solid #bbcdbf; border-radius:6px; }
+.provision-list { max-height:650px; overflow:auto; margin-top:14px; padding:8px; border:1px solid #dce5df; border-radius:10px; }
+.provision-unit { padding:14px; margin-bottom:10px; border:1px solid #dce5df; border-radius:8px; background:white; }
+.provision-unit.selected { border:2px solid #39704e; background:#f0f7f1; }
+.provision-unit h4 { margin:0 0 10px; }
+.provision-unit pre { white-space:pre-wrap; overflow-wrap:anywhere; font:inherit; font-size:14px; line-height:1.8; }
+.provision-references { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:12px; font-size:12px; }
+.provision-references button { cursor:pointer; padding:7px 10px; border:1px solid #8fad99; color:#254c34; border-radius:6px; background:#edf6ee; }

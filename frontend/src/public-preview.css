@@ -212,6 +212,15 @@ button.preview-status-card:hover { border-color: #91ad8a; box-shadow: 0 3px 12px
 .official-review-grid strong { color: #30493a; font-size: 13px; line-height: 1.45; }
 .official-review-checklist { margin: 16px 0 0; padding-left: 22px; color: #3f5647; line-height: 1.8; }
 .official-review-note { display: block; margin-top: 12px; color: #886e34; }
+.official-review-form { border-top: 1px solid #d0dfd6; margin-top: 20px; padding-top: 16px; }
+.official-review-form p { font-size: 13px; line-height: 1.8; }
+.official-review-form label { display: grid; gap: 8px; margin: 16px 0; font-size: 13px; }
+.official-review-form input, .official-review-form textarea { width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #a5b9ac; border-radius: 6px; background: white; color: #243d2d; font: inherit; }
+.official-review-form textarea { min-height: 110px; resize: vertical; }
+.official-review-form details { margin: 14px 0; }
+.official-review-form summary { cursor: pointer; line-height: 1.8; }
+.official-review-form details pre { max-height: 350px; overflow: auto; }
+.official-review-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 14px 0; }
 .official-review .spin { animation: official-review-spin .9s linear infinite; }
 @keyframes official-review-spin { to { transform: rotate(360deg); } }
 @media (max-width: 800px) { .official-review-grid { grid-template-columns: 1fr; } }

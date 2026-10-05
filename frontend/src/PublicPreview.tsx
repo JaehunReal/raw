@@ -238,7 +238,7 @@ export default function PublicPreview() {
       <header className="topbar"><div className="breadcrumb"><span>공개 워크스페이스</span><ChevronRight size={13} /><strong>{navigation.find((item) => item.id === view)?.label}</strong></div>
         <span className="preview-mode"><EyeLabel /> 읽기 전용</span></header>
       <main>
-        <div className="preview-notice" data-testid="preview-notice"><LockKeyhole size={18} /><div><strong>공개 읽기 전용 워크스페이스</strong><p>공식 법령은 연결된 저장소에서 조회합니다. 공식 원문의 관계·검토 준비는 읽기 전용이며, 편집·저장과 MCP 실행은 제공하지 않습니다. 규정 예제와 문서 패키지는 합성 예제입니다.</p></div></div>
+        <div className="preview-notice" data-testid="preview-notice"><LockKeyhole size={18} /><div><strong>공식 원문 조회 · 검토 초안 작성</strong><p>공식 법령에서 원문과 관계를 확인하고 검토 초안 7종을 작성할 수 있습니다. 초안은 이 브라우저에 저장하거나 MD·JSON으로 내려받습니다. 공동 저장·MCP 실행은 아직 연결되지 않았으며, 예제 메뉴는 합성 자료입니다.</p></div></div>
         {view === "dashboard" && <>
           <ServiceOverview onNavigate={setView} />
           <div className="guide-section-heading service-guide"><span className="guide-kicker">자료와 기능의 현재 상태</span><h2>공식 자료와 예제를 구분해 확인하세요.</h2><p className="guide-caption">공식 원문 연결 상태와 공개 화면에서 사용할 수 있는 기능입니다.</p></div>

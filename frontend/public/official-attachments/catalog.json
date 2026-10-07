@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-07T22:05:06.683428+00:00",
+  "generated_at": "2026-10-07T23:05:37.297477+00:00",
   "scope": "본문 보완 대상에서 확인한 첨부 자료 일부입니다. 전체 첨부 목록은 아닙니다.",
   "items": [
     {
@@ -20990,11 +20990,15 @@
       "source": "administrative",
       "source_id": "79169",
       "version_id": "2100000204942",
-      "role": "body_candidate",
+      "role": "body",
       "format": "pdf",
       "original_url": "https://law.go.kr/flDownload.do?flSeq=108327779",
       "sha256": "32f2344abbc53a82458ed9bf4f4781e71a0cffd2528982384112212149f5e394",
-      "conversion": null
+      "conversion": {
+        "markdown": "/official-attachments/32f2344abbc53a82458ed9bf4f4781e71a0cffd2528982384112212149f5e394/document.md",
+        "json": "/official-attachments/32f2344abbc53a82458ed9bf4f4781e71a0cffd2528982384112212149f5e394/document.json",
+        "bundle": "/official-attachments/32f2344abbc53a82458ed9bf4f4781e71a0cffd2528982384112212149f5e394/bundle.zip"
+      }
     },
     {
       "id": "125be87ffb065f6d8d81a787b7c24d9ce2b4100d867eac054cb83c99b8ca37cf",
@@ -21003,11 +21007,15 @@
       "source": "administrative",
       "source_id": "79169",
       "version_id": "2100000204942",
-      "role": "body_candidate",
+      "role": "body",
       "format": "pdf",
       "original_url": "https://law.go.kr/flDownload.do?flSeq=108327781",
       "sha256": "32f2344abbc53a82458ed9bf4f4781e71a0cffd2528982384112212149f5e394",
-      "conversion": null
+      "conversion": {
+        "markdown": "/official-attachments/32f2344abbc53a82458ed9bf4f4781e71a0cffd2528982384112212149f5e394/document.md",
+        "json": "/official-attachments/32f2344abbc53a82458ed9bf4f4781e71a0cffd2528982384112212149f5e394/document.json",
+        "bundle": "/official-attachments/32f2344abbc53a82458ed9bf4f4781e71a0cffd2528982384112212149f5e394/bundle.zip"
+      }
     },
     {
       "id": "fe6d816fa71356ab59d9da4f581bcb556197d52338ec6f71e458bd2973ed661d",

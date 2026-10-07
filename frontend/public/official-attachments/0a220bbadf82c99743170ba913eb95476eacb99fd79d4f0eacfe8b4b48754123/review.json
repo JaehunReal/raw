@@ -1,0 +1,9 @@
+{
+  "source_sha256": "0a220bbadf82c99743170ba913eb95476eacb99fd79d4f0eacfe8b4b48754123",
+  "manifest_sha256": "222282ca3fef9b66a29a87a4adcf11fb3642c2464811828460ae0cac0f58001a",
+  "reviewed_at": "2026-10-07T10:34:33.958423+00:00",
+  "role": "attachment",
+  "conversion_verified": true,
+  "reviewer": "Codex full-page visual comparison",
+  "notes": "원문 전체 1쪽 대조. 제·개정이유서 붙임. 제목·조문 번호·회사명·협약 관계 기호·문단 순서의 OCR 오류 교정. 표·각주·삽화 없음. 원본 PDF 직접 렌더링 페이지 보존."
+}

@@ -1,0 +1,15 @@
+{
+  "schema": "reviewed-transcription-v1",
+  "source_sha256": "0a220bbadf82c99743170ba913eb95476eacb99fd79d4f0eacfe8b4b48754123",
+  "source_url": "https://law.go.kr/flDownload.do?flSeq=132805575",
+  "role": "attachment",
+  "pages": [
+    {
+      "page": 1,
+      "image": "page-1.png",
+      "markdown": "# 조문별 제·개정이유서\n\n◇ 경주국립공원 구역 및 계획 변경·결정, 지형도면 등의 변경 고시\n\n자연공원법 제4조의2, 제8조 및 제15조에 따라 변경된 경주국립공원 구역 및 계획(환경부고시 2023-28호, 2023.5.1.)에 정정사항이 있어 변경 고시합니다.\n",
+      "tables": []
+    }
+  ],
+  "normalization": "줄바꿈·공백 정리. 원문의 내용·번호·회사명·관계 기호 보존."
+}

@@ -1,0 +1,9 @@
+{
+  "source_sha256": "2411ba7b20720ba9ff6d0784514b0a86e78540032bbaec880265845a6301fb27",
+  "manifest_sha256": "bc984ba0a01cc442175fbc4406237030939a8c42485491ec1d1767bd75e87c40",
+  "reviewed_at": "2026-10-07T16:34:38.634150+00:00",
+  "role": "body",
+  "conversion_verified": true,
+  "reviewer": "Codex two-page visual comparison",
+  "notes": "원문 2쪽 전체 대조. 최초 공고의 가~카 좌표 11쌍과 정정 경도 2개 및 구역 문구 대조. 최초·정정 공고 분리, 원본 지도 및 양쪽 페이지 보존. 표 비고 혼입과 OCR 오류 교정. 이후 변경 여부나 현행 통합본으로 승인하는 것은 아님."
+}

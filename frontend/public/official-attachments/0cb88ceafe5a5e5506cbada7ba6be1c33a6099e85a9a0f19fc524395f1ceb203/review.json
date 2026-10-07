@@ -1,0 +1,9 @@
+{
+  "source_sha256": "0cb88ceafe5a5e5506cbada7ba6be1c33a6099e85a9a0f19fc524395f1ceb203",
+  "manifest_sha256": "80fa17e2d6cc202a1851ec26efebe65d5d39c99fd4655d5a331c9f636956de4c",
+  "reviewed_at": "2026-10-07T11:04:56.143793+00:00",
+  "role": "attachment",
+  "conversion_verified": true,
+  "reviewer": "Codex full-page visual comparison",
+  "notes": "원문 전체 1쪽 대조. 명칭·문단 순서·별첨 표기 OCR 교정. 표·각주·삽화 없음. 이 PDF는 고시문 1쪽입니다. 원문에 고시목록 별첨으로 표시되어 있으나 해당 PDF에는 별첨 데이터세트관리기준표가 포함되어 있지 않습니다."
+}

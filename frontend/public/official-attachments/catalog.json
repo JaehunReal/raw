@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-07T05:34:23.039271+00:00",
+  "generated_at": "2026-10-07T06:04:24.342312+00:00",
   "scope": "본문 보완 대상에서 확인한 첨부 자료 일부입니다. 전체 첨부 목록은 아닙니다.",
   "items": [
     {
@@ -21386,7 +21386,11 @@
       "format": "pdf",
       "original_url": "https://law.go.kr/flDownload.do?flSeq=148511019",
       "sha256": "062b76b4e445ee253fe5bd41e7d43fe32ae6a2e61bb4f71ba8edff7d6bec7961",
-      "conversion": null
+      "conversion": {
+        "markdown": "/official-attachments/062b76b4e445ee253fe5bd41e7d43fe32ae6a2e61bb4f71ba8edff7d6bec7961/document.md",
+        "json": "/official-attachments/062b76b4e445ee253fe5bd41e7d43fe32ae6a2e61bb4f71ba8edff7d6bec7961/document.json",
+        "bundle": "/official-attachments/062b76b4e445ee253fe5bd41e7d43fe32ae6a2e61bb4f71ba8edff7d6bec7961/bundle.zip"
+      }
     },
     {
       "id": "61130446a70aef294958f47b3ed29f109a014059b98a406769bdba841b66ff18",
@@ -21776,7 +21780,11 @@
       "format": "pdf",
       "original_url": "https://law.go.kr/flDownload.do?flSeq=132810133",
       "sha256": "07474b51db529b11922c583ade7c2b5205adf4b70fb48a733429350d7ec0572b",
-      "conversion": null
+      "conversion": {
+        "markdown": "/official-attachments/07474b51db529b11922c583ade7c2b5205adf4b70fb48a733429350d7ec0572b/document.md",
+        "json": "/official-attachments/07474b51db529b11922c583ade7c2b5205adf4b70fb48a733429350d7ec0572b/document.json",
+        "bundle": "/official-attachments/07474b51db529b11922c583ade7c2b5205adf4b70fb48a733429350d7ec0572b/bundle.zip"
+      }
     },
     {
       "id": "27321756c403cb7d2c0fdac2fdfe5fdfa71f050e1b84ebe8df390b40aab757d9",

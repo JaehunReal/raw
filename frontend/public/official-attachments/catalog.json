@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-07T05:04:21.937188+00:00",
+  "generated_at": "2026-10-07T05:34:23.039271+00:00",
   "scope": "본문 보완 대상에서 확인한 첨부 자료 일부입니다. 전체 첨부 목록은 아닙니다.",
   "items": [
     {
@@ -5207,7 +5207,11 @@
       "format": "pdf",
       "original_url": "https://law.go.kr/flDownload.do?flSeq=154322729",
       "sha256": "06253853545775d8b64dc6fb51cca9184fe79d4fcaa93ad9167bce7a23496354",
-      "conversion": null
+      "conversion": {
+        "markdown": "/official-attachments/06253853545775d8b64dc6fb51cca9184fe79d4fcaa93ad9167bce7a23496354/document.md",
+        "json": "/official-attachments/06253853545775d8b64dc6fb51cca9184fe79d4fcaa93ad9167bce7a23496354/document.json",
+        "bundle": "/official-attachments/06253853545775d8b64dc6fb51cca9184fe79d4fcaa93ad9167bce7a23496354/bundle.zip"
+      }
     },
     {
       "id": "acaff2ed860c6bc752255afa82292fe26f450851510c1b5134691984deb24793",
@@ -5220,7 +5224,11 @@
       "format": "pdf",
       "original_url": "https://law.go.kr/flDownload.do?flSeq=154322731",
       "sha256": "06253853545775d8b64dc6fb51cca9184fe79d4fcaa93ad9167bce7a23496354",
-      "conversion": null
+      "conversion": {
+        "markdown": "/official-attachments/06253853545775d8b64dc6fb51cca9184fe79d4fcaa93ad9167bce7a23496354/document.md",
+        "json": "/official-attachments/06253853545775d8b64dc6fb51cca9184fe79d4fcaa93ad9167bce7a23496354/document.json",
+        "bundle": "/official-attachments/06253853545775d8b64dc6fb51cca9184fe79d4fcaa93ad9167bce7a23496354/bundle.zip"
+      }
     },
     {
       "id": "c45bb40d472f93fb0698ce55da2037f3dcd260f0199267c8bdf2fee94ee96595",
@@ -22392,7 +22400,11 @@
       "format": "pdf",
       "original_url": "https://law.go.kr/flDownload.do?flSeq=132809409",
       "sha256": "04f5a0901f30cb35e04b57aa1d168f047a7fd82d72688845c916b60f1d481e28",
-      "conversion": null
+      "conversion": {
+        "markdown": "/official-attachments/04f5a0901f30cb35e04b57aa1d168f047a7fd82d72688845c916b60f1d481e28/document.md",
+        "json": "/official-attachments/04f5a0901f30cb35e04b57aa1d168f047a7fd82d72688845c916b60f1d481e28/document.json",
+        "bundle": "/official-attachments/04f5a0901f30cb35e04b57aa1d168f047a7fd82d72688845c916b60f1d481e28/bundle.zip"
+      }
     },
     {
       "id": "d0ef0bb201f02e47dfb8716f6a155e42c69d5a92f2497b60c4655d7f0197fcb8",

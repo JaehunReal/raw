@@ -1,0 +1,23 @@
+{
+  "source_sha256": "04f5a0901f30cb35e04b57aa1d168f047a7fd82d72688845c916b60f1d481e28",
+  "source_url": "https://law.go.kr/flDownload.do?flSeq=132809409",
+  "source": "administrative",
+  "source_id": "51961",
+  "version_id": "2100000228576",
+  "status": "complete",
+  "converter": "visual-reviewed-transcription",
+  "counts": {
+    "pages": 1,
+    "tables": 0,
+    "pictures": 0,
+    "footnotes": 0
+  },
+  "previous_manifest_sha256": "68e9efebb775a4f5f82822498ff7cdc2f147260b5a31c378b2566e7a92557245",
+  "converted_at": "2026-10-07T05:34:17.284744+00:00",
+  "files": {
+    "document.md": "1ae4dbff8535dd530304203927a068ac1cd9335279fd648064fec1f0009b16c7",
+    "document.json": "83de087b7888652f2d57034972d94162f1bf3aa8a472a831097d6cba8ad87d04",
+    "page-1.png": "9d9d8846e3a592ab5329e5c7f88f96c7d1e0bd7e08e2fedca79bfd4c4a6d5dab"
+  },
+  "review_required": false
+}

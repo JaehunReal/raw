@@ -1,0 +1,9 @@
+{
+  "source_sha256": "014457f99a2d4acb40400fc2d7b601a82a15c6b9248d77deef92a2e5b92efba3",
+  "manifest_sha256": "abddd7dd5ee1c0146f448862b6e384f13b5326dd8b2d037ff7f0ab3d2ea251c0",
+  "reviewed_at": "2026-10-07T05:04:16.142718+00:00",
+  "role": "body",
+  "conversion_verified": true,
+  "reviewer": "Codex full-page visual comparison",
+  "notes": "고시 전문 1쪽 전체 및 표 4개 셀 대조. 행정구역명·면적 단위·열람 URL·기관명·문장 순서 교정. 원문 일자 공란과 도면 생략을 그대로 보존하고 검증 메모로 고지. 각주 및 실제 도면 없음."
+}

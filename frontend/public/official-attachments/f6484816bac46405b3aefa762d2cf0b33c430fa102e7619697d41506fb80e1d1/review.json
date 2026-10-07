@@ -1,0 +1,9 @@
+{
+  "source_sha256": "f6484816bac46405b3aefa762d2cf0b33c430fa102e7619697d41506fb80e1d1",
+  "manifest_sha256": "ab442674c87eeb08f169fe66d6f6fe4ea3f094db4d4a54207e4441209f76a6b3",
+  "reviewed_at": "2026-10-07T21:04:48.046988+00:00",
+  "role": "annex",
+  "conversion_verified": true,
+  "reviewer": "Codex four-page visual comparison with second pass at scale 3",
+  "notes": "4쪽 112개 리 및 구역 열 대조. 행 결합·순서·지명 및 지번 OCR 오류 수정. 목리8개·수동리16개 제외 지번 대조. 서성리/교촌리 및 송로리의 원문 좌우 열 불일치 보존. 반복기호 보존, 합계112 분리. 조례 본문 아닌 구역표."
+}

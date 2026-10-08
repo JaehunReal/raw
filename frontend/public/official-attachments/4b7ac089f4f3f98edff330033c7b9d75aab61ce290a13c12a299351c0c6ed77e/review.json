@@ -1,0 +1,40 @@
+{
+  "source_sha256": "4b7ac089f4f3f98edff330033c7b9d75aab61ce290a13c12a299351c0c6ed77e",
+  "reviewed_at": "2026-10-08T08:11:06.477502+00:00",
+  "reviewer": "Codex AI full-page visual comparison; not human review",
+  "pages_reviewed": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16
+  ],
+  "checks": [
+    "source SHA-256",
+    "all page images inspected",
+    "MD/JSON text and page sequence",
+    "table values and budget sums",
+    "footnote association",
+    "body/annex distinction",
+    "image paths and hashes"
+  ],
+  "limitations": [
+    "고시문 PDF 1쪽, 계획 표지 2쪽, 목차 3쪽, 계획 본문 4~12쪽, 별첨 조감도 13~16쪽으로 구분했습니다.",
+    "2014년 원본에 기록된 계획과 금액이며 현재의 시설 현황을 뜻하지 않습니다.",
+    "PDF 8·9·12쪽 도식의 선·화살표·일정 위치와 PDF 13~16쪽 조감도는 원본 이미지로 제공합니다. 도식의 텍스트 설명은 전체 도식 전사를 대신하지 않습니다.",
+    "PDF 7쪽 본원 비율 항목 합계는 100.2%이고 인쇄된 총계는 100.0%입니다. 원문 수치를 변경하지 않았습니다.",
+    "총사업비 표는 백만원, 연도별 투자계획 표는 억원 단위입니다. 병합 셀은 문구로 명시하고, 정확한 셀 배치는 원본 이미지에 보존했습니다."
+  ],
+  "previous_manifest_sha256": "0d9029e5ddac6182d3b531e9e5dfafac7362992c4aeb6350eb94f84c25bd9844"
+}

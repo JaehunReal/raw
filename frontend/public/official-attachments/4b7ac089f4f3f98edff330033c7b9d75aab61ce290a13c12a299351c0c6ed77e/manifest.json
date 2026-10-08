@@ -1,0 +1,38 @@
+{
+  "source_sha256": "4b7ac089f4f3f98edff330033c7b9d75aab61ce290a13c12a299351c0c6ed77e",
+  "source_url": "https://law.go.kr/flDownload.do?flSeq=21146552",
+  "source": "administrative",
+  "source_id": "2087546",
+  "version_id": "2200000038961",
+  "status": "complete",
+  "converter": "visual-reviewed-transcription",
+  "counts": {
+    "pages": 16,
+    "page_images": 16,
+    "annex_pages": 4
+  },
+  "previous_manifest_sha256": "0d9029e5ddac6182d3b531e9e5dfafac7362992c4aeb6350eb94f84c25bd9844",
+  "converted_at": "2026-10-08T08:11:06.477502+00:00",
+  "review_required": false,
+  "files": {
+    "document.json": "2450e86954888ca7b61fcaa8dddea3b972f300d1ebb167708abb3d7d00645d7e",
+    "document.md": "9a2526fd8a4eabc53dde057e70acfe9e3d88d42a5cca07554069165bfd84a2d6",
+    "pages/page-1.png": "b227a26f417ddc9c0bc0e734a5918bd698b38384734b02de93b7e21c3e1eeae7",
+    "pages/page-10.png": "7ab6db0fa2b660dddabebedf51640bb3eca42919ca5979910f9668af7482448c",
+    "pages/page-11.png": "5fc343cc89df73fcd05ed6d30fe779f90db0d9b005d9bddeb4a107d034fe78c2",
+    "pages/page-12.png": "dc5bcd3d7498314405f9335fd713a9c24850c7811637e97c50d61ac2fa2110cc",
+    "pages/page-13.png": "e5234498fba7ea0ab3eb28319a589c7aad57fdd02869664d06ae164b04d5d6fb",
+    "pages/page-14.png": "7e323f44ea847e1c151098c1b98f6fc7b230f419aecde834fefc906e454c2099",
+    "pages/page-15.png": "138a0792ab58486e456e616c19d2a2ad0262a697dbde9e5914083bd45dfaf160",
+    "pages/page-16.png": "018a384243dd4f37d9035b241a673af515fb581b3c1a0e152253eb567d56e12c",
+    "pages/page-2.png": "01db495f167e28265d445f71f072b38798d82c0d2f39a80b7b98c9ad9a07407a",
+    "pages/page-3.png": "d2a4989b98eb57b4a26d3aacec21d991263d4fef366460e787f5dee5a5a77b8a",
+    "pages/page-4.png": "788a383c7f0016b4a826686b9a3f6e3d5441ca0a4f80ffc33a30f6ddeffc66b4",
+    "pages/page-5.png": "ed3dcea30de6d33b7493465006552e0658866e54813ceac0b70d678fe0621ef4",
+    "pages/page-6.png": "907625669d855247abdb305d0934d73c11f9448389c415ac6aa12dab8e85154b",
+    "pages/page-7.png": "e1538dd375d83bd61b6162238f363bab457b459e550ae19934b6242248492f89",
+    "pages/page-8.png": "01436b75d7ab70c2c9ccb0e39ecefdb82a8045dc2c7d8fa1c7c7e75bdbce8295",
+    "pages/page-9.png": "668095d17338d0a69da870708496cddf86495fd946d1b09b8e6f633b945af8e6",
+    "review.json": "ba5233dbcd953e49f36050e52d96f4cb9b80ecee7fc61af2e62dad66551705f6"
+  }
+}

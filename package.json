@@ -6,6 +6,7 @@
     "node": "24.x"
   },
   "scripts": {
+    "preview:local": "node scripts/preview-server.mjs",
     "test:proxy": "node --test tests/proxy.test.mjs",
     "test:official": "node --test tests/official.test.mjs"
   },

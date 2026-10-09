@@ -103,6 +103,15 @@ export function LawsPage() {
 
   const readerRef = useRef<HTMLDivElement>(null);
 
+  // Sync search input when URL query changes
+  useEffect(() => {
+    setSearchInput(initialQ);
+  }, [initialQ]);
+
+  useEffect(() => {
+    setSelectedSource(initialSource);
+  }, [initialSource]);
+
   // Search Submit
   const handleSearchSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -110,12 +119,19 @@ export function LawsPage() {
     if (searchInput.trim()) params.set("q", searchInput.trim());
     if (selectedSource) params.set("source", selectedSource);
     params.set("offset", "0");
+    if (status.phase !== "connected") {
+      retry();
+    }
     navigate(`/laws?${params.toString()}`);
   };
 
-  // Fetch List when query changes
+  // Fetch List when query changes or when status becomes connected
   useEffect(() => {
-    if (status.phase !== "connected") return;
+    if (status.phase !== "connected") {
+      setList(null);
+      setListLoading(false);
+      return;
+    }
     const controller = new AbortController();
     setListLoading(true);
     setListError(false);
@@ -275,14 +291,44 @@ export function LawsPage() {
           </div>
 
           <div className="laws-scroll-list">
-            {listLoading && (
+            {status.phase === "loading" && (
+              <div className="list-loading">
+                <RefreshCw size={20} className="spin" />
+                <p>저장소 연결 상태를 확인하고 있습니다...</p>
+              </div>
+            )}
+
+            {status.phase !== "connected" && status.phase !== "loading" && (
+              <div className="list-error">
+                <p style={{ fontWeight: 600 }}>
+                  {status.phase === "not_configured"
+                    ? "법령 저장소(PostgreSQL) 연결 대기 중"
+                    : "데이터 저장소에 연결할 수 없습니다"}
+                </p>
+                <small style={{ color: "#64748b", marginTop: 4, lineHeight: 1.5 }}>
+                  {status.phase === "not_configured"
+                    ? "Vercel 배포 시 환경 변수(DATABASE_URL) 설정이 필요합니다."
+                    : "로컬 게이트웨이(포트 8766) 상태를 점검해 주세요."}
+                </small>
+                <button
+                  type="button"
+                  className="retry-btn"
+                  onClick={retry}
+                  style={{ marginTop: 12 }}
+                >
+                  연결 다시 시도
+                </button>
+              </div>
+            )}
+
+            {status.phase === "connected" && listLoading && (
               <div className="list-loading">
                 <RefreshCw size={20} className="spin" />
                 <p>법령 목록을 불러오고 있습니다...</p>
               </div>
             )}
 
-            {listError && (
+            {status.phase === "connected" && listError && (
               <div className="list-error">
                 <p>목록을 불러오지 못했습니다.</p>
                 <button
@@ -295,7 +341,7 @@ export function LawsPage() {
               </div>
             )}
 
-            {!listLoading && !listError && list?.items.length === 0 && (
+            {status.phase === "connected" && !listLoading && !listError && list?.items.length === 0 && (
               <div className="list-empty">
                 <p>일치하는 법령이 없습니다.</p>
                 <small>다른 검색어나 유형으로 다시 조회해 보세요.</small>

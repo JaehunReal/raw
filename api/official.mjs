@@ -42,7 +42,7 @@ function databaseConfiguration(environment) {
     application_name: "rulecraft-public-readonly", allowExitOnIdle: true, maxUses: 50,
   } };
 }
-function json(res, status, value, head = false) {
+function json(res, status, value, head = false, cache = null) {
   let serialized = JSON.stringify(value);
   // Vercel also limits the serialized response, which can exceed raw_text size
   // when JSON escaping expands quotes, slashes, or control characters.
@@ -52,6 +52,9 @@ function json(res, status, value, head = false) {
   }
   res.statusCode = status;
   res.setHeader("Content-Type", "application/json; charset=utf-8");
+  if (status === 200 && cache) {
+    res.setHeader("Cache-Control", cache);
+  }
   res.end(head ? undefined : serialized);
 }
 function safeCount(value) {
@@ -249,7 +252,12 @@ export function createOfficialHandler({ environment = () => process.env, createP
         }
       }
       await client.query("COMMIT"); transaction = false;
-      return json(res, status, payload, head);
+      const cacheHeader = parameters.route === "status"
+        ? "public, s-maxage=15, stale-while-revalidate=30"
+        : parameters.route === "laws"
+        ? "public, s-maxage=60, stale-while-revalidate=300"
+        : "public, s-maxage=3600, stale-while-revalidate=86400";
+      return json(res, status, payload, head, cacheHeader);
     } catch (error) {
       const incompatible = error instanceof SchemaError || ["42P01", "42703", "42883", "42804"].includes(error?.code);
       return json(res, 503, disconnected(incompatible ? "incompatible_schema" : "unavailable",

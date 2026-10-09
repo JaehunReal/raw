@@ -1,0 +1,496 @@
+/* Laws Page Styles */
+.laws-page {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* Header Card */
+.laws-header-card {
+  background: #ffffff;
+  border: 1px solid #e1ebe0;
+  border-radius: 14px;
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.02);
+}
+
+.laws-header-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.header-icon {
+  color: #2b6348;
+  margin-top: 2px;
+}
+
+.laws-header-title h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a3827;
+  letter-spacing: -0.5px;
+}
+
+.laws-header-title p {
+  font-size: 13px;
+  color: #688070;
+  margin-top: 4px;
+}
+
+.laws-search-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f7faf5;
+  border: 1px solid #d8e5d3;
+  border-radius: 10px;
+  padding: 6px 8px;
+}
+
+.laws-search-toolbar .search-box {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: 10px;
+}
+
+.laws-search-toolbar .search-icon {
+  color: #6d8975;
+}
+
+.laws-search-toolbar input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  color: #1e3f2c;
+  outline: none;
+}
+
+.source-select {
+  border: 1px solid #cddcc9;
+  border-radius: 6px;
+  padding: 7px 12px;
+  font-size: 13px;
+  color: #2d4c38;
+  background: #ffffff;
+  outline: none;
+  cursor: pointer;
+}
+
+.search-btn {
+  background: #25553e;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.search-btn:hover {
+  background: #183e2c;
+}
+
+/* Two-column Workbench */
+.laws-workbench {
+  display: grid;
+  grid-template-columns: 360px minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+}
+
+/* Left List Panel */
+.laws-list-panel {
+  background: #ffffff;
+  border: 1px solid #e2ece0;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  max-height: calc(100vh - 180px);
+  position: sticky;
+  top: 78px;
+}
+
+.panel-top {
+  padding: 14px 16px;
+  border-bottom: 1px solid #edf3eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fbfdfa;
+}
+
+.results-count {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #3b5a47;
+}
+
+.query-badge {
+  font-size: 11px;
+  background: #edf5ea;
+  color: #29553a;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.laws-scroll-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.law-item-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f0f4ee;
+  border-left: 3px solid transparent;
+  background: #ffffff;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.law-item-btn:hover {
+  background: #f7faf5;
+}
+
+.law-item-btn.selected {
+  background: #edf5eb;
+  border-left-color: #25583f;
+}
+
+.item-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.type-tag {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.type-tag.law {
+  background: #e2f2e5;
+  color: #23653b;
+}
+
+.type-tag.administrative {
+  background: #e2eaf5;
+  color: #1f4f81;
+}
+
+.type-tag.ordinance {
+  background: #fbf0dc;
+  color: #7d5718;
+}
+
+.version-tag {
+  font-size: 10px;
+  color: #798e7f;
+}
+
+.item-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1e3d2a;
+  line-height: 1.45;
+  margin-bottom: 6px;
+}
+
+.item-dates {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  color: #7c9081;
+}
+
+.laws-pagination {
+  padding: 10px 14px;
+  border-top: 1px solid #eef4ec;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11.5px;
+  background: #fcfdfa;
+}
+
+.laws-pagination button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #d5e0d2;
+  color: #3b5745;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.laws-pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.page-indicator {
+  color: #718976;
+}
+
+.list-loading,
+.list-error,
+.list-empty {
+  padding: 40px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: #647d6c;
+  font-size: 13px;
+}
+
+.retry-btn {
+  padding: 6px 14px;
+  background: #25583f;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Right Document Panel */
+.laws-reader-panel {
+  background: #ffffff;
+  border: 1px solid #e2ece0;
+  border-radius: 14px;
+  min-height: 560px;
+  overflow: hidden;
+}
+
+.reader-placeholder {
+  padding: 90px 30px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: #688272;
+}
+
+.reader-placeholder h3 {
+  font-size: 18px;
+  color: #244633;
+}
+
+.reader-placeholder p {
+  font-size: 13.5px;
+  max-width: 420px;
+  line-height: 1.6;
+}
+
+.reader-placeholder.empty .empty-icon {
+  color: #a4bea8;
+}
+
+/* Document Container */
+.document-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.doc-header {
+  padding: 24px 28px 0;
+  border-bottom: 1px solid #e6ede4;
+  background: #fafdf9;
+}
+
+.doc-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.doc-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.doc-id,
+.doc-version {
+  background: #edf3e9;
+  color: #3b5f49;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.official-ext-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: #2b6145;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.doc-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #173b27;
+  line-height: 1.35;
+  letter-spacing: -0.5px;
+  margin-bottom: 16px;
+}
+
+.doc-meta-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 14px 18px;
+  background: #ffffff;
+  border: 1px solid #e1e9df;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.meta-item span {
+  font-size: 11px;
+  color: #7b9182;
+}
+
+.meta-item strong {
+  font-size: 12.5px;
+  color: #274835;
+}
+
+.meta-item.hash .hash-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.meta-item.hash code {
+  font-size: 11px;
+  color: #3f604c;
+  background: #f2f7ef;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.meta-item.hash button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #557963;
+  padding: 2px;
+}
+
+/* Tabs */
+.doc-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid transparent;
+}
+
+.tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 12px 18px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #5b7463;
+  border: none;
+  border-bottom: 2.5px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tab-btn:hover {
+  color: #1f4330;
+}
+
+.tab-btn.active {
+  color: #1c4b32;
+  font-weight: 700;
+  border-bottom-color: #2b6a48;
+}
+
+.tab-count {
+  font-size: 11px;
+  background: #e3efe0;
+  color: #205537;
+  padding: 1px 6px;
+  border-radius: 10px;
+}
+
+/* Tab Body */
+.doc-tab-body {
+  padding: 24px 28px;
+}
+
+.raw-text-content {
+  white-space: pre-wrap;
+  word-break: break-all;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.8;
+  color: #273d30;
+  background: #fbfdfa;
+  padding: 20px;
+  border: 1px solid #e5ebe2;
+  border-radius: 8px;
+  max-height: 700px;
+  overflow-y: auto;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+  .laws-workbench {
+    grid-template-columns: 1fr;
+  }
+  .laws-list-panel {
+    position: static;
+    max-height: 480px;
+  }
+}

@@ -40,6 +40,14 @@ import NationalLawPanel from "./NationalLawPanel";
 import LoginGate from "./LoginGate";
 import { apiFetch } from "./apiFetch";
 import PublicPreview from "./PublicPreview";
+import { RouterProvider, useRouter } from "./router";
+import { Layout } from "./components/Layout";
+import { HomePage } from "./pages/HomePage";
+import { LawsPage } from "./pages/LawsPage";
+import { TopicsPage } from "./pages/TopicsPage";
+import { AttachmentsPage } from "./pages/AttachmentsPage";
+import { GuidePage } from "./pages/GuidePage";
+import { DemoPage } from "./pages/DemoPage";
 
 type Node = {
   id: string;
@@ -2336,10 +2344,68 @@ function GraphCanvas({
     </div>
   );
 }
+function AppRoot() {
+  const { path } = useRouter();
+
+  if (path.startsWith("/app") || path === "/login") {
+    return (
+      <LoginGate>
+        <App />
+      </LoginGate>
+    );
+  }
+
+  if (path.startsWith("/laws")) {
+    return (
+      <Layout activeNav="/laws">
+        <LawsPage />
+      </Layout>
+    );
+  }
+
+  if (path.startsWith("/topics")) {
+    return (
+      <Layout activeNav="/topics">
+        <TopicsPage />
+      </Layout>
+    );
+  }
+
+  if (path.startsWith("/attachments")) {
+    return (
+      <Layout activeNav="/attachments">
+        <AttachmentsPage />
+      </Layout>
+    );
+  }
+
+  if (path.startsWith("/guide")) {
+    return (
+      <Layout activeNav="/guide">
+        <GuidePage />
+      </Layout>
+    );
+  }
+
+  if (path.startsWith("/demo")) {
+    return (
+      <Layout activeNav="/demo">
+        <DemoPage />
+      </Layout>
+    );
+  }
+
+  return (
+    <Layout activeNav="/">
+      <HomePage />
+    </Layout>
+  );
+}
+
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    {import.meta.env.VITE_PUBLIC_PREVIEW === "true"
-      ? <PublicPreview />
-      : <LoginGate><App /></LoginGate>}
+    <RouterProvider>
+      <AppRoot />
+    </RouterProvider>
   </React.StrictMode>,
 );

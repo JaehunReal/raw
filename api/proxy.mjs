@@ -9,17 +9,17 @@ function equal(a, b) {
   const right = Buffer.from(b);
   return left.length === right.length && timingSafeEqual(left, right);
 }
-function signature(payload, password) {
-  return createHmac("sha256", password).update(`rulecraft-session:${payload}`).digest("base64url");
+function signature(payload, secret) {
+  return createHmac("sha256", secret).update(`rulecraft-session:${payload}`).digest("base64url");
 }
-function sessionCookie(req, password) {
+function sessionCookie(req, secret) {
   const value = String(req.headers.cookie || "").split(";").map((item) => item.trim())
     .find((item) => item.startsWith(`${COOKIE}=`))?.slice(COOKIE.length + 1);
   if (!value) return false;
   const [expires, signed, extra] = value.split(".");
   return !extra && /^\d+$/.test(expires) && Number(expires) > Date.now() / 1000
     && Number(expires) <= Date.now() / 1000 + SESSION_SECONDS + 60
-    && equal(signed || "", signature(expires, password));
+    && equal(signed || "", signature(expires, secret));
 }
 function cookie(value, seconds) {
   return `${COOKIE}=${value}; HttpOnly; Secure; SameSite=Strict; Path=/api; Max-Age=${seconds}`;
@@ -75,6 +75,7 @@ export default async function handler(req, res) {
   res.setHeader("X-Content-Type-Options", "nosniff");
   const password = process.env.RULECRAFT_WEB_PASSWORD || "";
   const token = process.env.RULECRAFT_API_TOKEN || "";
+  const secret = process.env.RULECRAFT_SESSION_SECRET || password;
   const rawBackend = process.env.RULECRAFT_BACKEND_URL || "";
   let backend, route, search;
   try {
@@ -95,8 +96,8 @@ export default async function handler(req, res) {
   if (!["GET", "HEAD"].includes(method) && !sameOrigin(req))
     return json(res, 403, { detail: "동일한 웹사이트에서 요청해 주세요." });
   if (route === "session") {
-    if (method === "GET") return json(res, sessionCookie(req, password) ? 200 : 401,
-      { authenticated: sessionCookie(req, password) });
+    if (method === "GET") return json(res, sessionCookie(req, secret) ? 200 : 401,
+      { authenticated: sessionCookie(req, secret) });
     if (method === "DELETE") {
       res.setHeader("Set-Cookie", cookie("", 0));
       return json(res, 200, { authenticated: false });
@@ -108,10 +109,10 @@ export default async function handler(req, res) {
     if (typeof submitted?.password !== "string" || !equal(submitted.password, password))
       return json(res, 401, { detail: "비밀번호를 확인해 주세요." });
     const expires = String(Math.floor(Date.now() / 1000) + SESSION_SECONDS);
-    res.setHeader("Set-Cookie", cookie(`${expires}.${signature(expires, password)}`, SESSION_SECONDS));
+    res.setHeader("Set-Cookie", cookie(`${expires}.${signature(expires, secret)}`, SESSION_SECONDS));
     return json(res, 200, { authenticated: true });
   }
-  if (route !== "health" && !sessionCookie(req, password))
+  if (route !== "health" && !sessionCookie(req, secret))
     return json(res, 401, { detail: "로그인이 필요합니다.", code: "login_required" });
   let body;
   if (!["GET", "HEAD"].includes(method)) {

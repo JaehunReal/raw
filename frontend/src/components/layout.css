@@ -1,55 +1,273 @@
-/* Modern App Shell Layout */
-.modern-shell {
-  display: flex;
-  min-height: 100vh;
-  background-color: #f7f9f6;
-  color: #243c2d;
-  font-family: "DM Sans Variable", "Noto Sans KR Variable", -apple-system, BlinkMacSystemFont, sans-serif;
+/* KR-DS (Korean Government Design System) App Shell Layout */
+:root {
+  --krds-navy-900: #051b2c;
+  --krds-navy-800: #0b2e4b;
+  --krds-navy-700: #0b3b60;
+  --krds-navy-600: #1351b4;
+  --krds-navy-100: #e8f1fa;
+  --krds-navy-50: #f2f7fc;
+  
+  --krds-blue-600: #1a73e8;
+  --krds-blue-500: #2563eb;
+  
+  --krds-gray-900: #1a202c;
+  --krds-gray-800: #2d3748;
+  --krds-gray-700: #4a5568;
+  --krds-gray-600: #718096;
+  --krds-gray-300: #cbd5e0;
+  --krds-gray-200: #e2e8f0;
+  --krds-gray-100: #f1f5f9;
+  --krds-gray-50: #f8fafc;
 }
 
-/* Mobile Header */
+.krds-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f5f7fa;
+  color: var(--krds-gray-900);
+  font-family: "Noto Sans KR Variable", "DM Sans Variable", -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 1. Official Government Top Banner (정부 공식 누리집 확인 배너) */
+.krds-gov-banner {
+  background: #edf2f7;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 11.5px;
+  color: var(--krds-gray-700);
+}
+
+.krds-gov-banner-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 5px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.krds-gov-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.krds-taegeuk {
+  display: inline-flex;
+  flex-direction: column;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.taegeuk-red {
+  flex: 1;
+  background: #c62828;
+}
+
+.taegeuk-blue {
+  flex: 1;
+  background: #0d47a1;
+}
+
+.krds-gov-text {
+  font-weight: 500;
+  color: #334155;
+}
+
+.krds-gov-banner-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  font-size: 11px;
+  color: #475569;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.krds-gov-banner-toggle:hover {
+  color: #0f172a;
+  text-decoration: underline;
+}
+
+.krds-gov-banner-dropdown {
+  background: #ffffff;
+  border-top: 1px solid #cbd5e1;
+  border-bottom: 1px solid #cbd5e1;
+  padding: 16px 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.krds-gov-banner-dropdown-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+.gov-info-col strong {
+  display: block;
+  font-size: 12.5px;
+  color: var(--krds-navy-800);
+  margin-bottom: 4px;
+}
+
+.gov-info-col p {
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--krds-gray-600);
+}
+
+/* 2. Utility & Accessibility Bar (웹 접근성 글자 크기 조절) */
+.krds-util-bar {
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 6px 24px;
+}
+
+.krds-util-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11.5px;
+}
+
+.krds-util-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.util-org-badge {
+  font-weight: 700;
+  color: var(--krds-navy-700);
+  background: var(--krds-navy-50);
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid var(--krds-navy-100);
+}
+
+.util-divider {
+  width: 1px;
+  height: 12px;
+  background: #cbd5e1;
+}
+
+.util-clock {
+  color: var(--krds-gray-600);
+}
+
+.krds-util-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.font-size-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.control-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+  padding: 0 4px;
+}
+
+.font-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-size: 11px;
+  color: #334155;
+  cursor: pointer;
+}
+
+.font-btn:hover {
+  background: #edf2f7;
+  color: #0f172a;
+}
+
+.font-btn.active {
+  background: var(--krds-navy-700);
+  color: #ffffff;
+  border-color: var(--krds-navy-700);
+}
+
+/* 3. Mobile Header */
 .mobile-header {
   display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
   height: 56px;
   background: #ffffff;
-  border-bottom: 1px solid #e2e8df;
+  border-bottom: 1px solid #e2e8f0;
   padding: 0 16px;
   align-items: center;
   justify-content: space-between;
+  position: sticky;
+  top: 0;
   z-index: 100;
 }
 
 .mobile-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  font-size: 16px;
   font-weight: 700;
-  font-size: 18px;
-  color: #204b38;
+  color: var(--krds-navy-800);
   text-decoration: none;
 }
 
-.mobile-menu-btn {
-  background: none;
-  border: none;
-  color: #3b5645;
-  cursor: pointer;
-  padding: 6px;
+.krds-symbol-sm {
+  width: 28px;
+  height: 28px;
+  background: var(--krds-navy-700);
+  color: #ffffff;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+.mobile-menu-btn {
+  background: none;
+  border: none;
+  color: var(--krds-gray-800);
+  padding: 6px;
+  cursor: pointer;
+}
+
+/* 4. App Body Wrap (Sidebar + Main) */
+.krds-body-wrap {
+  display: flex;
+  flex: 1;
+}
+
 /* Sidebar */
-.modern-sidebar {
-  width: 250px;
+.krds-sidebar {
+  width: 256px;
   flex-shrink: 0;
   background: #ffffff;
-  border-right: 1px solid #e4eae1;
+  border-right: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
   position: sticky;
@@ -57,12 +275,13 @@
   height: 100vh;
   overflow-y: auto;
   z-index: 90;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.2s ease-in-out;
 }
 
 .sidebar-brand-wrap {
-  padding: 24px 20px 18px;
-  border-bottom: 1px solid #f0f4ee;
+  padding: 22px 20px 18px;
+  border-bottom: 1px solid #edf2f7;
+  background: #ffffff;
 }
 
 .brand-logo {
@@ -72,16 +291,16 @@
   text-decoration: none;
 }
 
-.brand-icon {
-  width: 38px;
-  height: 38px;
-  background: linear-gradient(135deg, #22513f 0%, #17382c 100%);
-  color: #f0f7ea;
-  border-radius: 10px;
+.brand-symbol {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--krds-navy-800) 0%, var(--krds-navy-700) 100%);
+  color: #ffffff;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(34, 81, 63, 0.15);
+  box-shadow: 0 4px 10px rgba(11, 59, 96, 0.2);
 }
 
 .brand-meta {
@@ -90,20 +309,17 @@
 }
 
 .brand-name {
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 800;
+  color: var(--krds-navy-800);
   letter-spacing: -0.5px;
-  color: #1e3f31;
-}
-
-.brand-accent {
-  color: #558763;
 }
 
 .brand-slogan {
   font-size: 11px;
-  color: #7b8e7e;
+  color: var(--krds-gray-600);
   margin-top: 1px;
+  font-weight: 500;
 }
 
 .sidebar-nav {
@@ -111,21 +327,21 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
 }
 
 .nav-group-label {
   font-size: 11px;
-  font-weight: 600;
-  color: #92a495;
+  font-weight: 700;
+  color: #64748b;
   padding: 8px 12px 6px;
   letter-spacing: 0.5px;
 }
 
 .nav-separator {
-  margin-top: 18px;
+  margin-top: 16px;
   padding-top: 14px;
-  border-top: 1px solid #f0f4ee;
+  border-top: 1px solid #edf2f7;
 }
 
 .nav-link {
@@ -133,95 +349,94 @@
   align-items: center;
   gap: 12px;
   padding: 10px 14px;
-  border-radius: 8px;
-  color: #4b6352;
+  border-radius: 6px;
+  color: #334155;
   font-size: 13.5px;
   font-weight: 500;
   text-decoration: none;
   position: relative;
-  transition: all 0.15s ease;
+  transition: all 0.12s ease;
 }
 
 .nav-link:hover {
-  background: #f2f7ef;
-  color: #1f4233;
+  background: var(--krds-navy-50);
+  color: var(--krds-navy-700);
 }
 
 .nav-link.active {
-  background: #eaf3e6;
-  color: #1a4231;
-  font-weight: 600;
+  background: var(--krds-navy-100);
+  color: var(--krds-navy-800);
+  font-weight: 700;
 }
 
-.nav-active-pill {
+.nav-active-bar {
   position: absolute;
   left: 0;
-  top: 8px;
-  bottom: 8px;
-  width: 3.5px;
-  background: #2b6148;
-  border-radius: 0 4px 4px 0;
+  top: 6px;
+  bottom: 6px;
+  width: 4px;
+  background: var(--krds-navy-700);
+  border-radius: 0 3px 3px 0;
 }
 
 .workspace-link {
-  color: #3b5f4c;
-  background: #fafcf8;
-  border: 1px solid #e1ecde;
-}
-.workspace-link:hover {
-  background: #eef6eb;
+  color: #1e3a5f;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
 }
 
 .sidebar-footer {
   padding: 16px 14px 20px;
-  border-top: 1px solid #edf2ea;
+  border-top: 1px solid #edf2f7;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
+  background: #fafbfc;
 }
 
 .data-badge {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
-  background: #f3f8f0;
-  border: 1px solid #e2ede0;
-  padding: 10px 12px;
-  border-radius: 8px;
-  color: #385b47;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 9px 12px;
+  border-radius: 6px;
+  color: var(--krds-navy-700);
 }
 
 .badge-text {
   display: flex;
   flex-direction: column;
-  font-size: 11px;
 }
 
 .badge-text strong {
   font-size: 11.5px;
-  color: #244634;
+  color: var(--krds-navy-800);
 }
 
 .badge-text span {
-  color: #6a8270;
-  margin-top: 2px;
+  font-size: 10.5px;
+  color: var(--krds-gray-600);
+  margin-top: 1px;
 }
 
 .github-link {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 11.5px;
-  color: #728775;
+  font-size: 11px;
+  color: #64748b;
   text-decoration: none;
   padding: 4px 6px;
 }
+
 .github-link:hover {
-  color: #2b553f;
+  color: var(--krds-navy-700);
 }
 
 /* Main Wrap */
-.modern-main-wrap {
+.krds-main-wrap {
   flex: 1;
   min-width: 0;
   display: flex;
@@ -229,17 +444,17 @@
 }
 
 /* Topbar */
-.modern-topbar {
-  height: 58px;
+.krds-topbar {
+  height: 56px;
   background: #ffffff;
-  border-bottom: 1px solid #e5ebe2;
+  border-bottom: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 28px;
+  padding: 0 32px;
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 40;
 }
 
 .topbar-search-form-wrap {
@@ -251,17 +466,17 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #f4f7f2;
-  border: 1px solid #dce5d9;
-  border-radius: 8px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
   padding: 6px 12px;
   transition: all 0.15s ease;
 }
 
 .topbar-quick-search:focus-within {
   background: #ffffff;
-  border-color: #3f7b5e;
-  box-shadow: 0 0 0 3px rgba(63, 123, 94, 0.12);
+  border-color: var(--krds-navy-600);
+  box-shadow: 0 0 0 3px rgba(19, 81, 180, 0.15);
 }
 
 .topbar-quick-search input {
@@ -269,7 +484,7 @@
   background: transparent;
   width: 100%;
   font-size: 13px;
-  color: #213c2c;
+  color: var(--krds-gray-900);
   outline: none;
 }
 
@@ -285,113 +500,278 @@
   gap: 6px;
   padding: 7px 14px;
   font-size: 12.5px;
-  font-weight: 500;
-  border-radius: 7px;
+  font-weight: 600;
+  border-radius: 6px;
   text-decoration: none;
-  border: 1px solid #d5e0d2;
+  border: 1px solid #cbd5e1;
   background: #ffffff;
-  color: #3b5745;
+  color: #334155;
   transition: all 0.15s ease;
 }
 
 .topbar-btn:hover {
-  background: #f4f8f1;
-  border-color: #b9cdb5;
+  background: #f1f5f9;
+  border-color: #94a3b8;
 }
 
 .topbar-btn.primary {
-  background: #25553e;
-  border-color: #25553e;
+  background: var(--krds-navy-700);
+  border-color: var(--krds-navy-700);
   color: #ffffff;
 }
 
 .topbar-btn.primary:hover {
-  background: #1b4230;
+  background: var(--krds-navy-800);
 }
 
-/* Page Content */
-.modern-page-content {
+/* Page Content Area */
+.krds-page-content {
   flex: 1;
   padding: 32px 36px 60px;
-  max-width: 1380px;
+  max-width: 1400px;
   margin: 0 auto;
   width: 100%;
 }
 
-/* Footer */
-.modern-footer {
-  border-top: 1px solid #e4eae1;
-  background: #ffffff;
-  padding: 24px 36px;
+/* 5. Official Public Service Footer (공공기관 표준 푸터 & 공공누리 제1유형) */
+.krds-footer {
+  border-top: 1px solid #cbd5e1;
+  background: #f8fafc;
+  padding: 32px 36px 36px;
+  font-size: 12px;
+  color: var(--krds-gray-700);
 }
 
-.footer-content {
-  max-width: 1380px;
+.krds-footer-inner {
+  max-width: 1400px;
   margin: 0 auto;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.footer-left strong {
-  display: block;
-  font-size: 13px;
-  color: #2b4937;
+.krds-footer-top {
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
 }
 
-.footer-left p {
-  font-size: 11.5px;
-  color: #798d7d;
-  margin-top: 4px;
-}
-
-.footer-links {
+.footer-policy-links {
   display: flex;
   align-items: center;
-  gap: 16px;
-  font-size: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-.footer-links a {
-  color: #4f6854;
+.footer-policy-links a {
+  color: #475569;
   text-decoration: none;
 }
-.footer-links a:hover {
-  color: #1f3f2e;
+
+.footer-policy-links a strong {
+  color: var(--krds-navy-800);
+}
+
+.footer-policy-links a:hover {
+  color: var(--krds-navy-700);
   text-decoration: underline;
 }
 
-/* Mobile Responsive */
-@media (max-width: 860px) {
+.footer-policy-links .dot {
+  color: #cbd5e1;
+}
+
+.krds-footer-bottom {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.footer-agency-info {
+  flex: 1;
+  min-width: 300px;
+}
+
+.agency-brand {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.agency-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--krds-navy-800);
+}
+
+.agency-sub {
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.agency-address,
+.agency-copy {
+  margin: 4px 0;
+  line-height: 1.6;
+  color: #64748b;
+  font-size: 11.5px;
+}
+
+/* 공공누리 (KOGL) 마크 */
+.kogl-badge-wrap {
+  flex-shrink: 0;
+}
+
+.kogl-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 10px 14px;
+  border-radius: 6px;
+}
+
+.kogl-mark {
+  background: #0b3b60;
+  color: #ffffff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: 800;
+}
+
+.kogl-text-kr {
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
+
+.kogl-type {
+  font-size: 9px;
+  color: #bfdbfe;
+}
+
+.kogl-desc strong {
+  display: block;
+  font-size: 11.5px;
+  color: #1e293b;
+}
+
+.kogl-desc p {
+  margin: 2px 0 0;
+  font-size: 10.5px;
+  color: #64748b;
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+  .krds-gov-banner-dropdown-inner {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .krds-util-bar {
+    display: none;
+  }
   .mobile-header {
     display: flex;
   }
-  .modern-sidebar {
+  .krds-sidebar {
     position: fixed;
     top: 56px;
     bottom: 0;
     height: calc(100vh - 56px);
     transform: translateX(-100%);
-    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
   }
-  .modern-sidebar.open {
+  .krds-sidebar.open {
     transform: translateX(0);
   }
-  .modern-topbar {
+  .krds-topbar {
     display: none;
   }
-  .modern-main-wrap {
-    margin-top: 56px;
-  }
-  .modern-page-content {
+  .krds-page-content {
     padding: 20px 16px 40px;
   }
-  .mobile-backdrop {
-    position: fixed;
-    inset: 56px 0 0 0;
-    background: rgba(0, 0, 0, 0.35);
-    z-index: 85;
+  .krds-footer-bottom {
+    flex-direction: column;
+    gap: 20px;
   }
 }
+
+/* Common Digital Government (KR-DS) Components */
+.gov-page-header {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-top: 4px solid var(--krds-navy-700, #0b3b60);
+  border-radius: 8px;
+  padding: 24px 28px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(11, 59, 96, 0.04);
+}
+
+.gov-header-inner {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.gov-header-icon {
+  color: var(--krds-navy-700, #0b3b60);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.gov-header-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.gov-header-desc {
+  font-size: 13.5px;
+  color: #475569;
+  margin: 6px 0 0;
+  line-height: 1.5;
+}
+
+.gov-tabs-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.gov-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.gov-tab-btn:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.gov-tab-btn.active {
+  background: var(--krds-navy-700, #0b3b60);
+  border-color: var(--krds-navy-700, #0b3b60);
+  color: #ffffff;
+}
+

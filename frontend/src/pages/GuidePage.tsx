@@ -9,42 +9,24 @@ export function GuidePage() {
 
   return (
     <div className="guide-page">
-      <div className="page-header-card" style={{
-        background: "#ffffff",
-        border: "1px solid #e1ebe0",
-        borderRadius: "14px",
-        padding: "24px 28px",
-        marginBottom: "24px",
-      }}>
-        <div style={{ display: "flex", alignItems: "flex-start", gap: "14px", marginBottom: "18px" }}>
-          <HelpCircle size={26} color="#2b6348" style={{ marginTop: 2 }} />
+      <div className="gov-page-header">
+        <div className="gov-header-inner">
+          <HelpCircle size={26} className="gov-header-icon" />
           <div>
-            <h1 style={{ fontSize: "22px", fontWeight: 700, color: "#1a3827", margin: 0 }}>
+            <h1 className="gov-header-title">
               이용 안내 및 AI 도구 (MCP) 연동
             </h1>
-            <p style={{ fontSize: "13px", color: "#688070", margin: "6px 0 0" }}>
+            <p className="gov-header-desc">
               RuleCraft의 업무 흐름과 AI 클라이언트(Claude, ChatGPT 등)에서 법령 도구를 사용하는 방법을 확인합니다.
             </p>
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: "8px" }}>
+        <div className="gov-tabs-row">
           <button
             type="button"
             onClick={() => setTab("mcp")}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "6px",
-              padding: "9px 18px",
-              borderRadius: "8px",
-              fontSize: "13px",
-              fontWeight: 600,
-              border: tab === "mcp" ? "1px solid #285b41" : "1px solid #d4dfd2",
-              background: tab === "mcp" ? "#285b41" : "#ffffff",
-              color: tab === "mcp" ? "#ffffff" : "#3b5846",
-              cursor: "pointer",
-            }}
+            className={`gov-tab-btn ${tab === "mcp" ? "active" : ""}`}
           >
             <PlugZap size={16} />
             <span>AI 도구 (MCP) 연동 안내</span>
@@ -52,19 +34,7 @@ export function GuidePage() {
           <button
             type="button"
             onClick={() => setTab("overview")}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "6px",
-              padding: "9px 18px",
-              borderRadius: "8px",
-              fontSize: "13px",
-              fontWeight: 600,
-              border: tab === "overview" ? "1px solid #285b41" : "1px solid #d4dfd2",
-              background: tab === "overview" ? "#285b41" : "#ffffff",
-              color: tab === "overview" ? "#ffffff" : "#3b5846",
-              cursor: "pointer",
-            }}
+            className={`gov-tab-btn ${tab === "overview" ? "active" : ""}`}
           >
             <BookOpen size={16} />
             <span>규정 검토 업무 흐름 안내</span>

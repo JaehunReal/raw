@@ -86,16 +86,21 @@ export function LawsPage() {
   const initialVersionId = searchParams.get("version_id") || "";
   const initialOffset = parseInt(searchParams.get("offset") || "0", 10) || 0;
   const initialArticle = searchParams.get("article") || null;
+  const initialTab = (searchParams.get("tab") as ReaderTab) || "provisions";
 
   const [searchInput, setSearchInput] = useState(initialQ);
   const [selectedSource, setSelectedSource] = useState(initialSource);
-  const [activeTab, setActiveTab] = useState<ReaderTab>(initialArticle ? "provisions" : "provisions");
+  const [activeTab, setActiveTab] = useState<ReaderTab>(initialTab);
   const [jumpArticle, setJumpArticle] = useState<string | null>(initialArticle);
   const [copiedHash, setCopiedHash] = useState(false);
 
-  // Sync jumpArticle when URL parameter changes
+  // Sync jumpArticle and tab when URL parameter changes
   useEffect(() => {
     const art = searchParams.get("article");
+    const t = searchParams.get("tab") as ReaderTab | null;
+    if (t) {
+      setActiveTab(t);
+    }
     if (art) {
       setJumpArticle(art);
       setActiveTab("provisions");
@@ -207,7 +212,9 @@ export function LawsPage() {
         if (!controller.signal.aborted && data.document) {
           setDocument(data.document);
           setDocLoading(false);
-          readerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+          if (window.innerWidth <= 768) {
+            readerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
         }
       })
       .catch(() => {

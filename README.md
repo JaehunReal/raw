@@ -14,6 +14,8 @@
 | **GitHub** | JaehunReal/raw | [github.com/JaehunReal/raw](https://github.com/JaehunReal/raw) | **최신 동기화 (`main`)** |
 | **공공망 GitLab** | ryujh20/rulecraft | [gitlab.aigov.go.kr/ryujh20/rulecraft](https://gitlab.aigov.go.kr/ryujh20/rulecraft) | **보안 검사 통과 (`main`)** |
 
+![RuleCraft 대한민국 공공 법령 워크스페이스 대시보드](docs/screenshots/web-dashboard.png)
+
 ---
 
 ## ✨ 주요 기능 및 특징
@@ -29,6 +31,8 @@
   - 인용 관계 카드 및 본문 내 `제○조`, `제○항`, `제○호` 링크 클릭 시 해당 조항으로 즉시 부드럽게 스크롤
   - 이동 후 대상 조문에 포커스 펄스 애니메이션(하이라이트)을 적용하여 신속한 조문 파악 지원
 - **3단계 탭 뷰어**: 조문 본문, 인용/피인용 관계, 연관 관계 그래프를 탭 간 원클릭 전환
+
+![공식 법령 열람 및 인용 관계 탐색](docs/screenshots/laws-overview.png)
 
 ### 3. 규정 입안 위저드 & 신구조문대비표 자동 생성
 - 개정 목적, 개정 유형, 시행 예정일 입력 기반 단계별 초안 작성

@@ -10,6 +10,7 @@ import {
   ChevronRight,
   ShieldCheck,
 } from "lucide-react";
+import { useRouter } from "../router";
 import previewSnapshot from "../preview-snapshot.json";
 import "../public-preview.css";
 
@@ -195,7 +196,9 @@ function PreviewGraph({
 }
 
 export function DemoPage() {
-  const [tab, setTab] = useState<"vault" | "graph" | "impact" | "packages">("vault");
+  const { searchParams } = useRouter();
+  const initialTab = (searchParams.get("tab") as "vault" | "graph" | "impact" | "packages") || "vault";
+  const [tab, setTab] = useState<"vault" | "graph" | "impact" | "packages">(initialTab);
   const defaultNode =
     graph.nodes.find((node) => node.id === "KIPA-RULE-DAT-007") ||
     graph.nodes[0];
@@ -205,7 +208,8 @@ export function DemoPage() {
   const [sourceView, setSourceView] = useState(false);
   const [graphSelected, setGraphSelected] = useState(defaultNode.id);
   const [impactId, setImpactId] = useState("LAW-PRIV-015");
-  const [documentIndex, setDocumentIndex] = useState(0);
+  const initialDocIndex = parseInt(searchParams.get("doc") || "0", 10) || 0;
+  const [documentIndex, setDocumentIndex] = useState(initialDocIndex);
 
   const selected =
     graph.nodes.find((node) => node.id === selectedId) || defaultNode;

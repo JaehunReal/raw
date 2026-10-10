@@ -167,27 +167,50 @@ function PreviewGraph({ selected, onSelect }: { selected: string; onSelect: (id:
         <circle cx="1" cy="1" r="0.8" fill="#bccab7" opacity="0.55" />
       </pattern></defs>
       <rect width="920" height="555" fill="url(#preview-dots)" />
+      {/* Tier Swimlanes (계층별 체계화 영역 배경) */}
+      <g className="demo-graph-swimlanes">
+        <rect x="12" y="12" width="896" height="128" rx="8" fill="#f0f7ff" stroke="#bae6fd" strokeWidth="1.2" strokeDasharray="4 4" />
+        <g transform="translate(24, 32)">
+          <rect x="0" y="-12" width="220" height="20" rx="4" fill="#e0f2fe" stroke="#7dd3fc" />
+          <text x="8" y="2" fontSize="11" fontWeight="700" fill="#0369a1">🏛️ 제1계층: 상위법령 (법률) {groups[0].length}건</text>
+        </g>
+        <rect x="12" y="152" width="896" height="235" rx="8" fill="#f0fdf4" stroke="#bbf7d0" strokeWidth="1.2" strokeDasharray="4 4" />
+        <g transform="translate(24, 172)">
+          <rect x="0" y="-12" width="220" height="20" rx="4" fill="#dcfce7" stroke="#86efac" />
+          <text x="8" y="2" fontSize="11" fontWeight="700" fill="#15803d">📜 제2계층: 기관 소관 규정 {groups[1].length}건</text>
+        </g>
+        <rect x="12" y="400" width="896" height="142" rx="8" fill="#fffbeb" stroke="#fde68a" strokeWidth="1.2" strokeDasharray="4 4" />
+        <g transform="translate(24, 420)">
+          <rect x="0" y="-12" width="230" height="20" rx="4" fill="#fef3c7" stroke="#fcd34d" />
+          <text x="8" y="2" fontSize="11" fontWeight="700" fill="#b45309">📋 제3계층: 별지 서식 및 부속서류 {groups[2].length}건</text>
+        </g>
+      </g>
       {uniqueEdges.map((edge) => {
         const from = positions.get(edge.source), to = positions.get(edge.target);
         if (!from || !to) return null;
         const highlighted = edge.source === selected || edge.target === selected;
         return <path key={`${edge.source}-${edge.target}`} d={`M${from.x},${from.y} C${from.x},${(from.y + to.y) / 2} ${to.x},${(from.y + to.y) / 2} ${to.x},${to.y}`}
-          fill="none" stroke={highlighted ? "#628569" : "#ced8c7"} strokeWidth={highlighted ? 2 : 1.2}
-          opacity={highlighted ? 0.9 : 0.45} />;
+          fill="none" stroke={highlighted ? "#0b3b60" : "#94a3b8"} strokeWidth={highlighted ? 2.2 : 1.2}
+          opacity={highlighted ? 1 : 0.6} />;
       })}
       {graph.nodes.map((node) => {
         const position = positions.get(node.id)!;
         const active = node.id === selected;
         const law = node.agency === "국가법령";
+        const isForm = node.kind !== "article";
+        const themeColor = law ? "#0284c7" : isForm ? "#d97706" : "#16a34a";
         return <g key={node.id} transform={`translate(${position.x},${position.y})`}
           role="button" tabIndex={0} aria-label={`${node.rule_name} ${article(node)} ${node.title}, 합성 예제`}
           aria-pressed={active} onClick={() => onSelect(node.id)} onKeyDown={(event) => selectWithKey(event, node.id)}
           className="preview-graph-node" opacity={neighbors.has(node.id) ? 1 : 0.67}>
           <rect x="-96" y="-33" width="192" height="66" rx="11"
-            fill={active ? "#214f40" : law ? "#f8f4e9" : "#fff"}
-            stroke={active ? "#214f40" : law ? "#ded6bd" : "#d3dfcf"} />
-          <text textAnchor="middle" y="-8" fontSize="13" fontWeight="600" fill={active ? "#fff" : "#3d5441"}>{short(node.rule_name, 13)}</text>
-          <text textAnchor="middle" y="13" fontSize="12" fill={active ? "#e1ecdf" : "#536959"}>{article(node)} · {short(node.title, 13)}</text>
+            fill={active ? "#0b3b60" : "#ffffff"}
+            stroke={active ? "#3b82f6" : themeColor}
+            strokeWidth={active ? "2.5" : "1.4"} />
+          <path d="M-85,-33 h170 a11,11 0 0 1 11,11 v0 h-192 v0 a11,11 0 0 1 11,-11 z"
+            fill={active ? "#60a5fa" : themeColor} />
+          <text textAnchor="middle" y="-7" fontSize="12.5" fontWeight="700" fill={active ? "#fff" : themeColor}>{short(node.rule_name, 13)}</text>
+          <text textAnchor="middle" y="14" fontSize="11.5" fill={active ? "#e2e8f0" : "#475569"} fontWeight="500">{article(node)} · {short(node.title, 13)}</text>
           <title>{node.rule_name} {article(node)} · {node.title}</title>
         </g>;
       })}

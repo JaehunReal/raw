@@ -441,164 +441,196 @@ function ThreeTierArticleCard({
   const activeDecree = decreeMatches[selectedDecreeIdx] || decreeMatches[0];
   const activeRule = ruleMatches[selectedRuleIdx] || ruleMatches[0];
 
+  const [isOpen, setIsOpen] = useState(false);
+  const totalMatches = decreeMatches.length + ruleMatches.length;
+
   return (
-    <div className="three-tier-card">
-      <div className="three-tier-header">
+    <div className={`three-tier-card ${isOpen ? 'is-open' : 'is-closed'}`}>
+      <div
+        className={`three-tier-header ${isOpen ? 'active' : ''}`}
+        onClick={() => setIsOpen(!isOpen)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setIsOpen(!isOpen);
+          }
+        }}
+        aria-expanded={isOpen}
+      >
         <div className="three-tier-header-left">
           <span className="three-tier-icon">⚖️</span>
           <strong className="three-tier-title">법·시행령·시행규칙 3단 연계</strong>
           <span className="three-tier-sub">
             {articleUnit.article}{articleUnit.articleTitle ? `(${articleUnit.articleTitle})` : ''} 기준 3단비교
           </span>
+          {totalMatches > 0 && (
+            <span className="three-tier-matched-badge">
+              연계 {totalMatches}건
+            </span>
+          )}
         </div>
-        <span className="pill neutral" style={{ fontSize: '11px', fontWeight: 600 }}>
-          3단 비교 체계
-        </span>
+        <button
+          type="button"
+          className={`three-tier-toggle-btn ${isOpen ? 'open' : ''}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsOpen(!isOpen);
+          }}
+          aria-expanded={isOpen}
+          title={isOpen ? '3단 비교 체계 접기' : '3단 비교 체계 열기'}
+        >
+          <span className="toggle-btn-label">3단 비교 체계</span>
+          <span className="toggle-btn-arrow">{isOpen ? '접기 ▲' : '열기 ▼'}</span>
+        </button>
       </div>
 
-      <div className="three-tier-grid">
-        {/* 1단: 법률 */}
-        <div className={`three-tier-col ${isCurrentAct ? 'current' : ''}`}>
-          <div className="three-tier-col-header">
-            <span className="col-level-badge act">🏛️ 법률</span>
-            <span className="col-law-title">{family.act?.record.title || `${family.baseName}`}</span>
-            {isCurrentAct && <span className="col-current-tag">현재 열람</span>}
-          </div>
-          <div className="three-tier-col-content">
-            <div className="three-tier-article-label">
-              {articleUnit.article}{articleUnit.articleTitle ? `(${articleUnit.articleTitle})` : ''}
+      {isOpen && (
+        <div className="three-tier-grid">
+          {/* 1단: 법률 */}
+          <div className={`three-tier-col ${isCurrentAct ? 'current' : ''}`}>
+            <div className="three-tier-col-header">
+              <span className="col-level-badge act">🏛️ 법률</span>
+              <span className="col-law-title">{family.act?.record.title || `${family.baseName}`}</span>
+              {isCurrentAct && <span className="col-current-tag">현재 열람</span>}
             </div>
-            <div className="three-tier-snippet">
-              {articleUnit.text ? articleUnit.text.slice(0, 140) + '...' : '(원문 본문)'}
+            <div className="three-tier-col-content">
+              <div className="three-tier-article-label">
+                {articleUnit.article}{articleUnit.articleTitle ? `(${articleUnit.articleTitle})` : ''}
+              </div>
+              <div className="three-tier-snippet">
+                {articleUnit.text ? articleUnit.text.slice(0, 140) + '...' : '(원문 본문)'}
+              </div>
             </div>
-          </div>
-          {family.act && !isCurrentAct && (
-            <button
-              type="button"
-              className="three-tier-jump-btn"
-              onClick={() => onSelectLaw?.(family.act!.record, articleUnit.article)}
-            >
-              법률 해당 조문으로 이동 ↗
-            </button>
-          )}
-        </div>
-
-        {/* 2단: 시행령 */}
-        <div className={`three-tier-col ${isCurrentDecree ? 'current' : ''}`}>
-          <div className="three-tier-col-header">
-            <span className="col-level-badge decree">📜 시행령</span>
-            <span className="col-law-title">
-              {family.decree?.record.title || `${family.baseName} 시행령`}
-            </span>
-            {isCurrentDecree && <span className="col-current-tag">현재 열람</span>}
-          </div>
-          <div className="three-tier-col-content">
-            {decreeMatches.length > 0 ? (
-              <>
-                {decreeMatches.length > 1 && (
-                  <div className="three-tier-pills">
-                    {decreeMatches.map((dm, idx) => (
-                      <button
-                        key={idx}
-                        type="button"
-                        className={`three-tier-pill ${selectedDecreeIdx === idx ? 'selected' : ''}`}
-                        onClick={() => setSelectedDecreeIdx(idx)}
-                      >
-                        {dm.article_no}{dm.title ? `(${dm.title})` : ''}
-                      </button>
-                    ))}
-                  </div>
-                )}
-                <div className="three-tier-article-label">
-                  {activeDecree?.article_no}
-                  {activeDecree?.title ? `(${activeDecree.title})` : ''}
-                </div>
-                <div className="three-tier-snippet">
-                  {activeDecree?.text ? activeDecree.text.slice(0, 140) + '...' : '(시행령 본문)'}
-                </div>
-              </>
-            ) : family.decree ? (
-              <div className="three-tier-empty">(직접 위임 조항 없음)</div>
-            ) : (
-              <div className="three-tier-empty">(시행령 규정 없음)</div>
+            {family.act && !isCurrentAct && (
+              <button
+                type="button"
+                className="three-tier-jump-btn"
+                onClick={() => onSelectLaw?.(family.act!.record, articleUnit.article)}
+              >
+                법률 해당 조문으로 이동 ↗
+              </button>
             )}
           </div>
-          {family.decree && (
-            <button
-              type="button"
-              className={`three-tier-jump-btn ${isCurrentDecree ? 'secondary' : ''}`}
-              onClick={() =>
-                onSelectLaw?.(
-                  family.decree!.record,
-                  activeDecree ? activeDecree.article_no : '제1조'
-                )
-              }
-            >
-              {activeDecree
-                ? `시행령 ${activeDecree.article_no} 바로가기 ↗`
-                : '시행령 전체 열람 ↗'}
-            </button>
-          )}
-        </div>
 
-        {/* 3단: 시행규칙 */}
-        <div className={`three-tier-col ${isCurrentRule ? 'current' : ''}`}>
-          <div className="three-tier-col-header">
-            <span className="col-level-badge rule">📋 시행규칙</span>
-            <span className="col-law-title">
-              {family.rule?.record.title || `${family.baseName} 시행규칙`}
-            </span>
-            {isCurrentRule && <span className="col-current-tag">현재 열람</span>}
-          </div>
-          <div className="three-tier-col-content">
-            {ruleMatches.length > 0 ? (
-              <>
-                {ruleMatches.length > 1 && (
-                  <div className="three-tier-pills">
-                    {ruleMatches.map((rm, idx) => (
-                      <button
-                        key={idx}
-                        type="button"
-                        className={`three-tier-pill ${selectedRuleIdx === idx ? 'selected' : ''}`}
-                        onClick={() => setSelectedRuleIdx(idx)}
-                      >
-                        {rm.article_no}{rm.title ? `(${rm.title})` : ''}
-                      </button>
-                    ))}
+          {/* 2단: 시행령 */}
+          <div className={`three-tier-col ${isCurrentDecree ? 'current' : ''}`}>
+            <div className="three-tier-col-header">
+              <span className="col-level-badge decree">📜 시행령</span>
+              <span className="col-law-title">
+                {family.decree?.record.title || `${family.baseName} 시행령`}
+              </span>
+              {isCurrentDecree && <span className="col-current-tag">현재 열람</span>}
+            </div>
+            <div className="three-tier-col-content">
+              {decreeMatches.length > 0 ? (
+                <>
+                  {decreeMatches.length > 1 && (
+                    <div className="three-tier-pills">
+                      {decreeMatches.map((dm, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          className={`three-tier-pill ${selectedDecreeIdx === idx ? 'selected' : ''}`}
+                          onClick={() => setSelectedDecreeIdx(idx)}
+                        >
+                          {dm.article_no}{dm.title ? `(${dm.title})` : ''}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  <div className="three-tier-article-label">
+                    {activeDecree?.article_no}
+                    {activeDecree?.title ? `(${activeDecree.title})` : ''}
                   </div>
-                )}
-                <div className="three-tier-article-label">
-                  {activeRule?.article_no}
-                  {activeRule?.title ? `(${activeRule.title})` : ''}
-                </div>
-                <div className="three-tier-snippet">
-                  {activeRule?.text ? activeRule.text.slice(0, 140) + '...' : '(시행규칙 본문)'}
-                </div>
-              </>
-            ) : family.rule ? (
-              <div className="three-tier-empty">(직접 위임 조항 없음)</div>
-            ) : (
-              <div className="three-tier-empty">(시행규칙 규정 없음)</div>
+                  <div className="three-tier-snippet">
+                    {activeDecree?.text ? activeDecree.text.slice(0, 140) + '...' : '(시행령 본문)'}
+                  </div>
+                </>
+              ) : family.decree ? (
+                <div className="three-tier-empty">(직접 위임 조항 없음)</div>
+              ) : (
+                <div className="three-tier-empty">(시행령 규정 없음)</div>
+              )}
+            </div>
+            {family.decree && (
+              <button
+                type="button"
+                className={`three-tier-jump-btn ${isCurrentDecree ? 'secondary' : ''}`}
+                onClick={() =>
+                  onSelectLaw?.(
+                    family.decree!.record,
+                    activeDecree ? activeDecree.article_no : '제1조'
+                  )
+                }
+              >
+                {activeDecree
+                  ? `시행령 ${activeDecree.article_no} 바로가기 ↗`
+                  : '시행령 전체 열람 ↗'}
+              </button>
             )}
           </div>
-          {family.rule && (
-            <button
-              type="button"
-              className={`three-tier-jump-btn ${isCurrentRule ? 'secondary' : ''}`}
-              onClick={() =>
-                onSelectLaw?.(
-                  family.rule!.record,
-                  activeRule ? activeRule.article_no : '제1조'
-                )
-              }
-            >
-              {activeRule
-                ? `시행규칙 ${activeRule.article_no} 바로가기 ↗`
-                : '시행규칙 전체 열람 ↗'}
-            </button>
-          )}
+
+          {/* 3단: 시행규칙 */}
+          <div className={`three-tier-col ${isCurrentRule ? 'current' : ''}`}>
+            <div className="three-tier-col-header">
+              <span className="col-level-badge rule">📋 시행규칙</span>
+              <span className="col-law-title">
+                {family.rule?.record.title || `${family.baseName} 시행규칙`}
+              </span>
+              {isCurrentRule && <span className="col-current-tag">현재 열람</span>}
+            </div>
+            <div className="three-tier-col-content">
+              {ruleMatches.length > 0 ? (
+                <>
+                  {ruleMatches.length > 1 && (
+                    <div className="three-tier-pills">
+                      {ruleMatches.map((rm, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          className={`three-tier-pill ${selectedRuleIdx === idx ? 'selected' : ''}`}
+                          onClick={() => setSelectedRuleIdx(idx)}
+                        >
+                          {rm.article_no}{rm.title ? `(${rm.title})` : ''}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  <div className="three-tier-article-label">
+                    {activeRule?.article_no}
+                    {activeRule?.title ? `(${activeRule.title})` : ''}
+                  </div>
+                  <div className="three-tier-snippet">
+                    {activeRule?.text ? activeRule.text.slice(0, 140) + '...' : '(시행규칙 본문)'}
+                  </div>
+                </>
+              ) : family.rule ? (
+                <div className="three-tier-empty">(직접 위임 조항 없음)</div>
+              ) : (
+                <div className="three-tier-empty">(시행규칙 규정 없음)</div>
+              )}
+            </div>
+            {family.rule && (
+              <button
+                type="button"
+                className={`three-tier-jump-btn ${isCurrentRule ? 'secondary' : ''}`}
+                onClick={() =>
+                  onSelectLaw?.(
+                    family.rule!.record,
+                    activeRule ? activeRule.article_no : '제1조'
+                  )
+                }
+              >
+                {activeRule
+                  ? `시행규칙 ${activeRule.article_no} 바로가기 ↗`
+                  : '시행규칙 전체 열람 ↗'}
+              </button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

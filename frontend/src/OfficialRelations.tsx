@@ -144,6 +144,143 @@ export function OfficialRelations({
           : '현재 법령을 언급한 다른 법령입니다. 변경 시 함께 살펴볼 대상입니다.'}
       </p>
 
+      {/* 규정 관계 시각화 계통도 */}
+      <div className="relation-flow-graph">
+        <div className="flow-graph-header">
+          <div className="flow-header-left">
+            <span className="flow-icon">🕸️</span>
+            <strong>규정 관계 시각화 계통도</strong>
+            <small>인용·위임 흐름 분석</small>
+          </div>
+          <div className="flow-stats-tags">
+            <span className="flow-stat outgoing">
+              이 법에서 인용 {outgoing.length}건
+            </span>
+            <span className="flow-stat incoming">
+              이 법을 인용 {incoming.length}건
+            </span>
+          </div>
+        </div>
+
+        <div className="flow-diagram-canvas">
+          {/* Left Column: Outgoing (이 법이 인용하는 법령) */}
+          <div
+            className={`flow-column outgoing ${
+              direction === 'outgoing' ? 'active-col' : ''
+            }`}
+          >
+            <div className="flow-col-title">
+              <span>상위·근거 인용</span>
+              <button
+                type="button"
+                className="flow-switch-btn"
+                onClick={() => setDirection('outgoing')}
+              >
+                {outgoing.length}건 보기
+              </button>
+            </div>
+            <div className="flow-nodes-list">
+              {outgoing.slice(0, 4).map((e, idx) => {
+                const targetNode = data.nodes.find((n) => n.law_id === e.to);
+                return (
+                  <div
+                    key={idx}
+                    className="flow-node-item outgoing"
+                    onClick={() => {
+                      setDirection('outgoing');
+                      setQuery(targetNode?.title || '');
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    title="클릭하여 해당 법령과의 연결 근거를 조회합니다"
+                  >
+                    <span className="flow-node-pill">
+                      {e.kind === 'implementation_basis' ? '시행근거' : '인용'}
+                    </span>
+                    <span className="flow-node-name">
+                      {targetNode?.title || e.to}
+                    </span>
+                  </div>
+                );
+              })}
+              {outgoing.length > 4 && (
+                <div className="flow-more-tag">외 {outgoing.length - 4}개 법령</div>
+              )}
+              {outgoing.length === 0 && (
+                <div className="flow-node-empty">인용 근거 없음</div>
+              )}
+            </div>
+          </div>
+
+          {/* Center Column: Current Root Law */}
+          <div className="flow-center-root">
+            <div className="flow-arrow-in">
+              <span>{outgoing.length > 0 ? '← 근거' : '―'}</span>
+            </div>
+            <div className="flow-root-card">
+              <span className="root-badge">현재 열람 법령</span>
+              <h4 className="root-title">{record.title}</h4>
+              <div className="root-meta">
+                <span>버전 {record.version_id}</span>
+                <span>시행 {record.effective_date || '미확인'}</span>
+              </div>
+            </div>
+            <div className="flow-arrow-out">
+              <span>{incoming.length > 0 ? '영향 →' : '―'}</span>
+            </div>
+          </div>
+
+          {/* Right Column: Incoming (이 법을 인용하는 법령) */}
+          <div
+            className={`flow-column incoming ${
+              direction === 'incoming' ? 'active-col' : ''
+            }`}
+          >
+            <div className="flow-col-title">
+              <span>하위·역참조 법령</span>
+              <button
+                type="button"
+                className="flow-switch-btn"
+                onClick={() => setDirection('incoming')}
+              >
+                {incoming.length}건 보기
+              </button>
+            </div>
+            <div className="flow-nodes-list">
+              {incoming.slice(0, 4).map((e, idx) => {
+                const sourceNode = data.nodes.find((n) => n.law_id === e.from);
+                return (
+                  <div
+                    key={idx}
+                    className="flow-node-item incoming"
+                    onClick={() => {
+                      setDirection('incoming');
+                      setQuery(sourceNode?.title || '');
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    title="클릭하여 해당 법령과의 연결 근거를 조회합니다"
+                  >
+                    <span className="flow-node-pill incoming">
+                      {e.kind === 'implementation_basis' ? '시행근거' : '역인용'}
+                    </span>
+                    <span className="flow-node-name">
+                      {sourceNode?.title || e.from}
+                    </span>
+                  </div>
+                );
+              })}
+              {incoming.length > 4 && (
+                <div className="flow-more-tag">외 {incoming.length - 4}개 법령</div>
+              )}
+              {incoming.length === 0 && (
+                <div className="flow-node-empty">역인용 법령 없음</div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
       <label className="relation-search">
         연결 안에서 찾기
         <input
@@ -263,11 +400,41 @@ export function OfficialRelations({
       </div>
 
       {!edges.length && (
-        <p className="preview-empty">
-          {selected.length
-            ? '검색어와 일치하는 연결이 없습니다.'
-            : '이 방향으로 확인된 연결이 없습니다. 관계가 없다는 뜻은 아닙니다.'}
-        </p>
+        <div className="relation-empty-box">
+          <div className="empty-icon-circle">
+            <span style={{ fontSize: '24px' }}>🔍</span>
+          </div>
+          <h4>일치하는 연결 법령이 없습니다</h4>
+          <p>
+            {selected.length
+              ? `검색어 "${query}"와 일치하는 연결 관계가 확인되지 않았습니다.`
+              : direction === 'outgoing'
+              ? '현재 법령 원문에서 명시적으로 인용한 다른 법령이 데이터베이스에 등록되어 있지 않습니다.'
+              : '현재 법령을 역으로 인용한 다른 법령이 등록되어 있지 않습니다.'}
+          </p>
+          <div className="empty-actions">
+            {query && (
+              <button
+                type="button"
+                className="button secondary"
+                onClick={() => setQuery('')}
+              >
+                검색어 초기화
+              </button>
+            )}
+            <button
+              type="button"
+              className="button primary"
+              onClick={() =>
+                setDirection(direction === 'outgoing' ? 'incoming' : 'outgoing')
+              }
+            >
+              {direction === 'outgoing'
+                ? `반대 방향(이 법을 인용한 법령 ${incoming.length}건) 확인하기`
+                : `반대 방향(이 법에서 인용한 법령 ${outgoing.length}건) 확인하기`}
+            </button>
+          </div>
+        </div>
       )}
 
       {data.truncated && (

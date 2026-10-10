@@ -5184,6 +5184,204 @@
           "rule_type": "규정",
           "category": "행정"
         }
+      },
+      {
+        "id": "law-fire-art1",
+        "path": "statutes/소방기본법/제1조.md",
+        "agency": "소방청",
+        "rule_name": "소방기본법",
+        "article_no": "제1조",
+        "title": "목적",
+        "kind": "statute",
+        "version": "2024-01-30",
+        "last_amended": "2024-01-30",
+        "status": "active",
+        "body": "이 법은 화재를 예방·경계하거나 진압하고 화재, 재난·재해, 그 밖의 위급한 상황에서의 구조·구급 활동 등을 통하여 국민의 생명·신체 및 재산을 보호함으로써 공공의 안녕 및 질서 유지와 복리증진에 이바지함을 목적으로 한다.",
+        "markdown": "### 제1조(목적)\n화재 예방·경계·진압 및 재난 구조구급을 통한 국민 안전 확보.",
+        "metadata": {
+          "statute_type": "법률",
+          "law_id": "000812"
+        }
+      },
+      {
+        "id": "law-fire-art12",
+        "path": "statutes/소방기본법/제12조.md",
+        "agency": "소방청",
+        "rule_name": "소방기본법",
+        "article_no": "제12조",
+        "title": "화재의 예방조치 등",
+        "kind": "statute",
+        "version": "2024-01-30",
+        "last_amended": "2024-01-30",
+        "status": "active",
+        "body": "소방본부장이나 소방서장은 화재의 예방상 위험하다고 인정되는 행위를 하는 사람이나 위험물 등에 대하여 소방안전상 필요한 조치를 명할 수 있다.",
+        "markdown": "### 제12조(화재의 예방조치 등)\n화재 위험요소에 대한 예방 및 시정명령 권한.",
+        "metadata": {
+          "statute_type": "법률",
+          "law_id": "000812"
+        }
+      },
+      {
+        "id": "law-fire-art20",
+        "path": "statutes/소방기본법/제20조.md",
+        "agency": "소방청",
+        "rule_name": "소방기본법",
+        "article_no": "제20조",
+        "title": "소방안전관리대상물 및 안전관리자 선임",
+        "kind": "statute",
+        "version": "2024-01-30",
+        "last_amended": "2024-01-30",
+        "status": "active",
+        "body": "특정관리대상 공공시설 및 연구기관의 장은 화재예방을 위하여 소방안전관리자를 선임하고 정기점검 및 자체 소방훈련을 실시하여야 한다.",
+        "markdown": "### 제20조(소방안전관리자 선임)\n공공기관 및 연구시설의 소방안전관리자 선임 및 점검 의무.",
+        "metadata": {
+          "statute_type": "법률",
+          "law_id": "000812"
+        }
+      },
+      {
+        "id": "law-fire-decree-art1",
+        "path": "decrees/소방기본법_시행령/제1조.md",
+        "agency": "소방청",
+        "rule_name": "소방기본법 시행령",
+        "article_no": "제1조",
+        "title": "목적",
+        "kind": "decree",
+        "version": "2024-05-01",
+        "last_amended": "2024-05-01",
+        "status": "active",
+        "body": "이 영은 소방기본법에서 위임된 사항과 그 시행에 필요한 사항을 규정함을 목적으로 한다.",
+        "markdown": "### 제1조(목적)\n소방기본법 위임사항 및 시행규정 정립.",
+        "metadata": {
+          "statute_type": "대통령령",
+          "law_id": "000813"
+        }
+      },
+      {
+        "id": "law-fire-decree-art7",
+        "path": "decrees/소방기본법_시행령/제7조.md",
+        "agency": "소방청",
+        "rule_name": "소방기본법 시행령",
+        "article_no": "제7조",
+        "title": "소방훈련 및 소방안전교육",
+        "kind": "decree",
+        "version": "2024-05-01",
+        "last_amended": "2024-05-01",
+        "status": "active",
+        "body": "공공기관의 장은 연 1회 이상 전 직원을 대상으로 소방훈련 및 소방안전교육을 실시하여야 하며, 소방서와 합동훈련을 포함할 수 있다.",
+        "markdown": "### 제7조(소방훈련 및 교육)\n연 1회 이상 전 직원 소방훈련 및 교육 의무화.",
+        "metadata": {
+          "statute_type": "대통령령",
+          "law_id": "000813"
+        }
+      },
+      {
+        "id": "law-firesys-art1",
+        "path": "statutes/소방시설_설치_및_관리에_관한_법률/제1조.md",
+        "agency": "소방청",
+        "rule_name": "소방시설 설치 및 관리에 관한 법률",
+        "article_no": "제1조",
+        "title": "목적",
+        "kind": "statute",
+        "version": "2024-03-01",
+        "last_amended": "2024-03-01",
+        "status": "active",
+        "body": "이 법은 특정소방대상물의 소방시설 설치·관리와 소방용품의 성능검증 등에 관한 사항을 규정함으로써 화재안전 성능을 확보함을 목적으로 한다.",
+        "markdown": "### 제1조(목적)\n특정소방대상물 소방시설의 설치 및 관리 기준 규정.",
+        "metadata": {
+          "statute_type": "법률",
+          "law_id": "011245"
+        }
+      },
+      {
+        "id": "law-firesys-art22",
+        "path": "statutes/소방시설_설치_및_관리에_관한_법률/제22조.md",
+        "agency": "소방청",
+        "rule_name": "소방시설 설치 및 관리에 관한 법률",
+        "article_no": "제22조",
+        "title": "소방시설등의 자체점검",
+        "kind": "statute",
+        "version": "2024-03-01",
+        "last_amended": "2024-03-01",
+        "status": "active",
+        "body": "특정소방대상물의 관계인은 그 대상물에 설치되어 있는 소방시설등에 대하여 정기적으로 자체점검을 하거나 관리업자 등으로 하여금 점검하게 하여야 한다.",
+        "markdown": "### 제22조(소방시설 자체점검)\n정기적 자체점검 및 점검결과 관할 소방서 보고 의무.",
+        "metadata": {
+          "statute_type": "법률",
+          "law_id": "011245"
+        }
+      },
+      {
+        "id": "rule-firesafety-art1",
+        "path": "rules/시설안전_및_소방관리세칙/제1조.md",
+        "agency": "한국행정연구원",
+        "rule_name": "시설안전 및 소방관리세칙",
+        "article_no": "제1조",
+        "title": "목적",
+        "kind": "rule",
+        "version": "2025-01-15",
+        "last_amended": "2025-01-15",
+        "status": "active",
+        "body": "이 세칙은 소방기본법 및 소방시설법에 따라 한국행정연구원 청사 및 연구시설의 화재를 예방하고 시설안전을 체계적으로 관리함을 목적으로 한다.",
+        "markdown": "### 제1조(목적)\n소방기본법에 따른 청사 및 연구시설 화재예방·안전관리 세칙.",
+        "metadata": {
+          "rule_type": "세칙",
+          "category": "안전"
+        }
+      },
+      {
+        "id": "rule-firesafety-art4",
+        "path": "rules/시설안전_및_소방관리세칙/제4조.md",
+        "agency": "한국행정연구원",
+        "rule_name": "시설안전 및 소방관리세칙",
+        "article_no": "제4조",
+        "title": "소방안전관리자의 지정 및 임무",
+        "kind": "rule",
+        "version": "2025-01-15",
+        "last_amended": "2025-01-15",
+        "status": "active",
+        "body": "연구원은 소방기본법 제20조에 따라 경영지원실 시설담당 팀장을 소방안전관리자로 선임하며, 피난계획 수립 및 소방시설 유지관리의 책임을 진다.",
+        "markdown": "### 제4조(소방안전관리자 지정)\n시설담당자 선임 및 피난계획·소방설비 점검 총괄.",
+        "metadata": {
+          "rule_type": "세칙",
+          "category": "안전"
+        }
+      },
+      {
+        "id": "rule-firesafety-art8",
+        "path": "rules/시설안전_및_소방관리세칙/제8조.md",
+        "agency": "한국행정연구원",
+        "rule_name": "시설안전 및 소방관리세칙",
+        "article_no": "제8조",
+        "title": "정기 소방훈련 및 자체점검 실시",
+        "kind": "rule",
+        "version": "2025-01-15",
+        "last_amended": "2025-01-15",
+        "status": "active",
+        "body": "소방기본법 시행령 제7조에 따라 매년 10월 전 직원 합동소방훈련을 실시하며, 매월 첫째 주 수요일에 소방시설 작동기능점검표를 작성한다.",
+        "markdown": "### 제8조(소방훈련 및 자체점검)\n연 1회 합동훈련 및 매월 정기점검표 작성·보존.",
+        "metadata": {
+          "rule_type": "세칙",
+          "category": "안전"
+        }
+      },
+      {
+        "id": "form-fire-inspection",
+        "path": "forms/소방시설자체점검기록표.md",
+        "agency": "한국행정연구원",
+        "rule_name": "시설안전 및 소방관리세칙",
+        "article_no": "별지 제10호 서식",
+        "title": "소방시설 자체점검 및 피난유도 점검기록표",
+        "kind": "form",
+        "version": "2025-01",
+        "last_amended": "2025-01-15",
+        "status": "active",
+        "body": "시설안전 및 소방관리세칙 제8조 및 소방시설법 제22조에 따라 연구원 청사 소방시설 점검결과를 기록합니다.",
+        "markdown": "### [별지 제10호 서식] 소방시설 자체점검기록표\n- 소화설비, 경보설비, 피난설비 점검 항목\n- 불량사항 및 정비계획\n- 점검자 및 소방안전관리자 날인",
+        "metadata": {
+          "form_type": "서식",
+          "mandatory": true
+        }
       }
     ],
     "edges": [
@@ -6095,6 +6293,56 @@
       {
         "source": "rule-delegation-art7",
         "target": "rule-org-art8",
+        "type": "references"
+      },
+      {
+        "source": "law-fire-decree-art1",
+        "target": "law-fire-art1",
+        "type": "delegated_by"
+      },
+      {
+        "source": "law-fire-decree-art7",
+        "target": "law-fire-art20",
+        "type": "delegated_by"
+      },
+      {
+        "source": "law-firesys-art1",
+        "target": "law-fire-art1",
+        "type": "references"
+      },
+      {
+        "source": "law-firesys-art22",
+        "target": "law-fire-art12",
+        "type": "references"
+      },
+      {
+        "source": "rule-firesafety-art1",
+        "target": "law-fire-art1",
+        "type": "delegated_by"
+      },
+      {
+        "source": "rule-firesafety-art4",
+        "target": "law-fire-art20",
+        "type": "delegated_by"
+      },
+      {
+        "source": "rule-firesafety-art8",
+        "target": "law-fire-decree-art7",
+        "type": "delegated_by"
+      },
+      {
+        "source": "rule-firesafety-art8",
+        "target": "law-firesys-art22",
+        "type": "references"
+      },
+      {
+        "source": "form-fire-inspection",
+        "target": "rule-firesafety-art8",
+        "type": "delegated_by"
+      },
+      {
+        "source": "form-fire-inspection",
+        "target": "law-firesys-art22",
         "type": "references"
       }
     ],

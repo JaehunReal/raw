@@ -100,6 +100,26 @@ type Impact = {
   before: string;
   after: string;
 };
+type LawNode = {
+  id: string;
+  name: string;
+  agency: string;
+  kind: string;
+  tier: "higher_law" | "institute_rule" | "form";
+  articles: Node[];
+  articleCount: number;
+};
+type LawEdge = {
+  source: string;
+  target: string;
+  type: string;
+  count: number;
+  articleLinks: Array<{ sourceArt: Node; targetArt: Node; type: string }>;
+};
+type LawGraph = {
+  nodes: LawNode[];
+  edges: LawEdge[];
+};
 type Overview = {
   stats: Record<string, number>;
   readiness: Record<
@@ -992,7 +1012,10 @@ function App() {
     [proposed, setProposed] = useState(""),
     [impact, setImpact] = useState<Impact | null>(null),
     [focus, setFocus] = useState(""),
-    [direction, setDirection] = useState("ALL");
+    [direction, setDirection] = useState("ALL"),
+    [focusLaw, setFocusLaw] = useState("소방기본법"),
+    [lawSearchQuery, setLawSearchQuery] = useState(""),
+    [graphViewMode, setGraphViewMode] = useState<"law" | "article">("law");
   const [showGit, setShowGit] = useState(false),
     [gitBase, setGitBase] = useState("HEAD"),
     [gitHead, setGitHead] = useState("");
@@ -1080,6 +1103,141 @@ function App() {
     } finally {
       setLoading(false);
     }
+  }
+
+  const lawGraph = useMemo(() => {
+    const nodeMap = new Map<string, Node>(graph.nodes.map((n) => [n.id, n]));
+    const lawMap = new Map<string, LawNode>();
+
+    graph.nodes.forEach((n) => {
+      const isLaw =
+        n.kind === "statute" ||
+        n.kind === "decree" ||
+        n.agency === "국가법령" ||
+        (n.agency !== "한국행정연구원" && n.kind !== "form" && n.kind !== "guide");
+      const isForm = n.kind === "form" || n.kind === "guide";
+      const tier: LawNode["tier"] = isLaw
+        ? "higher_law"
+        : isForm
+        ? "form"
+        : "institute_rule";
+
+      if (!lawMap.has(n.rule_name)) {
+        lawMap.set(n.rule_name, {
+          id: n.rule_name,
+          name: n.rule_name,
+          agency: n.agency,
+          kind: n.kind,
+          tier,
+          articles: [n],
+          articleCount: 1,
+        });
+      } else {
+        const existing = lawMap.get(n.rule_name)!;
+        existing.articles.push(n);
+        existing.articleCount++;
+        if (existing.agency === "국가법령" && n.agency !== "국가법령") {
+          existing.agency = n.agency;
+        }
+      }
+    });
+
+    const edgeMap = new Map<string, LawEdge>();
+    graph.edges.forEach((e) => {
+      const s = nodeMap.get(e.source);
+      const t = nodeMap.get(e.target);
+      if (!s || !t || s.rule_name === t.rule_name) return;
+
+      const key = `${s.rule_name}__${t.rule_name}`;
+      if (!edgeMap.has(key)) {
+        edgeMap.set(key, {
+          source: s.rule_name,
+          target: t.rule_name,
+          type: e.type,
+          count: 1,
+          articleLinks: [{ sourceArt: s, targetArt: t, type: e.type }],
+        });
+      } else {
+        const existing = edgeMap.get(key)!;
+        existing.count++;
+        existing.articleLinks.push({ sourceArt: s, targetArt: t, type: e.type });
+      }
+    });
+
+    return {
+      nodes: Array.from(lawMap.values()),
+      edges: Array.from(edgeMap.values()),
+    };
+  }, [graph]);
+
+  function handleSearchOrAddLaw(lawName: string) {
+    const trimmed = lawName.trim();
+    if (!trimmed) return;
+
+    // Check if already in lawGraph
+    const matched = lawGraph.nodes.find(
+      (n) =>
+        n.name.toLowerCase().includes(trimmed.toLowerCase()) ||
+        trimmed.toLowerCase().includes(n.name.toLowerCase()),
+    );
+    if (matched) {
+      setFocusLaw(matched.name);
+      setToast(`🔍 [${matched.name}] 법률로 포커스 이동했습니다.`);
+      return;
+    }
+
+    // Add new law to graph with links to related local rule
+    const newLawId = `law-custom-${Date.now()}`;
+    const newArtNode: Node = {
+      id: `${newLawId}-art1`,
+      path: `statutes/${trimmed}/제1조.md`,
+      agency: "소방청 / 관계부처",
+      rule_name: trimmed,
+      article_no: "제1조",
+      title: "목적 및 기본원칙",
+      kind: "statute",
+      version: "2026",
+      last_amended: "2026-01-01",
+      status: "active",
+      body: `이 법은 ${trimmed}에 관한 기본적인 사항을 규정하여 공공안전 및 질서를 확보함을 목적으로 한다.`,
+      markdown: `### 제1조(목적)\n${trimmed}의 목적 및 기본 방침을 규정한다.`,
+      metadata: { statute_type: "법률" },
+    };
+
+    // Find a good target to connect: if safety/fire related, connect to facility safety; otherwise administrative rule
+    const connectTarget =
+      trimmed.includes("소방") ||
+      trimmed.includes("안전") ||
+      trimmed.includes("시설")
+        ? "rule-firesafety-art1"
+        : "rule-org-art1";
+
+    const newEdge: Edge = {
+      source: connectTarget,
+      target: newArtNode.id,
+      type: "delegated_by",
+    };
+
+    setGraph((prev) => {
+      const updatedNodes = [...prev.nodes, newArtNode];
+      const updatedEdges = [...prev.edges, newEdge];
+      try {
+        localStorage.setItem(
+          "rulecraft_custom_nodes",
+          JSON.stringify(updatedNodes),
+        );
+      } catch {}
+      return {
+        ...prev,
+        nodes: updatedNodes,
+        edges: updatedEdges,
+      };
+    });
+
+    setFocusLaw(trimmed);
+    setToast(
+      `✨ [${trimmed}] 법률이 추가되어 관련 소관 규정과 연관 관계가 연결되었습니다!`,
+    );
   }
 
   const [showLawPicker, setShowLawPicker] = useState(false);
@@ -1982,10 +2140,13 @@ function App() {
                       <ArrowUpRight size={18} />
                     </button>
                   </div>
-                  <GraphCanvas
-                    graph={graph}
-                    focus={defaultArticle?.id || ""}
-                    onNode={openNode}
+                  <LawGraphCanvas
+                    lawGraph={lawGraph}
+                    focusLaw={focusLaw || "소방기본법"}
+                    onSelectLaw={(law) => {
+                      setFocusLaw(law.name);
+                      go("graph");
+                    }}
                     mini
                   />
                   <div className="graph-legend">
@@ -2622,76 +2783,199 @@ function App() {
           {view === "graph" && (
             <>
               <PageHeading
-                eyebrow="CONNECTED KNOWLEDGE"
-                title="규정 관계 그래프"
-                description="상위법에서 기관 지침, 별지 서식까지. 조문을 클릭해 관계를 탐색하세요."
+                eyebrow="CONNECTED STATUTORY KNOWLEDGE"
+                title="법률·규정 간 연관 관계 그래프"
+                description="법률 단위로 연결된 위임·인용 관계를 탐색하세요. 법률을 선택하면 하위 조문과 연결된 상·하위 규정을 즉시 확인할 수 있습니다."
               />
-              <div className="vault-toolbar">
-                <select
-                  aria-label="중심 조문"
-                  value={focus}
-                  onChange={(e) => setFocus(e.target.value)}
-                >
-                  <option value="">전체 관계 보기</option>
-                  {graph.nodes.map((n) => (
-                    <option key={n.id} value={n.id}>
-                      {n.rule_name} · {n.title}
-                    </option>
-                  ))}
-                </select>
-                <div className="segmented">
-                  {[
-                    ["ALL", "전체 관계"],
-                    ["UPWARD_PARENT", "상위법"],
-                    ["BACKLINKS", "역참조"],
-                  ].map(([id, name]) => (
+
+              {/* 상단 법률 검색 및 연관 추가 툴바 */}
+              <div className="law-search-toolbar">
+                <div className="search-input law-search-input">
+                  <Search size={16} />
+                  <input
+                    aria-label="법률 검색"
+                    placeholder="법률명 검색 또는 연관 추가 (예: 소방기본법, 개인정보 보호법, 직제규정, 도로교통법...)"
+                    value={lawSearchQuery}
+                    onChange={(e) => setLawSearchQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && lawSearchQuery.trim()) {
+                        handleSearchOrAddLaw(lawSearchQuery.trim());
+                      }
+                    }}
+                  />
+                  {lawSearchQuery && (
                     <button
-                      key={id}
-                      className={direction === id ? "active" : ""}
-                      onClick={() => setDirection(id)}
+                      aria-label="검색어 지우기"
+                      onClick={() => setLawSearchQuery("")}
                     >
-                      {name}
+                      <X size={14} />
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    className="button primary law-search-submit-btn"
+                    onClick={() => handleSearchOrAddLaw(lawSearchQuery)}
+                  >
+                    <span>연관 탐색</span>
+                  </button>
+                </div>
+
+                <div className="law-quick-chips">
+                  <span className="chips-label">빠른 연관 탐색:</span>
+                  {[
+                    "소방기본법",
+                    "소방시설 설치 및 관리에 관한 법률",
+                    "시설안전 및 소방관리세칙",
+                    "개인정보 보호법",
+                    "공공데이터의 제공 및 이용 활성화에 관한 법률",
+                    "직제규정",
+                    "인사규정",
+                    "임직원 복무규정",
+                    "예산회계규정",
+                  ].map((lawName) => (
+                    <button
+                      key={lawName}
+                      type="button"
+                      className={`law-chip ${focusLaw === lawName ? "active" : ""}`}
+                      onClick={() => {
+                        setFocusLaw(lawName);
+                        setToast(`🔍 [${lawName}] 법률로 포커스 이동했습니다.`);
+                      }}
+                    >
+                      {lawName === "소방기본법"
+                        ? "🔥 소방기본법"
+                        : lawName.includes("소방") || lawName.includes("안전")
+                        ? "🚒 " + lawName
+                        : lawName.includes("개인정보")
+                        ? "🛡️ " + lawName
+                        : lawName.includes("공공데이터")
+                        ? "📊 " + lawName
+                        : "📜 " + lawName}
                     </button>
                   ))}
                 </div>
-                <span className="toolbar-end">
-                  노드를 선택하면 관계와 원문이 오른쪽에 표시됩니다.
-                </span>
+
+                <div className="vault-toolbar" style={{ marginTop: "10px" }}>
+                  <div className="segmented">
+                    <button
+                      className={graphViewMode === "law" ? "active" : ""}
+                      onClick={() => setGraphViewMode("law")}
+                    >
+                      🏛️ 법률·규정 간 연관 관계 (기본)
+                    </button>
+                    <button
+                      className={graphViewMode === "article" ? "active" : ""}
+                      onClick={() => setGraphViewMode("article")}
+                    >
+                      📄 조문별 세부 연결망
+                    </button>
+                  </div>
+
+                  {graphViewMode === "article" && (
+                    <select
+                      aria-label="중심 조문"
+                      value={focus}
+                      onChange={(e) => setFocus(e.target.value)}
+                    >
+                      <option value="">전체 조문 관계 보기</option>
+                      {graph.nodes.map((n) => (
+                        <option key={n.id} value={n.id}>
+                          {n.rule_name} · {n.title}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+
+                  <span className="toolbar-end">
+                    법률 노드를 클릭하면 하위 조문과 연결된 상·하위 규정이 오른쪽에 표시됩니다.
+                  </span>
+                </div>
               </div>
 
               <div className="graph-screen-layout">
                 <section className="panel full-graph">
                   <div className="graph-panel-header">
                     <div className="graph-stats-pills">
-                      <span className="stat-pill total">
-                        <strong>전체 {graph.nodes.length}개</strong> 규정
-                      </span>
-                      <span className="stat-pill law">
-                        🏛️ 상위법 {graph.nodes.filter((n) => n.kind === "statute" || n.kind === "decree" || n.agency === "국가법령" || (n.agency !== "한국행정연구원" && n.kind !== "form" && n.kind !== "guide")).length}건
-                      </span>
-                      <span className="stat-pill rule">
-                        📜 소관규정 {graph.nodes.filter((n) => (n.agency === "한국행정연구원" || n.kind === "rule") && n.kind !== "form" && n.kind !== "guide").length}건
-                      </span>
-                      <span className="stat-pill form">
-                        📋 별지서식 {graph.nodes.filter((n) => n.kind === "form" || n.kind === "guide").length}건
-                      </span>
-                      <span className="stat-pill edge">
-                        🔗 관계 {graph.edges.length}건
-                      </span>
+                      {graphViewMode === "law" ? (
+                        <>
+                          <span className="stat-pill total">
+                            <strong>전체 {lawGraph.nodes.length}개</strong> 법률·규정
+                          </span>
+                          <span className="stat-pill law">
+                            🏛️ 상위법령{" "}
+                            {lawGraph.nodes.filter((n) => n.tier === "higher_law").length}개
+                          </span>
+                          <span className="stat-pill rule">
+                            📜 소관 실무규정{" "}
+                            {lawGraph.nodes.filter((n) => n.tier === "institute_rule").length}개
+                          </span>
+                          <span className="stat-pill form">
+                            📋 별지서식{" "}
+                            {lawGraph.nodes.filter((n) => n.tier === "form").length}개
+                          </span>
+                          <span className="stat-pill edge">
+                            🔗 법률간 연결 {lawGraph.edges.length}건
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="stat-pill total">
+                            <strong>전체 {graph.nodes.length}개</strong> 조문
+                          </span>
+                          <span className="stat-pill law">
+                            🏛️ 상위법{" "}
+                            {graph.nodes.filter(
+                              (n) =>
+                                n.kind === "statute" ||
+                                n.kind === "decree" ||
+                                n.agency === "국가법령" ||
+                                (n.agency !== "한국행정연구원" &&
+                                  n.kind !== "form" &&
+                                  n.kind !== "guide"),
+                            ).length}건
+                          </span>
+                          <span className="stat-pill rule">
+                            📜 소관규정{" "}
+                            {graph.nodes.filter(
+                              (n) =>
+                                (n.agency === "한국행정연구원" || n.kind === "rule") &&
+                                n.kind !== "form" &&
+                                n.kind !== "guide",
+                            ).length}건
+                          </span>
+                          <span className="stat-pill form">
+                            📋 별지서식{" "}
+                            {graph.nodes.filter((n) => n.kind === "form" || n.kind === "guide").length}건
+                          </span>
+                          <span className="stat-pill edge">
+                            🔗 관계 {graph.edges.length}건
+                          </span>
+                        </>
+                      )}
                     </div>
                   </div>
-                  <GraphCanvas
-                    graph={graph}
-                    focus={focus}
-                    direction={direction}
-                    onNode={(n) => {
-                      setFocus(n.id);
-                    }}
-                  />
+
+                  {graphViewMode === "law" ? (
+                    <LawGraphCanvas
+                      lawGraph={lawGraph}
+                      focusLaw={focusLaw}
+                      onSelectLaw={(law) => setFocusLaw(law.name)}
+                    />
+                  ) : (
+                    <GraphCanvas
+                      graph={graph}
+                      focus={focus}
+                      direction={direction}
+                      onNode={(n) => {
+                        setFocus(n.id);
+                      }}
+                    />
+                  )}
+
                   <div className="graph-legend">
                     <span>
                       <i className="law" />
-                      상위법령 (법률·시행령)
+                      상위법령 (법률·대통령령)
                     </span>
                     <span>
                       <i className="rule" />
@@ -2699,176 +2983,165 @@ function App() {
                     </span>
                     <span>
                       <i className="form" />
-                      별지 서식
+                      별지 서식군
                     </span>
                     <span className="legend-hint">
-                      연결 방향: 인용 조문 → 근거 조문 (화살표 추적)
+                      연결 방향: 소관 규정 → 상위법령 위임 근거 (화살표 추적)
                     </span>
                   </div>
                 </section>
 
                 {/* Right side: 체계화된 상세 인스펙터 패널 */}
                 <aside className="graph-inspector-panel">
-                  {focus ? (
-                    (() => {
-                      const focusNode = graph.nodes.find((n) => n.id === focus);
-                      if (!focusNode) return null;
-                      const isLawNode =
-                        focusNode.kind === "statute" ||
-                        focusNode.kind === "decree" ||
-                        focusNode.agency === "국가법령" ||
-                        (focusNode.agency !== "한국행정연구원" &&
-                          focusNode.kind !== "form" &&
-                          focusNode.kind !== "guide");
-                      const isFormItem =
-                        focusNode.kind === "form" || focusNode.kind === "guide";
-                      const focusEdges = graph.edges.filter(
-                        (e) => e.source === focus || e.target === focus,
-                      );
-                      return (
-                        <div className="panel inspector-card">
-                          <div className="inspector-head">
-                            <span
-                              className={`pill ${
-                                isLawNode
-                                  ? "blue"
-                                  : isFormItem
-                                  ? "sand"
-                                  : "sage"
-                              }`}
-                            >
-                              {isLawNode
-                                ? "상위법령"
-                                : isFormItem
-                                ? "별지서식"
-                                : "기관규정"}
-                            </span>
-                            <span className="inspector-agency">
-                              {focusNode.agency}
-                            </span>
-                          </div>
-                          <h3 className="inspector-title">{focusNode.title}</h3>
-                          <p className="inspector-subtitle">
-                            {focusNode.rule_name}{" "}
-                            {focusNode.kind !== "form" &&
-                              `· ${displayArticle(focusNode)}`}
-                          </p>
+                  {(() => {
+                    const selectedLawNode =
+                      lawGraph.nodes.find((n) => n.name === focusLaw) ||
+                      lawGraph.nodes[0];
+                    if (!selectedLawNode) return null;
 
-                          <div className="inspector-meta-row">
-                            <div>
-                              <span>식별자</span>
-                              <code>{focusNode.id}</code>
-                            </div>
-                            <div>
-                              <span>연결 관계</span>
-                              <strong>{focusEdges.length}건</strong>
-                            </div>
-                          </div>
+                    // 이 법률과 연결된 법률 엣지들
+                    const connectedLawEdges = lawGraph.edges.filter(
+                      (e) =>
+                        e.source === selectedLawNode.name ||
+                        e.target === selectedLawNode.name,
+                    );
 
-                          <button
-                            type="button"
-                            className="button primary inspector-read-btn"
-                            onClick={() => openNode(focusNode)}
+                    return (
+                      <div className="panel inspector-card">
+                        <div className="inspector-head">
+                          <span
+                            className={`pill ${
+                              selectedLawNode.tier === "higher_law"
+                                ? "blue"
+                                : selectedLawNode.tier === "form"
+                                ? "sand"
+                                : "sage"
+                            }`}
                           >
-                            <FileText size={15} />
-                            <span>원문 조문 열람·편집 ↗</span>
-                          </button>
+                            {selectedLawNode.tier === "higher_law"
+                              ? "🏛️ 상위법령 (법률·대통령령)"
+                              : selectedLawNode.tier === "form"
+                              ? "📋 별지 서식"
+                              : "📜 소관 실무 규정"}
+                          </span>
+                          <span className="inspector-agency">
+                            {selectedLawNode.agency}
+                          </span>
+                        </div>
 
-                          <div className="inspector-relations-section">
-                            <h4>연결된 규정 ({focusEdges.length}건)</h4>
-                            {focusEdges.length > 0 ? (
-                              <div className="inspector-edges-scroll">
-                                {focusEdges.map((e, idx) => {
-                                  const isSource = e.source === focusNode.id;
-                                  const otherId = isSource ? e.target : e.source;
-                                  const other = graph.nodes.find(
-                                    (n) => n.id === otherId
-                                  );
-                                  if (!other) return null;
-                                  return (
-                                    <button
-                                      key={idx}
-                                      type="button"
-                                      className="inspector-edge-btn"
-                                      onClick={() => setFocus(other.id)}
-                                    >
-                                      <div className="edge-btn-top">
-                                        <span
-                                          className={`edge-dir ${
-                                            isSource ? "outgoing" : "incoming"
-                                          }`}
-                                        >
-                                          {isSource ? "→ 인용" : "← 역인용"}
-                                        </span>
-                                        <span className="edge-kind">
-                                          {e.type || "인용"}
-                                        </span>
-                                      </div>
-                                      <strong>{other.title}</strong>
-                                      <small>
-                                        {other.rule_name} ·{" "}
-                                        {displayArticle(other)}
-                                      </small>
-                                    </button>
-                                  );
-                                })}
+                        <h3 className="inspector-title">{selectedLawNode.name}</h3>
+                        <p className="inspector-subtitle">
+                          {selectedLawNode.agency} 소관 · 조문{" "}
+                          <strong>{selectedLawNode.articleCount}개</strong> 보유
+                        </p>
+
+                        <div className="inspector-meta-row">
+                          <div>
+                            <span>소관 구분</span>
+                            <code>
+                              {selectedLawNode.tier === "higher_law"
+                                ? "국가 공식 법령"
+                                : "기관 실무 규정"}
+                            </code>
+                          </div>
+                          <div>
+                            <span>연결된 법률</span>
+                            <strong>{connectedLawEdges.length}개 법률</strong>
+                          </div>
+                        </div>
+
+                        {/* 1. 어디에 연결되는지 확인 섹션 */}
+                        <div className="inspector-relations-section">
+                          <h4>
+                            🔗 어디에 연결되는지 확인 ({connectedLawEdges.length}건)
+                          </h4>
+                          {connectedLawEdges.length > 0 ? (
+                            <div className="inspector-edges-scroll">
+                              {connectedLawEdges.map((e, idx) => {
+                                const isSource = e.source === selectedLawNode.name;
+                                const otherLawName = isSource ? e.target : e.source;
+                                const otherLaw = lawGraph.nodes.find(
+                                  (n) => n.name === otherLawName,
+                                );
+                                return (
+                                  <button
+                                    key={idx}
+                                    type="button"
+                                    className="inspector-edge-btn"
+                                    onClick={() => setFocusLaw(otherLawName)}
+                                  >
+                                    <div className="edge-btn-top">
+                                      <span
+                                        className={`edge-dir ${
+                                          isSource ? "outgoing" : "incoming"
+                                        }`}
+                                      >
+                                        {isSource ? "→ 위임·연계" : "← 위임 근거"}
+                                      </span>
+                                      <span className="edge-kind">
+                                        조문 연계 {e.count}건
+                                      </span>
+                                    </div>
+                                    <strong>{otherLawName}</strong>
+                                    <small>{otherLaw?.agency || "관계기관"}</small>
+
+                                    {/* 조문간 구체적 연결 근거 */}
+                                    <div className="edge-article-links">
+                                      {e.articleLinks.slice(0, 2).map((al, alIdx) => (
+                                        <div key={alIdx} className="article-link-tag">
+                                          § {displayArticle(al.sourceArt)} ➔ {displayArticle(al.targetArt)}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            <p className="inspector-no-edges">
+                              현재 연결된 상·하위 법률이 없습니다.
+                            </p>
+                          )}
+                        </div>
+
+                        {/* 2. 법률에 포함된 조문 목록 섹션 (법률을 누르면 조문이 나옴) */}
+                        <div className="inspector-articles-section">
+                          <h4>
+                            📜 포함된 조문 목록 ({selectedLawNode.articles.length}건)
+                          </h4>
+                          <div className="inspector-articles-scroll">
+                            {selectedLawNode.articles.map((art) => (
+                              <div
+                                key={art.id}
+                                className="inspector-article-item"
+                                onClick={() => openNode(art)}
+                              >
+                                <div className="article-item-head">
+                                  <strong>{art.article_no}</strong>
+                                  <span className="article-item-title">{art.title}</span>
+                                </div>
+                                <p className="article-item-body">
+                                  {art.body.slice(0, 75)}
+                                  {art.body.length > 75 ? "…" : ""}
+                                </p>
+                                <div className="article-item-footer">
+                                  <span>원문 열람·편집 ↗</span>
+                                </div>
                               </div>
-                            ) : (
-                              <p className="inspector-no-edges">
-                                연결된 상·하위 규정이 없습니다.
-                              </p>
-                            )}
+                            ))}
                           </div>
+                        </div>
 
-                          <button
-                            type="button"
-                            className="button secondary reset-btn"
-                            onClick={() => setFocus("")}
-                          >
-                            전체 관계 보기로 초기화
-                          </button>
-                        </div>
-                      );
-                    })()
-                  ) : (
-                    <div className="panel inspector-card guide-mode">
-                      <div className="guide-header">
-                        <Network size={24} className="guide-icon" />
-                        <div>
-                          <h3>규정 관계 체계화 안내</h3>
-                          <p>노드를 클릭해 상세 연결을 확인하세요</p>
-                        </div>
+                        <button
+                          type="button"
+                          className="button secondary reset-btn"
+                          onClick={() => setFocusLaw("소방기본법")}
+                        >
+                          🔥 소방기본법 연관망으로 초기화
+                        </button>
                       </div>
-                      <div className="guide-layers">
-                        <div className="guide-layer-item law">
-                          <span className="layer-dot law" />
-                          <div>
-                            <strong>제1계층: 상위법령 (법률)</strong>
-                            <small>국가법령정보센터 기준 상위 위임 근거</small>
-                          </div>
-                        </div>
-                        <div className="guide-layer-item rule">
-                          <span className="layer-dot rule" />
-                          <div>
-                            <strong>제2계층: 기관 소관 규정</strong>
-                            <small>업무 집행을 위한 기관 지침·훈령·세부기준</small>
-                          </div>
-                        </div>
-                        <div className="guide-layer-item form">
-                          <span className="layer-dot form" />
-                          <div>
-                            <strong>제3계층: 별지 서식</strong>
-                            <small>신청·통지·대장 등 실제 행정 집행 서식</small>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="guide-tip">
-                        💡 <strong>팁:</strong> 상단 중심 조문 선택기나 그래프의
-                        조문 노드를 클릭하면 해당 조문을 중심으로 연결된 상·하위
-                        규정이 즉시 하이라이트됩니다.
-                      </div>
-                    </div>
-                  )}
+                    );
+                  })()}
                 </aside>
               </div>
 
@@ -4020,6 +4293,372 @@ function IssueList({ issues }: { issues: Issue[] }) {
     </div>
   ) : null;
 }
+function LawGraphCanvas({
+  lawGraph,
+  focusLaw,
+  onSelectLaw,
+  mini = false,
+}: {
+  lawGraph: LawGraph;
+  focusLaw: string;
+  onSelectLaw: (law: LawNode) => void;
+  mini?: boolean;
+}) {
+  let nodes = lawGraph.nodes;
+  let edges = lawGraph.edges;
+
+  if (mini) {
+    const core =
+      nodes.find((n) => n.id === focusLaw) ||
+      nodes.find((n) => n.id === "소방기본법") ||
+      nodes.find((n) => n.id === "공공데이터의 제공 및 이용 활성화에 관한 법률") ||
+      nodes[0];
+    const connected = new Set([
+      core?.id,
+      ...edges
+        .filter((e) => e.source === core?.id || e.target === core?.id)
+        .flatMap((e) => [e.source, e.target]),
+    ]);
+    nodes = nodes.filter((n) => connected.has(n.id)).slice(0, 7);
+    edges = edges.filter(
+      (e) =>
+        nodes.some((n) => n.id === e.source) &&
+        nodes.some((n) => n.id === e.target),
+    );
+  }
+
+  const higherLaws = nodes.filter((n) => n.tier === "higher_law");
+  const instituteRules = nodes.filter((n) => n.tier === "institute_rule");
+  const forms = nodes.filter((n) => n.tier === "form");
+
+  const width = mini ? 340 : 960;
+  const maxPerRow = mini ? 3 : 5;
+  const lawRows = Math.max(1, Math.ceil(higherLaws.length / maxPerRow));
+  const ruleRows = Math.max(1, Math.ceil(instituteRules.length / maxPerRow));
+  const formRows = Math.max(1, Math.ceil(forms.length / maxPerRow));
+
+  const lawLaneY = 8;
+  const lawLaneH = mini ? 48 : Math.max(70, lawRows * 44 + 28);
+  const ruleLaneY = lawLaneY + lawLaneH + 10;
+  const ruleLaneH = mini ? 58 : Math.max(70, ruleRows * 44 + 28);
+  const formLaneY = ruleLaneY + ruleLaneH + 10;
+  const formLaneH = mini ? 46 : Math.max(55, formRows * 44 + 28);
+
+  const height = mini ? 176 : formLaneY + formLaneH + 14;
+
+  const positions = new Map<string, { x: number; y: number }>();
+  const rowConfigs = [
+    { items: higherLaws, startY: mini ? 26 : lawLaneY + 34 },
+    { items: instituteRules, startY: mini ? 80 : ruleLaneY + 34 },
+    { items: forms, startY: mini ? 136 : formLaneY + 34 },
+  ];
+
+  rowConfigs.forEach(({ items, startY }) =>
+    items.forEach((n, i) => {
+      const group = Math.floor(i / maxPerRow);
+      const offset = i % maxPerRow;
+      const count = Math.min(items.length - group * maxPerRow, maxPerRow);
+      positions.set(n.id, {
+        x: (width / (count + 1)) * (offset + 1),
+        y: startY + group * (mini ? 24 : 44),
+      });
+    }),
+  );
+
+  const activeLawIds = new Set<string>();
+  if (focusLaw) {
+    activeLawIds.add(focusLaw);
+    edges.forEach((e) => {
+      if (e.source === focusLaw) activeLawIds.add(e.target);
+      if (e.target === focusLaw) activeLawIds.add(e.source);
+    });
+  }
+
+  const w = mini ? 82 : 144;
+  const h = mini ? 24 : 36;
+
+  return (
+    <div className={`graph-canvas law-graph-mode ${mini ? "mini" : ""}`}>
+      <svg
+        viewBox={`0 0 ${width} ${height}`}
+        role="img"
+        aria-label="법률 간 연관 관계 그래프"
+      >
+        <defs>
+          <pattern
+            id={mini ? "mini-law-dots" : "full-law-dots"}
+            width="20"
+            height="20"
+            patternUnits="userSpaceOnUse"
+          >
+            <circle cx="1" cy="1" r=".7" fill="#94a3b8" opacity="0.4" />
+          </pattern>
+          <marker
+            id={mini ? "mini-law-arr" : "full-law-arr"}
+            viewBox="0 0 10 10"
+            refX="9"
+            refY="5"
+            markerWidth="5"
+            markerHeight="5"
+            orient="auto-start-reverse"
+          >
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b" />
+          </marker>
+          <marker
+            id="active-law-arr"
+            viewBox="0 0 10 10"
+            refX="9"
+            refY="5"
+            markerWidth="6"
+            markerHeight="6"
+            orient="auto-start-reverse"
+          >
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563eb" />
+          </marker>
+        </defs>
+        <rect
+          width={width}
+          height={height}
+          fill={`url(#${mini ? "mini-law-dots" : "full-law-dots"})`}
+        />
+
+        {!mini && (
+          <g className="graph-swimlanes">
+            {/* 1단계: 상위법령 */}
+            <rect
+              x="12"
+              y={lawLaneY}
+              width={width - 24}
+              height={lawLaneH}
+              rx="8"
+              fill={higherLaws.length > 0 ? "#f0f7ff" : "#f8fafc"}
+              stroke={higherLaws.length > 0 ? "#bae6fd" : "#e2e8f0"}
+              strokeWidth="1.2"
+              strokeDasharray="4 4"
+            />
+            <g transform={`translate(20, ${lawLaneY + 16})`}>
+              <rect
+                x="0"
+                y="-11"
+                width="220"
+                height="18"
+                rx="3"
+                fill={higherLaws.length > 0 ? "#e0f2fe" : "#f1f5f9"}
+                stroke={higherLaws.length > 0 ? "#7dd3fc" : "#cbd5e1"}
+              />
+              <text
+                x="6"
+                y="2"
+                fontSize="9.5"
+                fontWeight="700"
+                fill={higherLaws.length > 0 ? "#0369a1" : "#64748b"}
+              >
+                🏛️ 제1계층: 상위법령 (법률·대통령령) {higherLaws.length}개
+              </text>
+            </g>
+
+            {/* 2단계: 소관 규정 */}
+            <rect
+              x="12"
+              y={ruleLaneY}
+              width={width - 24}
+              height={ruleLaneH}
+              rx="8"
+              fill={instituteRules.length > 0 ? "#f0fdf4" : "#f8fafc"}
+              stroke={instituteRules.length > 0 ? "#bbf7d0" : "#e2e8f0"}
+              strokeWidth="1.2"
+              strokeDasharray="4 4"
+            />
+            <g transform={`translate(20, ${ruleLaneY + 16})`}>
+              <rect
+                x="0"
+                y="-11"
+                width="230"
+                height="18"
+                rx="3"
+                fill={instituteRules.length > 0 ? "#dcfce7" : "#f1f5f9"}
+                stroke={instituteRules.length > 0 ? "#86efac" : "#cbd5e1"}
+              />
+              <text
+                x="6"
+                y="2"
+                fontSize="9.5"
+                fontWeight="700"
+                fill={instituteRules.length > 0 ? "#15803d" : "#64748b"}
+              >
+                📜 제2계층: 기관 소관 실무 규정 (지침·세칙) {instituteRules.length}개
+              </text>
+            </g>
+
+            {/* 3단계: 별지 서식 */}
+            <rect
+              x="12"
+              y={formLaneY}
+              width={width - 24}
+              height={formLaneH}
+              rx="8"
+              fill={forms.length > 0 ? "#fffbeb" : "#f8fafc"}
+              stroke={forms.length > 0 ? "#fde68a" : "#e2e8f0"}
+              strokeWidth="1.2"
+              strokeDasharray="4 4"
+            />
+            <g transform={`translate(20, ${formLaneY + 16})`}>
+              <rect
+                x="0"
+                y="-11"
+                width="210"
+                height="18"
+                rx="3"
+                fill={forms.length > 0 ? "#fef3c7" : "#f1f5f9"}
+                stroke={forms.length > 0 ? "#fcd34d" : "#cbd5e1"}
+              />
+              <text
+                x="6"
+                y="2"
+                fontSize="9.5"
+                fontWeight="700"
+                fill={forms.length > 0 ? "#b45309" : "#64748b"}
+              >
+                📋 제3계층: 별지 서식 및 집행서식 {forms.length}개
+              </text>
+            </g>
+          </g>
+        )}
+
+        {/* 법률 간 연결선 */}
+        {edges.map((e) => {
+          const s = positions.get(e.source);
+          const t = positions.get(e.target);
+          if (!s || !t) return null;
+          const isHighlighted = focusLaw
+            ? e.source === focusLaw || e.target === focusLaw
+            : true;
+          return (
+            <path
+              key={e.source + "->" + e.target}
+              d={`M${s.x},${s.y} C${s.x},${(s.y + t.y) / 2} ${t.x},${(s.y + t.y) / 2} ${t.x},${t.y}`}
+              fill="none"
+              stroke={
+                isHighlighted
+                  ? focusLaw
+                    ? "#2563eb"
+                    : "#94a3b8"
+                  : "#e2e8f0"
+              }
+              strokeWidth={
+                isHighlighted ? (mini ? 1.4 : focusLaw ? 2.2 : 1.4) : 0.6
+              }
+              strokeDasharray={e.type === "references" ? "4 3" : undefined}
+              markerEnd={`url(#${
+                isHighlighted && focusLaw
+                  ? "active-law-arr"
+                  : mini
+                  ? "mini-law-arr"
+                  : "full-law-arr"
+              })`}
+            />
+          );
+        })}
+
+        {/* 법률 노드 */}
+        {nodes.map((n) => {
+          const p = positions.get(n.id);
+          if (!p) return null;
+          const isFocus = n.id === focusLaw;
+          const isConnected = focusLaw ? activeLawIds.has(n.id) : true;
+          const isLaw = n.tier === "higher_law";
+          const isForm = n.tier === "form";
+
+          return (
+            <g
+              key={n.id}
+              transform={`translate(${p.x},${p.y})`}
+              className={`graph-node law-node ${isFocus ? "focused" : ""}`}
+              opacity={focusLaw && !isConnected ? 0.35 : 1}
+              role="button"
+              tabIndex={0}
+              aria-label={`${n.name} 법률 노드`}
+              onClick={() => onSelectLaw(n)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") onSelectLaw(n);
+              }}
+            >
+              <rect
+                x={-w / 2}
+                y={-h / 2}
+                width={w}
+                height={h}
+                rx={mini ? 4 : 7}
+                fill={isFocus ? "#0b3b60" : "#ffffff"}
+                stroke={
+                  isFocus
+                    ? "#3b82f6"
+                    : isLaw
+                    ? "#0284c7"
+                    : isForm
+                    ? "#d97706"
+                    : "#16a34a"
+                }
+                strokeWidth={isFocus ? "2.5" : "1.2"}
+              />
+              {/* Category strip */}
+              <path
+                d={`M${-w / 2 + 7},${-h / 2} h${w - 14} a7,7 0 0 1 7,7 v0 h${-w} v0 a7,7 0 0 1 7,-7 z`}
+                fill={
+                  isFocus
+                    ? "#60a5fa"
+                    : isLaw
+                    ? "#0284c7"
+                    : isForm
+                    ? "#d97706"
+                    : "#16a34a"
+                }
+              />
+              <text
+                textAnchor="middle"
+                y={mini ? -2 : -3}
+                fontSize={mini ? 7.2 : 9.8}
+                fill={
+                  isFocus
+                    ? "#ffffff"
+                    : isLaw
+                    ? "#0369a1"
+                    : isForm
+                    ? "#b45309"
+                    : "#15803d"
+                }
+                fontWeight="700"
+              >
+                {n.name.length > (mini ? 8 : 13)
+                  ? n.name.slice(0, mini ? 7 : 12) + "…"
+                  : n.name}
+              </text>
+              <text
+                textAnchor="middle"
+                y={mini ? 7 : 10}
+                fontSize={mini ? 6.2 : 7.8}
+                fill={isFocus ? "#cbd5e1" : "#64748b"}
+                fontWeight="500"
+              >
+                {n.agency} · 조문 {n.articleCount}건
+              </text>
+              <title>
+                {n.name} ({n.agency}, 조문 {n.articleCount}건)
+              </title>
+            </g>
+          );
+        })}
+      </svg>
+      {!mini && (
+        <div className="graph-counter">
+          <Network size={15} />
+          {nodes.length}개 법률·규정 · {edges.length}개 법률간 연결
+        </div>
+      )}
+    </div>
+  );
+}
+
 function GraphCanvas({
   graph,
   focus,

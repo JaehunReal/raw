@@ -49,6 +49,131 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
+  // Practical workspace API routes
+  if (url.pathname.startsWith("/api/")) {
+    const snapshotPath = path.resolve(__dirname, "../frontend/src/preview-snapshot.json");
+    let snapshot = { graph: { nodes: [], edges: [], issues: [] }, package_example: { documents: [] } };
+    try {
+      if (fs.existsSync(snapshotPath)) {
+        snapshot = JSON.parse(fs.readFileSync(snapshotPath, "utf8"));
+      }
+    } catch (e) {
+      console.error("Failed to read snapshot:", e);
+    }
+
+    res.setHeader("Content-Type", "application/json; charset=utf-8");
+
+    if (url.pathname === "/api/session") {
+      res.statusCode = 200;
+      return res.end(JSON.stringify({ authenticated: true }));
+    }
+
+    if (url.pathname === "/api/overview") {
+      res.statusCode = 200;
+      return res.end(
+        JSON.stringify({
+          stats: {
+            nodes: snapshot.graph.nodes.length,
+            edges: snapshot.graph.edges.length,
+            agencies: 2,
+            rules: 3,
+            forms: 2,
+            issues: 0,
+            packages: 1,
+          },
+          readiness: {
+            graph: {
+              available: true,
+              status: "ready",
+              detail: `로컬 Markdown 문서 ${snapshot.graph.nodes.length}개`,
+            },
+            mcp: { status: "ready", detail: "MCP 브리지 활성화" },
+          },
+          recent_changes: [
+            {
+              timestamp: "2026-10-09 14:00",
+              rule_name: "공공데이터 제공 및 이용 활성화에 관한 지침",
+              article: "제7조",
+              type: "위임근거 개정안 검토",
+            },
+          ],
+          agencies: ["한국행정연구원", "개인정보보호위원회"],
+          rules: ["공공데이터 제공 및 이용 활성화에 관한 지침", "개인정보 보호 내부 관리계획"],
+          issues: [],
+        })
+      );
+    }
+
+    if (url.pathname === "/api/graph") {
+      res.statusCode = 200;
+      return res.end(JSON.stringify(snapshot.graph));
+    }
+
+    if (url.pathname === "/api/packages") {
+      res.statusCode = 200;
+      return res.end(
+        JSON.stringify({
+          packages: [
+            {
+              id: "pkg-2026-001",
+              agency: "한국행정연구원",
+              rule_name: "공공데이터 제공 및 이용 활성화에 관한 지침",
+              amendment_type: "partial",
+              created_at: "2026-10-09T14:00:00Z",
+              documents: snapshot.package_example?.documents || [],
+            },
+          ],
+        })
+      );
+    }
+
+    if (url.pathname === "/api/articles") {
+      res.statusCode = 200;
+      return res.end(
+        JSON.stringify({
+          articles: snapshot.graph.nodes,
+          total: snapshot.graph.nodes.length,
+        })
+      );
+    }
+
+    if (url.pathname === "/api/validate") {
+      res.statusCode = 200;
+      return res.end(JSON.stringify({ valid: true, issues: [] }));
+    }
+
+    if (url.pathname === "/api/impact") {
+      res.statusCode = 200;
+      return res.end(
+        JSON.stringify({
+          target_file_path: "한국행정연구원/지침/공공데이터제공지침.md",
+          changed: true,
+          impacted_nodes: [
+            {
+              id: "guideline-01",
+              title: "공공데이터 제공 및 이용 활성화에 관한 지침 제7조",
+              depth: 1,
+            },
+            {
+              id: "form-01",
+              title: "공공데이터 제공 신청서 (별지 제1호 서식)",
+              depth: 2,
+            },
+            {
+              id: "form-02",
+              title: "데이터 반출 심의 의결서 (별지 제2호 서식)",
+              depth: 2,
+            },
+          ],
+          suggested_link_edits: [],
+          issues: [],
+          before: "",
+          after: "",
+        })
+      );
+    }
+  }
+
   // Serve static files from dist
   let filePath = path.join(DIST, decodeURIComponent(url.pathname));
   if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {

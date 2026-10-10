@@ -4089,7 +4089,7 @@ function GraphCanvas({
         nodes.some((n) => n.id === e.target),
     );
   }
-  const width = mini ? 430 : 1050;
+  const width = mini ? 360 : 920;
   const law = nodes.filter(
       (n) =>
         n.kind === "statute" ||
@@ -4106,14 +4106,14 @@ function GraphCanvas({
   const ruleRows = Math.max(1, Math.ceil(rules.length / maxPerRow));
   const formRows = Math.max(1, Math.ceil(forms.length / maxPerRow));
 
-  const lawLaneY = 12;
-  const lawLaneH = mini ? 70 : Math.max(140, lawRows * 75 + 45);
-  const ruleLaneY = lawLaneY + lawLaneH + 16;
-  const ruleLaneH = mini ? 90 : Math.max(140, ruleRows * 75 + 45);
-  const formLaneY = ruleLaneY + ruleLaneH + 16;
-  const formLaneH = mini ? 70 : Math.max(120, formRows * 75 + 45);
+  const lawLaneY = 10;
+  const lawLaneH = mini ? 52 : Math.max(110, lawRows * 62 + 38);
+  const ruleLaneY = lawLaneY + lawLaneH + 12;
+  const ruleLaneH = mini ? 66 : Math.max(110, ruleRows * 62 + 38);
+  const formLaneY = ruleLaneY + ruleLaneH + 12;
+  const formLaneH = mini ? 52 : Math.max(95, formRows * 62 + 38);
 
-  const height = mini ? 260 : formLaneY + formLaneH + 24;
+  const height = mini ? 196 : formLaneY + formLaneH + 18;
 
   const positions = new Map<string, { x: number; y: number }>();
   if (mini && focus) {
@@ -4125,9 +4125,9 @@ function GraphCanvas({
   }
 
   const rowConfigs = [
-    { items: law, startY: mini ? 42 : lawLaneY + 54 },
-    { items: rules, startY: mini ? 128 : ruleLaneY + 54 },
-    { items: forms, startY: mini ? 218 : formLaneY + 54 },
+    { items: law, startY: mini ? 32 : lawLaneY + 44 },
+    { items: rules, startY: mini ? 94 : ruleLaneY + 44 },
+    { items: forms, startY: mini ? 156 : formLaneY + 44 },
   ];
   rowConfigs.forEach(({ items, startY }) =>
     items.forEach((n, i) => {
@@ -4136,7 +4136,7 @@ function GraphCanvas({
         count = Math.min(items.length - group * maxPerRow, maxPerRow);
       positions.set(n.id, {
         x: (width / (count + 1)) * (offset + 1),
-        y: startY + group * (mini ? 38 : 75),
+        y: startY + group * (mini ? 28 : 62),
       });
     }),
   );
@@ -4350,8 +4350,8 @@ function GraphCanvas({
           const isFocus = n.id === focus,
             isLaw = n.agency === "국가법령",
             isForm = n.kind === "form",
-            w = mini ? 105 : 168,
-            h = mini ? 38 : 61;
+            w = mini ? 82 : 138,
+            h = mini ? 28 : 46;
           return (
             <g
               key={n.id}
@@ -4370,7 +4370,7 @@ function GraphCanvas({
                 y={-h / 2}
                 width={w}
                 height={h}
-                rx={mini ? 7 : 10}
+                rx={mini ? 5 : 8}
                 fill={
                   isFocus
                     ? "#0b3b60"
@@ -4385,33 +4385,33 @@ function GraphCanvas({
                         ? "#d97706"
                         : "#16a34a"
                 }
-                strokeWidth={isFocus ? (mini ? "2" : "2.5") : (mini ? "1.2" : "1.5")}
+                strokeWidth={isFocus ? (mini ? "1.8" : "2.2") : (mini ? "1" : "1.3")}
               />
               {/* Category Top Strip */}
               <path
-                d={`M${-w / 2 + (mini ? 7 : 10)},${-h / 2} h${w - (mini ? 14 : 20)} a${mini ? 7 : 10},${mini ? 7 : 10} 0 0 1 ${mini ? 7 : 10},${mini ? 7 : 10} v0 h${-w} v0 a${mini ? 7 : 10},${mini ? 7 : 10} 0 0 1 ${mini ? 7 : 10},${-(mini ? 7 : 10)} z`}
+                d={`M${-w / 2 + (mini ? 5 : 8)},${-h / 2} h${w - (mini ? 10 : 16)} a${mini ? 5 : 8},${mini ? 5 : 8} 0 0 1 ${mini ? 5 : 8},${mini ? 5 : 8} v0 h${-w} v0 a${mini ? 5 : 8},${mini ? 5 : 8} 0 0 1 ${mini ? 5 : 8},${-(mini ? 5 : 8)} z`}
                 fill={isFocus ? "#60a5fa" : isLaw ? "#0284c7" : isForm ? "#d97706" : "#16a34a"}
               />
               <text
                 textAnchor="middle"
-                y={mini ? -2 : -4}
-                fontSize={mini ? 9 : 11.5}
+                y={mini ? -2 : -3}
+                fontSize={mini ? 7.5 : 10.5}
                 fill={isFocus ? "#ffffff" : isLaw ? "#0369a1" : isForm ? "#b45309" : "#15803d"}
                 fontWeight="700"
               >
-                {n.rule_name.length > (mini ? 11 : 15)
-                  ? n.rule_name.slice(0, mini ? 10 : 14) + "…"
+                {n.rule_name.length > (mini ? 9 : 13)
+                  ? n.rule_name.slice(0, mini ? 8 : 12) + "…"
                   : n.rule_name}
               </text>
               <text
                 textAnchor="middle"
-                y={mini ? 11 : 14}
-                fontSize={mini ? 8 : 10}
+                y={mini ? 8 : 12}
+                fontSize={mini ? 6.5 : 8.8}
                 fill={isFocus ? "#e2e8f0" : "#475569"}
                 fontWeight="500"
               >
-                {isForm ? "별지 서식" : displayArticle(n)} ·{" "}
-                {n.title.slice(0, mini ? 8 : 15)}
+                {isForm ? "별지" : displayArticle(n)} ·{" "}
+                {n.title.slice(0, mini ? 7 : 12)}
               </text>
               <title>
                 {n.rule_name} {n.title}

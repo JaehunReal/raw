@@ -69,15 +69,18 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (url.pathname === "/api/overview") {
+      const allAgencies = Array.from(new Set(snapshot.graph.nodes.map((n) => n.agency)));
+      const allRules = Array.from(new Set(snapshot.graph.nodes.map((n) => n.rule_name)));
+      const formsCount = snapshot.graph.nodes.filter((n) => n.kind === "form").length;
       res.statusCode = 200;
       return res.end(
         JSON.stringify({
           stats: {
             nodes: snapshot.graph.nodes.length,
             edges: snapshot.graph.edges.length,
-            agencies: 2,
-            rules: 3,
-            forms: 2,
+            agencies: allAgencies.length,
+            rules: allRules.length,
+            forms: formsCount,
             issues: 0,
             packages: 1,
           },
@@ -85,20 +88,13 @@ const server = http.createServer(async (req, res) => {
             graph: {
               available: true,
               status: "ready",
-              detail: `로컬 Markdown 문서 ${snapshot.graph.nodes.length}개`,
+              detail: `국가법령 및 실무규정 ${snapshot.graph.nodes.length}개 조문 (국가법령정보센터 실데이터 연계)`,
             },
             mcp: { status: "ready", detail: "MCP 브리지 활성화" },
           },
-          recent_changes: [
-            {
-              timestamp: "2026-10-09 14:00",
-              rule_name: "공공데이터 제공 및 이용 활성화에 관한 지침",
-              article: "제7조",
-              type: "위임근거 개정안 검토",
-            },
-          ],
-          agencies: ["한국행정연구원", "개인정보보호위원회"],
-          rules: ["공공데이터 제공 및 이용 활성화에 관한 지침", "개인정보 보호 내부 관리계획"],
+          recent_changes: snapshot.graph.nodes.slice(0, 8),
+          agencies: allAgencies,
+          rules: allRules,
           issues: [],
         })
       );

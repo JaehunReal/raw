@@ -384,3 +384,299 @@
     font-size: 16px !important;
   }
 }
+
+/* ============================================================
+   Three-Tier Law Comparison View (법령 3단비교: 법·시행령·시행규칙)
+   ============================================================ */
+.three-tier-quickbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  margin: 14px 0 16px;
+}
+
+.quickbar-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0b3b60;
+  white-space: nowrap;
+}
+
+.quickbar-items {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.quickbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.quickbar-btn:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.quickbar-btn.active {
+  background: #0b3b60;
+  color: #ffffff;
+  border-color: #0b3b60;
+  box-shadow: 0 1px 3px rgba(11, 59, 96, 0.2);
+}
+
+.quickbar-btn .btn-tag {
+  background: rgba(255, 255, 255, 0.25);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.quickbar-disabled {
+  font-size: 12.5px;
+  color: #94a3b8;
+  padding: 6px 10px;
+  background: #f1f5f9;
+  border-radius: 6px;
+}
+
+/* 3-Tier Card (각 조항 하단 배치) */
+.three-tier-card {
+  margin-top: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.three-tier-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: #f1f5f9;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.three-tier-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.three-tier-icon {
+  font-size: 15px;
+}
+
+.three-tier-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.three-tier-sub {
+  font-size: 12px;
+  color: #64748b;
+  margin-left: 4px;
+}
+
+.three-tier-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  padding: 12px;
+}
+
+.three-tier-col {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.15s ease;
+}
+
+.three-tier-col.current {
+  border-color: #0b3b60;
+  background: #f0f7ff;
+  box-shadow: 0 0 0 1px #0b3b60;
+}
+
+.three-tier-col-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  border-bottom: 1px dashed #e2e8f0;
+  padding-bottom: 8px;
+}
+
+.three-tier-col-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.col-level-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.col-level-badge.act {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.col-level-badge.decree {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.col-level-badge.rule {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.col-law-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.col-current-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: #0b3b60;
+  background: #e0f2fe;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.three-tier-col-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.three-tier-article-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.three-tier-snippet {
+  font-size: 12px;
+  color: #475569;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  background: #f8fafc;
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid #f1f5f9;
+}
+
+.three-tier-empty {
+  font-size: 12px;
+  color: #94a3b8;
+  font-style: italic;
+  padding: 8px 0;
+}
+
+.three-tier-jump-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid #0b3b60;
+  background: #0b3b60;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-top: auto;
+}
+
+.three-tier-jump-btn:hover {
+  background: #1a73e8;
+  border-color: #1a73e8;
+}
+
+.three-tier-jump-btn.secondary {
+  background: #ffffff;
+  color: #0b3b60;
+  border-color: #93c5fd;
+}
+
+.three-tier-jump-btn.secondary:hover {
+  background: #f0f7ff;
+  border-color: #0b3b60;
+}
+
+.three-tier-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.three-tier-pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+  cursor: pointer;
+}
+
+.three-tier-pill.selected {
+  background: #0b3b60;
+  color: #ffffff;
+  border-color: #0b3b60;
+}
+
+@media (max-width: 900px) {
+  .three-tier-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

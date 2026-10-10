@@ -573,6 +573,8 @@ export function LawsPage() {
                       key={`${document.law_id}:${document.version_id}`}
                       provisions={document.provisions || []}
                       initialArticle={jumpArticle}
+                      currentLaw={document}
+                      onSelectLaw={(rec, article) => handleSelectLaw(rec as LawRecord, article)}
                     />
                   </div>
                 )}

@@ -5,7 +5,7 @@ import {
   PlugZap, Search, ShieldCheck, Sparkles, CircleAlert, Clock3,
 } from "lucide-react";
 import { ServiceOverview, McpGuide } from "./ServiceGuide";
-import previewSnapshot from "./preview-snapshot.json";
+import previewSnapshot from "./demo-snapshot.json";
 import OfficialLaws, { checkedAt, connectionLabel, displayCount, useOfficialStatus } from "./OfficialLaws";
 import AttachmentLibrary from "./AttachmentLibrary";
 import "./public-preview.css";

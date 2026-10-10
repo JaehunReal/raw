@@ -11,7 +11,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useRouter } from "../router";
-import previewSnapshot from "../preview-snapshot.json";
+import previewSnapshot from "../demo-snapshot.json";
 import "../public-preview.css";
 
 type PreviewNode = {
@@ -264,7 +264,7 @@ function PreviewGraph({
 }
 
 export function DemoPage() {
-  const { searchParams } = useRouter();
+  const { searchParams, navigate } = useRouter();
   const initialTab = (searchParams.get("tab") as "vault" | "graph" | "impact" | "packages") || "vault";
   const [tab, setTab] = useState<"vault" | "graph" | "impact" | "packages">(initialTab);
   const defaultNode =
@@ -316,12 +316,19 @@ export function DemoPage() {
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <h1 style={{ fontSize: "22px", fontWeight: 700, color: "#1a3827", margin: 0 }}>
-                공식 법령 및 규정 체계 체험관
+                합성 예제 규정 체험관
               </h1>
-              <span className="pill sage" style={{ fontWeight: 600 }}>🏛️ 국가법령 실데이터 연계</span>
+              <span className="pill warning">합성 시뮬레이션 자료</span>
             </div>
             <p style={{ fontSize: "13px", color: "#688070", margin: "6px 0 0" }}>
-              「개인정보 보호법」, 「공공데이터의 제공 및 이용 활성화에 관한 법률」, 시행령 및 기관 실무 지침 등 {graph.nodes.length}개 실제 조문·서식으로 규정 관계 탐색, 역참조 영향 분석, 7종 개정 문서를 체험합니다.
+              한국행정연구원 공공데이터제공지침 등 가상 조문과 서식으로 규정 관계 탐색, 역참조 영향 분석, 7종 개정 문서를 안전하게 체험합니다. 실제 공식 법령 개정 업무는{" "}
+              <strong
+                style={{ color: "#1a3827", cursor: "pointer", textDecoration: "underline" }}
+                onClick={() => navigate("/app")}
+              >
+                실무 워크스페이스(/app) ➔
+              </strong>
+              에서 실무자가 직접 수행하실 수 있습니다.
             </p>
           </div>
         </div>
@@ -346,7 +353,7 @@ export function DemoPage() {
             }}
           >
             <Library size={15} />
-            <span>규정 저장소 열람</span>
+            <span>예제 저장소 열람</span>
           </button>
           <button
             type="button"
@@ -366,7 +373,7 @@ export function DemoPage() {
             }}
           >
             <Network size={15} />
-            <span>관계도 시각화</span>
+            <span>예제 관계도 시각화</span>
           </button>
           <button
             type="button"
@@ -418,13 +425,13 @@ export function DemoPage() {
             <label className="preview-search">
               <Search size={17} />
               <input
-                aria-label="법령 및 규정 검색"
+                aria-label="예제 규정 검색"
                 placeholder="규정명, 조문, 기관 검색"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
               />
             </label>
-            <div className="preview-list-count">공식 법령·규정 {filtered.length}개</div>
+            <div className="preview-list-count">합성 예제 {filtered.length}개</div>
             <div className="preview-node-list">
               {filtered.map((node) => (
                 <button
@@ -447,14 +454,14 @@ export function DemoPage() {
                 </button>
               ))}
               {!filtered.length && (
-                <p className="preview-empty">일치하는 법령·규정 문서가 없습니다.</p>
+                <p className="preview-empty">일치하는 예제 문서가 없습니다.</p>
               )}
             </div>
           </section>
 
           <section className="panel preview-reader">
             <div className="preview-reader-header">
-              <span className="pill sage">공식 법령 실데이터</span>
+              <span className="pill warning">합성 예제 · 읽기 전용</span>
               <h2>{selected.title}</h2>
               <p>
                 {selected.rule_name} · {article(selected)}

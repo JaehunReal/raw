@@ -1345,14 +1345,28 @@ function App() {
               <div className="page-heading">
                 <div>
                   <div className="eyebrow">
-                    <span className="small-line" /> YOUR REGULATORY WORKSPACE
+                    <span className="small-line" /> OFFICIAL REGULATORY WORKSPACE
                   </div>
-                  <h1>규정의 흐름을 한눈에.</h1>
-                  <p>연결된 규정을 이해하고, 더 정확한 제·개정을 시작하세요.</p>
+                  <h1>규정 관리 실무 워크스페이스</h1>
+                  <p>대한민국 공식 법령(법률·대통령령·행정규칙)을 기반으로 소관 규정을 제·개정하고, 상위법령 위임 연계 분석 및 법제 7종 문서를 실무자가 직접 다룹니다.</p>
                 </div>
-                <button className="button primary" onClick={startWizard}>
-                  <Plus size={17} />새 개정 프로젝트
-                </button>
+                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                  <button
+                    type="button"
+                    className="button secondary"
+                    onClick={() => {
+                      setLawPickerTarget("wizard");
+                      setShowLawPicker(true);
+                    }}
+                    style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+                  >
+                    <BookOpen size={16} />
+                    <span>🏛️ 공식 법령 불러오기</span>
+                  </button>
+                  <button className="button primary" onClick={startWizard}>
+                    <Plus size={17} />새 개정 프로젝트
+                  </button>
+                </div>
               </div>
               <section className="welcome-card">
                 <div className="welcome-content">
@@ -1757,6 +1771,18 @@ function App() {
                   <option value="form">별표 서식</option>
                   <option value="guide">실무 가이드</option>
                 </select>
+                <button
+                  type="button"
+                  className="button secondary"
+                  onClick={() => {
+                    setLawPickerTarget("wizard");
+                    setShowLawPicker(true);
+                  }}
+                  style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+                >
+                  <BookOpen size={15} />
+                  공식 법령 추가
+                </button>
                 <button
                   className="button secondary"
                   onClick={() => {

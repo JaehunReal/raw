@@ -318,14 +318,43 @@ export default function OfficialProvisions({
               className={`provision-unit ${active === n.id ? 'selected' : ''}`}
               style={{ marginLeft: Math.min(n.depth, 2) * 12 }}
             >
-              {/* 조문 헤더: () 안에 주제 포함 표기 */}
-              <h4>
-                <span className="provision-level">
-                  {['조', '항', '호', '목'][n.depth]}
-                </span>
-                {n.fullLabel}
-                {n.deleted ? ' · 삭제' : ''}
-              </h4>
+              {/* 조문 헤더: () 안에 주제 포함 표기 및 실무 워크스페이스 연동 버튼 */}
+              <div className="provision-header-row">
+                <h4>
+                  <span className="provision-level">
+                    {['조', '항', '호', '목'][n.depth]}
+                  </span>
+                  {n.fullLabel}
+                  {n.deleted ? ' · 삭제' : ''}
+                </h4>
+                {n.depth === 0 && (
+                  <button
+                    type="button"
+                    className="import-to-workspace-btn"
+                    onClick={() => {
+                      sessionStorage.setItem(
+                        "rulecraft_imported_law_article",
+                        JSON.stringify({
+                          source: currentLaw?.source,
+                          law_id: currentLaw?.law_id,
+                          rule_name: currentLaw?.title || "공식 법령",
+                          article_no: n.article,
+                          title: n.articleTitle || n.fullLabel,
+                          text: n.text,
+                          agency:
+                            currentLaw?.source === "administrative"
+                              ? "소관 행정기관"
+                              : "국가법령",
+                        }),
+                      );
+                      window.location.href = "/app?view=wizard";
+                    }}
+                    title="이 실제 법령 조문을 실무 워크스페이스로 불러와서 개정안 작성 및 변경영향 분석"
+                  >
+                    ⚡ 실무 개정 검토
+                  </button>
+                )}
+              </div>
 
               {n.depth === 0 &&
               units.some((u) => u.article === n.article && u.depth > 0) ? (

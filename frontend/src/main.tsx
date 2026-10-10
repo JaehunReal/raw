@@ -251,6 +251,355 @@ function createClientPackage(
   };
 }
 
+function LawPickerModal({
+  onClose,
+  onSelect,
+}: {
+  onClose: () => void;
+  onSelect: (node: Node) => void;
+}) {
+  const [keyword, setKeyword] = useState("개인정보");
+  const [laws, setLaws] = useState<any[]>([]);
+  const [selectedLaw, setSelectedLaw] = useState<any | null>(null);
+  const [provisions, setProvisions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [docLoading, setDocLoading] = useState(false);
+
+  async function searchLaws(q: string) {
+    if (!q.trim()) return;
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `/api/official/laws?q=${encodeURIComponent(q)}&limit=15`,
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setLaws(data.items || []);
+        setSelectedLaw(null);
+        setProvisions([]);
+      }
+    } catch {
+      // ignore
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function pickLaw(law: any) {
+    setSelectedLaw(law);
+    setDocLoading(true);
+    try {
+      const res = await fetch(
+        `/api/official/document?source=${law.source}&law_id=${law.law_id}&version_id=${law.version_id}`,
+      );
+      if (res.ok) {
+        const data = await res.json();
+        const provs = data.document?.provisions || [];
+        setProvisions(provs);
+      }
+    } catch {
+      // ignore
+    } finally {
+      setDocLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    void searchLaws(keyword);
+  }, []);
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <section
+        className="editor-modal law-picker-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label="공식 법령 조문 검색 및 불러오기"
+        onClick={(e) => e.stopPropagation()}
+        style={{ maxWidth: "860px", width: "95%" }}
+      >
+        <div className="modal-header">
+          <div>
+            <span className="section-kicker">OFFICIAL LAW IMPORT</span>
+            <h2>🏛️ 대한민국 공식 법령 조문 불러오기</h2>
+            <p
+              className="muted"
+              style={{ fontSize: "12px", marginTop: "2px" }}
+            >
+              실제 법률·대통령령·행정규칙에서 조문을 직접 선택하여 개정안 작성
+              및 변경영향 분석에 바로 사용합니다.
+            </p>
+          </div>
+          <button className="icon-button" aria-label="닫기" onClick={onClose}>
+            <X size={21} />
+          </button>
+        </div>
+
+        <div
+          style={{ padding: "16px 24px", borderBottom: "1px solid #e2e8f0" }}
+        >
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              void searchLaws(keyword);
+            }}
+            style={{ display: "flex", gap: "8px" }}
+          >
+            <input
+              type="text"
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              placeholder="법령명을 입력하세요 (예: 개인정보 보호법, 전자정부법, 공공데이터, 행정절차법)"
+              style={{
+                flex: 1,
+                padding: "10px 14px",
+                border: "1px solid #cbd5e1",
+                borderRadius: "6px",
+                fontSize: "13px",
+              }}
+            />
+            <button
+              type="submit"
+              className="button primary"
+              disabled={loading}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+              }}
+            >
+              {loading ? (
+                <Loader2 size={16} className="spin" />
+              ) : (
+                <Search size={16} />
+              )}
+              법령 검색
+            </button>
+          </form>
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "16px",
+            padding: "20px 24px",
+            maxHeight: "450px",
+            overflowY: "auto",
+          }}
+        >
+          {/* 좌측: 검색된 법령 목록 */}
+          <div>
+            <h4
+              style={{
+                fontSize: "13px",
+                fontWeight: "700",
+                marginBottom: "8px",
+                color: "#1e293b",
+              }}
+            >
+              검색된 법령 목록 ({laws.length}건)
+            </h4>
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "6px" }}
+            >
+              {laws.map((item) => (
+                <button
+                  key={`${item.source}-${item.law_id}`}
+                  type="button"
+                  onClick={() => void pickLaw(item)}
+                  style={{
+                    padding: "10px 12px",
+                    borderRadius: "6px",
+                    border: `1px solid ${
+                      selectedLaw?.law_id === item.law_id
+                        ? "#0284c7"
+                        : "#e2e8f0"
+                    }`,
+                    background:
+                      selectedLaw?.law_id === item.law_id
+                        ? "#f0f9ff"
+                        : "#ffffff",
+                    textAlign: "left",
+                    cursor: "pointer",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "2px",
+                  }}
+                >
+                  <strong style={{ fontSize: "13px", color: "#0f172a" }}>
+                    {item.title}
+                  </strong>
+                  <div
+                    style={{
+                      fontSize: "11px",
+                      color: "#64748b",
+                      display: "flex",
+                      gap: "6px",
+                    }}
+                  >
+                    <span
+                      className="pill sage"
+                      style={{ fontSize: "10px", padding: "1px 6px" }}
+                    >
+                      {item.source === "law" ? "국가법령" : "행정규칙"}
+                    </span>
+                    <span>시행: {item.effective_date || "미정"}</span>
+                  </div>
+                </button>
+              ))}
+              {laws.length === 0 && !loading && (
+                <p
+                  style={{
+                    fontSize: "12px",
+                    color: "#94a3b8",
+                    padding: "16px 0",
+                    textAlign: "center",
+                  }}
+                >
+                  검색 결과가 없습니다.
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* 우측: 선택된 법령의 조문 목록 */}
+          <div>
+            <h4
+              style={{
+                fontSize: "13px",
+                fontWeight: "700",
+                marginBottom: "8px",
+                color: "#1e293b",
+              }}
+            >
+              {selectedLaw
+                ? `「${selectedLaw.title}」 조문 선택`
+                : "법령을 선택하세요"}
+            </h4>
+            {docLoading ? (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: "30px",
+                  gap: "8px",
+                }}
+              >
+                <Loader2 size={18} className="spin" />
+                <span style={{ fontSize: "12px", color: "#64748b" }}>
+                  조문 데이터를 불러오는 중...
+                </span>
+              </div>
+            ) : (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "6px",
+                  maxHeight: "380px",
+                  overflowY: "auto",
+                }}
+              >
+                {provisions.map((p, idx) => {
+                  const pTitle = p.title ? p.title.replace(/[()]/g, "") : "";
+                  const artFull = `${p.article_no}${
+                    pTitle ? `(${pTitle})` : ""
+                  }`;
+                  const pText =
+                    p.text ||
+                    p.paragraphs?.map((pr: any) => pr.text).join("\n") ||
+                    "";
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        const newNode: Node = {
+                          id: `official_${selectedLaw.law_id}_${String(
+                            p.article_no,
+                          ).replace(/\s+/g, "_")}`,
+                          path: `official/${selectedLaw.title}`,
+                          agency:
+                            selectedLaw.source === "administrative"
+                              ? "행정기관"
+                              : "국가법령",
+                          rule_name: selectedLaw.title,
+                          article_no: p.article_no,
+                          title: pTitle || p.article_no,
+                          kind: "rule",
+                          version: "1.0",
+                          last_amended: selectedLaw.effective_date || "",
+                          status: "active",
+                          body: pText,
+                          markdown: pText,
+                          metadata: {},
+                        };
+                        onSelect(newNode);
+                      }}
+                      style={{
+                        padding: "8px 12px",
+                        borderRadius: "6px",
+                        border: "1px solid #e2e8f0",
+                        background: "#f8fafc",
+                        textAlign: "left",
+                        cursor: "pointer",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = "#0284c7";
+                        e.currentTarget.style.background = "#eff6ff";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = "#e2e8f0";
+                        e.currentTarget.style.background = "#f8fafc";
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: "12.5px",
+                          fontWeight: "600",
+                          color: "#1e293b",
+                        }}
+                      >
+                        {artFull}
+                      </span>
+                      <span
+                        style={{
+                          fontSize: "11px",
+                          color: "#0284c7",
+                          fontWeight: "700",
+                        }}
+                      >
+                        불러오기 ↗
+                      </span>
+                    </button>
+                  );
+                })}
+                {selectedLaw && provisions.length === 0 && (
+                  <p
+                    style={{
+                      fontSize: "12px",
+                      color: "#94a3b8",
+                      padding: "16px 0",
+                      textAlign: "center",
+                    }}
+                  >
+                    등록된 조문이 없습니다.
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
 function displayArticle(n: Node) {
   const value = String(n.article_no);
   if (!value) return "안내 문서";
@@ -371,9 +720,78 @@ function App() {
     }
   }
 
+  const [showLawPicker, setShowLawPicker] = useState(false);
+  const [lawPickerTarget, setLawPickerTarget] = useState<"wizard" | "impact">(
+    "wizard",
+  );
+
   useEffect(() => {
     void load();
+
+    // Check if an article was imported from official laws portal (/laws)
+    const rawImported = sessionStorage.getItem("rulecraft_imported_law_article");
+    if (rawImported) {
+      try {
+        const data = JSON.parse(rawImported);
+        sessionStorage.removeItem("rulecraft_imported_law_article");
+        const importedNode: Node = {
+          id: `official_${data.law_id || "law"}_${String(
+            data.article_no,
+          ).replace(/\s+/g, "_")}`,
+          path: `official/${data.rule_name}`,
+          agency: data.agency || "국가법령",
+          rule_name: data.rule_name,
+          article_no: data.article_no,
+          title: data.title || data.article_no,
+          kind: "rule",
+          version: "1.0",
+          last_amended: "",
+          status: "active",
+          body: data.text,
+          markdown: data.text,
+          metadata: {},
+        };
+        setGraph((prev) => ({
+          ...prev,
+          nodes: [
+            importedNode,
+            ...prev.nodes.filter((n) => n.id !== importedNode.id),
+          ],
+        }));
+        setDraftArticle(importedNode.id);
+        setRevision(importedNode.markdown);
+        setImpactTarget(importedNode.id);
+        setProposed(importedNode.markdown);
+        setView("wizard");
+        setWizardStep(1);
+        setToast(
+          `공식 법령 [${data.rule_name} ${data.article_no}] 조문을 실무 워크스페이스로 불러왔습니다!`,
+        );
+      } catch {
+        // ignore
+      }
+    }
   }, []);
+
+  function handleSelectOfficialArticle(newNode: Node) {
+    setGraph((prev) => ({
+      ...prev,
+      nodes: [newNode, ...prev.nodes.filter((n) => n.id !== newNode.id)],
+    }));
+    if (lawPickerTarget === "wizard") {
+      setDraftArticle(newNode.id);
+      setRevision(newNode.markdown);
+      setWizardStep(1);
+    } else {
+      setImpactTarget(newNode.id);
+      setProposed(newNode.markdown);
+    }
+    setShowLawPicker(false);
+    setToast(
+      `공식 법령 [${newNode.rule_name} ${newNode.article_no}] 조문을 불러왔습니다!`,
+    );
+  }
+
   useEffect(() => {
     if (toast) {
       const id = setTimeout(() => setToast(""), 4000);
@@ -1607,8 +2025,44 @@ function App() {
                     <h3>변경 대상과 개정안</h3>
                     <GitBranch size={18} />
                   </div>
-                  <label>
-                    변경할 조문
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginTop: "14px",
+                      marginBottom: "6px",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: "13px",
+                        fontWeight: "700",
+                        color: "#1e293b",
+                      }}
+                    >
+                      변경할 조문
+                    </span>
+                    <button
+                      type="button"
+                      className="button secondary"
+                      onClick={() => {
+                        setLawPickerTarget("impact");
+                        setShowLawPicker(true);
+                      }}
+                      style={{
+                        padding: "4px 10px",
+                        fontSize: "11.5px",
+                        fontWeight: "700",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "6px",
+                      }}
+                    >
+                      🏛️ 공식 법령에서 조문 불러오기
+                    </button>
+                  </div>
+                  <label style={{ marginTop: 0 }}>
                     <select
                       value={impactTarget}
                       onChange={(e) => chooseImpact(e.target.value)}
@@ -1952,8 +2406,44 @@ function App() {
                   <>
                     <span className="section-kicker">STEP 02</span>
                     <h2>개정할 조문과 내용을 확인하세요.</h2>
-                    <label>
-                      대상 조문
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginTop: "16px",
+                        marginBottom: "6px",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: "13px",
+                          fontWeight: "700",
+                          color: "#1e293b",
+                        }}
+                      >
+                        대상 조문 선택
+                      </span>
+                      <button
+                        type="button"
+                        className="button secondary"
+                        onClick={() => {
+                          setLawPickerTarget("wizard");
+                          setShowLawPicker(true);
+                        }}
+                        style={{
+                          padding: "5px 12px",
+                          fontSize: "12px",
+                          fontWeight: "700",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "6px",
+                        }}
+                      >
+                        🏛️ 공식 법령 검색하여 조문 불러오기
+                      </button>
+                    </div>
+                    <label style={{ marginTop: 0 }}>
                       <select
                         aria-label="개정 대상 조문"
                         value={draftArticle}
@@ -2490,6 +2980,12 @@ function App() {
             </div>
           </section>
         </div>
+      )}
+      {showLawPicker && (
+        <LawPickerModal
+          onClose={() => setShowLawPicker(false)}
+          onSelect={handleSelectOfficialArticle}
+        />
       )}
       {toast && (
         <div className="toast" role="status">

@@ -337,21 +337,34 @@ export default function OfficialProvisions({
                 <LegalText text={n.text} />
               )}
 
-              {/* 내부 참조 */}
-              {!!refs.length && (
+              {/* 연계 조항 바로가기 링크 */}
+              {refs.some((r) => !!r.target) && (
                 <div className="provision-references">
-                  <span>원문 내 참조</span>
-                  {refs.map((r, k) =>
-                    r.target ? (
-                      <button key={k} onClick={() => jump(r.target!)}>
-                        {r.text} 열기 ↗
-                      </button>
-                    ) : (
-                      <span key={k} className="pill neutral">
-                        {r.text} · {r.reason}
-                      </span>
-                    )
-                  )}
+                  <span className="provision-ref-title">
+                    <span className="provision-ref-icon">🔗</span>
+                    조항 바로가기:
+                  </span>
+                  <div className="provision-ref-btn-group">
+                    {refs
+                      .filter((r) => !!r.target)
+                      .map((r, k) => (
+                        <button
+                          key={k}
+                          type="button"
+                          className="provision-ref-btn"
+                          onClick={() => jump(r.target!)}
+                          title={`${r.displayLabel || r.text} 조항으로 바로 이동`}
+                        >
+                          <span className="ref-quote-text">{r.text}</span>
+                          {r.displayLabel && r.displayLabel !== r.text && (
+                            <span className="ref-target-label">
+                              ({r.displayLabel})
+                            </span>
+                          )}
+                          <span className="ref-arrow-icon">↗</span>
+                        </button>
+                      ))}
+                  </div>
                 </div>
               )}
 

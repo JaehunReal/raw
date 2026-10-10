@@ -85,26 +85,60 @@ export type Reference = {
   start: number;
   end: number;
   target?: string;
+  displayLabel?: string;
   reason?: string;
 };
 
 export function references(unit: Unit, units: Unit[]): Reference[] {
   const result: Reference[] = [];
+  const text = unit.text;
+
   const pattern =
-    /(?:제\s*\d+\s*조(?:의\s*\d+)?)(?:\s*제\s*\d+\s*항)?(?:\s*제\s*\d+\s*호)?(?:\s*[가-힣]목)?|제\s*\d+\s*항(?:\s*제\s*\d+\s*호)?(?:\s*[가-힣]목)?|제\s*\d+\s*호(?:\s*[가-힣]목)?/g;
-  for (const m of unit.text.matchAll(pattern)) {
-    const t = m[0].replace(/\s/g, ''),
-      a = t.match(/^제\d+조(?:의\d+)?/)?.[0];
-    const p = t.match(/제(\d+)항/)?.[1] ?? (a ? null : unit.paragraph);
-    const i = t.match(/제(\d+)호/)?.[1] ?? null;
-    const s = t.match(/([가-힣])목$/)?.[1] ?? null;
-    const prefix = unit.text.slice(0, m.index);
-    // A complete unit can refer to another law or anaphoric context. Keep these
-    // visible but do not turn a matching local number into a misleading link.
+    /(?:제\s*\d+\s*조(?:의\s*\d+)?)(?:\s*제\s*\d+\s*항)?(?:\s*제\s*\d+\s*호)?(?:\s*[가-힣]목)?|제\s*\d+\s*항(?:\s*제\s*\d+\s*호)?(?:\s*[가-힣]목)?|제\s*\d+\s*호(?:\s*[가-힣]목)?|(?:다음(?:의)?\s*)?각\s*호/g;
+
+  for (const m of text.matchAll(pattern)) {
+    const matchedStr = m[0];
+    const cleanStr = matchedStr.replace(/\s/g, '');
+    const prefix = text.slice(0, m.index!);
+    const suffix = text.slice(m.index! + m[0].length);
+
+    // Case A: 각 호 / 다음 각 호
+    if (cleanStr.includes('각호')) {
+      const firstItem =
+        units.find(
+          (n) =>
+            n.article === unit.article &&
+            (unit.paragraph ? n.paragraph === unit.paragraph : true) &&
+            n.item === '1'
+        ) ||
+        units.find((n) => n.article === unit.article && n.item === '1');
+      if (firstItem && firstItem.id !== unit.id) {
+        if (!result.some((r) => r.target === firstItem.id)) {
+          result.push({
+            text: matchedStr.trim(),
+            displayLabel: `${matchedStr.trim()} (${firstItem.article} 제1호~)`,
+            target: firstItem.id,
+            start: m.index!,
+            end: m.index! + m[0].length,
+          });
+        }
+      }
+      continue;
+    }
+
+    const a = cleanStr.match(/^제\d+조(?:의\d+)?/)?.[0];
+    const p = cleanStr.match(/제(\d+)항/)?.[1] ?? (a ? null : unit.paragraph);
+    const i = cleanStr.match(/제(\d+)호/)?.[1] ?? null;
+    const s = cleanStr.match(/([가-힣])목$/)?.[1] ?? null;
+
+    // A complete unit can refer to another law or anaphoric context.
     const external =
-      /[「『]|법|시행령|규칙|같은\s*(법|영|규칙|조|항)|전항|전조|이하|부터|내지|각\s*호/.test(
-        unit.text
-      );
+      /[「『][^」』\n]{2,180}[」』]\s*$/.test(prefix) ||
+      /[가-힣]+법\s*$/.test(prefix) ||
+      /같은\s*(?:법|영|규칙|조|항)\s*$/.test(prefix) ||
+      /^\s*(?:부터|내지)/.test(suffix) ||
+      /전항|전조|이하|내지/.test(prefix.slice(-6));
+
     const matches = units.filter(
       (n) =>
         n.article === (a || unit.article) &&
@@ -112,11 +146,12 @@ export function references(unit: Unit, units: Unit[]): Reference[] {
         n.item === i &&
         n.subitem === s
     );
+
     const ownHeading = prefix.trim() === '' && matches.some((n) => n.id === unit.id);
     if (ownHeading) continue;
-    const unsupportedBranch = /^\s*의\s*\d/.test(
-      unit.text.slice(m.index! + m[0].length)
-    );
+
+    const unsupportedBranch = /^\s*의\s*\d/.test(suffix);
+
     const reason =
       external || unsupportedBranch
         ? '문맥 확인 필요'
@@ -127,12 +162,22 @@ export function references(unit: Unit, units: Unit[]): Reference[] {
         : matches[0].deleted
         ? '삭제된 조문'
         : undefined;
+
+    const targetId = matches.length === 1 && !reason ? matches[0].id : undefined;
+
+    // Deduplicate identical targets within the same unit
+    if (targetId && result.some((r) => r.target === targetId)) {
+      continue;
+    }
+
     result.push({
       text: m[0],
       start: m.index!,
       end: m.index! + m[0].length,
-      ...(reason ? { reason } : { target: matches[0].id }),
+      displayLabel: matches[0]?.fullLabel,
+      ...(reason ? { reason } : { target: targetId }),
     });
   }
+
   return result;
 }

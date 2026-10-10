@@ -270,34 +270,81 @@
   outline-offset: 3px;
 }
 
+/* Linked Provision References (조항 바로가기 링크) */
 .provision-references {
   margin-top: 14px;
+  padding: 10px 14px;
+  background: #f0f7ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
+  gap: 10px;
+}
+
+.provision-ref-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0b3b60;
+  white-space: nowrap;
+}
+
+.provision-ref-icon {
+  font-size: 14px;
+}
+
+.provision-ref-btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
-  font-size: 12px;
 }
 
-.provision-references span:first-child {
-  font-weight: 600;
-  color: #64748b;
-  margin-right: 4px;
-}
-
-.provision-references button {
-  background: #e0f2fe;
-  color: #0369a1;
-  border: 1px solid #bae6fd;
-  border-radius: 4px;
-  padding: 3px 8px;
-  font-size: 12px;
+.provision-ref-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  color: #02479e;
+  border: 1.5px solid #02479e;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13.5px;
   font-weight: 600;
   cursor: pointer;
+  box-shadow: 0 1px 3px rgba(2, 71, 158, 0.08);
+  transition: all 0.15s ease-in-out;
 }
 
-.provision-references button:hover {
-  background: #bae6fd;
+.provision-ref-btn:hover {
+  background: #02479e;
+  color: #ffffff;
+  border-color: #02479e;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(2, 71, 158, 0.2);
+}
+
+.provision-ref-btn .ref-quote-text {
+  font-weight: 700;
+}
+
+.provision-ref-btn .ref-target-label {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #1e40af;
+}
+
+.provision-ref-btn:hover .ref-target-label {
+  color: #dbeafe;
+}
+
+.provision-ref-btn .ref-arrow-icon {
+  font-size: 12px;
+  font-weight: 700;
 }
 
 /* Relation Provisions Jump (조·항·호 바로 이동 컴포넌트) */

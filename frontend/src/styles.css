@@ -1200,13 +1200,33 @@ td:first-child {
 }
 
 .type-tag.law {
-  color: #b45309;
-  background: #fef3c7;
+  color: #0369a1;
+  background: #e0f2fe;
+  border: 1px solid #bae6fd;
+}
+
+.type-tag.decree {
+  color: #0f766e;
+  background: #ccfbf1;
+  border: 1px solid #99f6e4;
+}
+
+.type-tag.rule {
+  color: #15803d;
+  background: #dcfce7;
+  border: 1px solid #bbf7d0;
+}
+
+.type-tag.guide {
+  color: #4338ca;
+  background: #e0e7ff;
+  border: 1px solid #c7d2fe;
 }
 
 .type-tag.form {
-  color: #7c3aed;
-  background: #f5f3ff;
+  color: #b45309;
+  background: #fef3c7;
+  border: 1px solid #fde68a;
 }
 
 .date-cell {

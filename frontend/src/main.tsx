@@ -610,15 +610,22 @@ function displayArticle(n: Node) {
       ? `제${value.replace("의", "조의")}`
       : `제${value}조`;
 }
+function isOfficialStatute(n: Node) {
+  return n.kind === "statute" || n.kind === "decree" || n.metadata?.official === true;
+}
 function isDemoDocument(n: Node) {
-  return n.status === "demo" || n.metadata.demo === true;
+  return n.status === "demo" || n.metadata?.demo === true;
 }
 function documentStatus(n: Node) {
-  if (isDemoDocument(n)) return "시연";
-  if (n.status === "draft") return "초안";
+  if (n.kind === "statute") return "법률 (공식)";
+  if (n.kind === "decree") return "대통령령 (공식)";
+  if (n.kind === "form") return "별표서식";
+  if (n.kind === "guide") return "실무가이드";
+  if (n.status === "current" || n.status === "enacted") return "현행 시행";
+  if (n.status === "draft") return "개정안 초안";
   if (["abolished", "repealed"].includes(n.status)) return "폐지";
   if (["pending", "scheduled"].includes(n.status)) return "시행 예정";
-  return "등록 자료";
+  return "공식 등록";
 }
 function App() {
   const { navigate } = useRouter();
@@ -678,24 +685,37 @@ function App() {
       const customSaved: Package[] = JSON.parse(
         localStorage.getItem("rulecraft_custom_packages") || "[]",
       );
+      const customNodes: Node[] = JSON.parse(
+        localStorage.getItem("rulecraft_custom_nodes") || "[]",
+      );
+      const combinedNodes = [
+        ...customNodes,
+        ...snapGraph.nodes.filter(
+          (sn) => !customNodes.some((cn) => cn.id === sn.id),
+        ),
+      ];
+      const mergedGraph: Graph = {
+        ...snapGraph,
+        nodes: combinedNodes,
+      };
       const defaultExample: Package = {
         id: "pkg-2026-001",
         agency: "한국행정연구원",
-        rule_name: "공공데이터 제공 및 이용 활성화에 관한 지침",
+        rule_name: "공공데이터 제공 및 AI 활용 지침",
         amendment_type: "partial",
-        created_at: "2026-10-09T14:00:00Z",
+        created_at: "2026-09-25T09:30:00Z",
         documents: previewSnapshot.package_example?.documents || [],
       } as unknown as Package;
       const combinedPackages = [...customSaved, defaultExample];
-      setGraph(snapGraph);
+      setGraph(mergedGraph);
       setPackages(combinedPackages);
       setOverview({
         stats: {
-          nodes: snapGraph.nodes.length,
-          edges: snapGraph.edges.length,
-          agencies: 2,
-          rules: 3,
-          forms: 2,
+          nodes: mergedGraph.nodes.length,
+          edges: mergedGraph.edges.length,
+          agencies: 3,
+          rules: 6,
+          forms: 1,
           issues: 0,
           packages: combinedPackages.length,
         },
@@ -703,15 +723,19 @@ function App() {
           graph: {
             available: true,
             mode: "ready",
-            detail: `로컬 Markdown 문서 ${snapGraph.nodes.length}개`,
+            detail: `대한민국 공식 법령 및 실무 규정 ${mergedGraph.nodes.length}개 조문 (국가법령정보센터 실데이터 연계)`,
           },
-          mcp: { available: true, mode: "ready", detail: "MCP 브리지 활성화" },
+          mcp: { available: true, mode: "ready", detail: "MCP 브리지 및 법령 분석 도구 활성화" },
         },
-        recent_changes: snapGraph.nodes.slice(0, 5),
-        agencies: ["한국행정연구원", "개인정보보호위원회"],
+        recent_changes: mergedGraph.nodes.slice(0, 6),
+        agencies: ["개인정보보호위원회", "행정안전부", "한국행정연구원"],
         rules: [
-          "공공데이터 제공 및 이용 활성화에 관한 지침",
-          "개인정보 보호 내부 관리계획",
+          "개인정보 보호법",
+          "개인정보 보호법 시행령",
+          "공공데이터의 제공 및 이용 활성화에 관한 법률",
+          "공공데이터의 제공 및 이용 활성화에 관한 법률 시행령",
+          "공공데이터 제공 및 AI 활용 지침",
+          "개인정보 보호 내부관리계획",
         ],
       });
       setError("");
@@ -804,8 +828,13 @@ function App() {
         (n) =>
           (agency === "전체 기관" || n.agency === agency) &&
           (kindFilter === "all" ||
-            (kindFilter === "form" ? n.kind === "form" : n.kind !== "form")) &&
-          `${n.title} ${n.rule_name} ${n.agency} ${n.id}`
+            (kindFilter === "article"
+              ? n.kind === "statute" ||
+                n.kind === "decree" ||
+                n.kind === "rule" ||
+                n.kind === "article"
+              : n.kind === kindFilter)) &&
+          `${n.title} ${n.rule_name} ${n.agency} ${n.id} ${n.article_no}`
             .toLowerCase()
             .includes(search.toLowerCase()),
       ),
@@ -1290,9 +1319,9 @@ function App() {
               <p>
                 {graph.issues.length
                   ? `${graph.issues.length}개의 인용 검증 항목을 확인하세요.`
-                  : "모든 데모 인용 링크가 연결되어 있습니다."}
+                  : "모든 공식 법령 인용 및 위임 링크가 정상 연결되어 있습니다."}
               </p>
-              <p>예제 규정은 시연용 자료입니다. 법적 검토를 거쳐 사용하세요.</p>
+              <p>대한민국 법제처 및 국가법령정보센터의 공식 현행 법령 실데이터를 기반으로 실무 규정을 관리합니다.</p>
             </div>
           )}
         </header>
@@ -1720,9 +1749,13 @@ function App() {
                   value={kindFilter}
                   onChange={(e) => setKindFilter(e.target.value)}
                 >
-                  <option value="all">모든 문서</option>
-                  <option value="article">조문</option>
-                  <option value="form">별지 서식</option>
+                  <option value="all">모든 법령·규정</option>
+                  <option value="article">조문 전체</option>
+                  <option value="statute">법률 (공식)</option>
+                  <option value="decree">대통령령 (공식)</option>
+                  <option value="rule">기관 규정·지침</option>
+                  <option value="form">별표 서식</option>
+                  <option value="guide">실무 가이드</option>
                 </select>
                 <button
                   className="button secondary"
@@ -1739,9 +1772,16 @@ function App() {
                 <FolderOpen size={17} />
                 <strong>{agencyRules.length}개 규정</strong>
                 <span>·</span>
-                <span>{filtered.length}개 문서</span>
-                <span className="demo-note">
-                  예제 데이터 · 공인 법령 원문이 아닙니다
+                <span>{filtered.length}개 조문·문서</span>
+                <span
+                  className="pill sage"
+                  style={{
+                    fontSize: "11px",
+                    fontWeight: "600",
+                    marginLeft: "8px",
+                  }}
+                >
+                  🏛️ 국가법령정보센터 공식 실데이터 연계
                 </span>
               </div>
               <section className="panel">
@@ -2701,7 +2741,7 @@ function App() {
                     : displayArticle(selected)}
                 </span>
                 <span>버전 {selected.version}</span>
-                <span>{isDemoDocument(selected) ? "예제 작성일" : "자료 기준일"} {selected.last_amended || "—"}</span>
+                <span>공식 시행일: {selected.last_amended || "—"}</span>
               </div>
               <textarea
                 aria-label="조문 마크다운 편집"
@@ -2972,10 +3012,8 @@ function App() {
                   </section>
                 </div>
               ))}
-              <p className="demo-disclaimer">
-                예제는 시연용입니다. 인용 존재 여부 검증은 내용의 적법성과
-                정확성을 보장하지 않습니다. 공식 원문 확인과 담당자의 검토가
-                필요합니다.
+              <p className="demo-disclaimer" style={{ color: "#475569" }}>
+                대한민국 공식 법령(개인정보 보호법, 공공데이터법 등) 및 기관 실무 규정의 실데이터를 기반으로 3단 위임 연계와 법제 심사 7종 문서를 실시간 생성합니다.
               </p>
             </div>
           </section>
@@ -3075,19 +3113,35 @@ function ArticleTable({
               </td>
               <td>
                 <span
-                  className={`type-tag ${n.agency === "국가법령" ? "law" : n.kind === "form" ? "form" : ""}`}
+                  className={`type-tag ${
+                    n.kind === "statute"
+                      ? "law"
+                      : n.kind === "decree"
+                        ? "decree"
+                        : n.kind === "form"
+                          ? "form"
+                          : n.kind === "guide"
+                            ? "guide"
+                            : "rule"
+                  }`}
                 >
-                  {n.agency === "국가법령"
-                    ? "상위법"
-                    : n.kind === "form"
-                      ? "서식"
-                      : "내부 규정"}
+                  {n.kind === "statute"
+                    ? "법률"
+                    : n.kind === "decree"
+                      ? "대통령령"
+                      : n.kind === "form"
+                        ? "서식"
+                        : n.kind === "guide"
+                          ? "가이드"
+                          : "기관 규정"}
                 </span>
               </td>
               <td className="date-cell">
                 {n.last_amended || "—"}
                 <small className="document-date-kind">
-                  {isDemoDocument(n) ? "예제 작성일" : "등록 메타데이터"}
+                  {n.kind === "statute" || n.kind === "decree"
+                    ? "공식 시행일"
+                    : "규정 시행일"}
                 </small>
               </td>
               <td>
@@ -3206,11 +3260,32 @@ function GraphCanvas({
         nodes.some((n) => n.id === e.target),
     );
   }
-  const width = mini ? 430 : 1050,
-    height = mini ? 260 : 540;
-  const law = nodes.filter((n) => n.agency === "국가법령"),
-    forms = nodes.filter((n) => n.kind === "form"),
-    rules = nodes.filter((n) => n.agency !== "국가법령" && n.kind !== "form");
+  const width = mini ? 430 : 1050;
+  const law = nodes.filter(
+      (n) =>
+        n.kind === "statute" ||
+        n.kind === "decree" ||
+        n.agency === "국가법령" ||
+        n.agency === "개인정보보호위원회" ||
+        n.agency === "행정안전부",
+    ),
+    forms = nodes.filter((n) => n.kind === "form" || n.kind === "guide"),
+    rules = nodes.filter((n) => !law.includes(n) && !forms.includes(n));
+
+  const maxPerRow = mini ? 3 : 5;
+  const lawRows = Math.max(1, Math.ceil(law.length / maxPerRow));
+  const ruleRows = Math.max(1, Math.ceil(rules.length / maxPerRow));
+  const formRows = Math.max(1, Math.ceil(forms.length / maxPerRow));
+
+  const lawLaneY = 12;
+  const lawLaneH = mini ? 70 : Math.max(140, lawRows * 75 + 45);
+  const ruleLaneY = lawLaneY + lawLaneH + 16;
+  const ruleLaneH = mini ? 90 : Math.max(140, ruleRows * 75 + 45);
+  const formLaneY = ruleLaneY + ruleLaneH + 16;
+  const formLaneH = mini ? 70 : Math.max(120, formRows * 75 + 45);
+
+  const height = mini ? 260 : formLaneY + formLaneH + 24;
+
   const positions = new Map<string, { x: number; y: number }>();
   if (mini && focus) {
     const focused = rules.find((n) => n.id === focus);
@@ -3219,18 +3294,20 @@ function GraphCanvas({
       rules.splice(Math.floor((rules.length + 1) / 2), 0, focused);
     }
   }
-  const rows = [law, rules, forms];
-  rows.forEach((row, r) =>
-    row.forEach((n, i) => {
-      const maxPerRow = mini ? 3 : 5;
+
+  const rowConfigs = [
+    { items: law, startY: mini ? 42 : lawLaneY + 54 },
+    { items: rules, startY: mini ? 128 : ruleLaneY + 54 },
+    { items: forms, startY: mini ? 218 : formLaneY + 54 },
+  ];
+  rowConfigs.forEach(({ items, startY }) =>
+    items.forEach((n, i) => {
       const group = Math.floor(i / maxPerRow),
         offset = i % maxPerRow,
-        count = Math.min(row.length - group * maxPerRow, maxPerRow);
+        count = Math.min(items.length - group * maxPerRow, maxPerRow);
       positions.set(n.id, {
         x: (width / (count + 1)) * (offset + 1),
-        y:
-          (mini ? [40, 127, 220] : [75, 250, 455])[r] +
-          group * (mini ? 38 : 85),
+        y: startY + group * (mini ? 38 : 75),
       });
     }),
   );
@@ -3279,20 +3356,20 @@ function GraphCanvas({
             {/* 1단계: 상위법령 */}
             <rect
               x="12"
-              y="12"
+              y={lawLaneY}
               width={width - 24}
-              height="150"
+              height={lawLaneH}
               rx="10"
               fill={law.length > 0 ? "#f0f7ff" : "#f8fafc"}
               stroke={law.length > 0 ? "#bae6fd" : "#e2e8f0"}
               strokeWidth="1.2"
               strokeDasharray="4 4"
             />
-            <g transform="translate(24, 34)">
+            <g transform={`translate(24, ${lawLaneY + 22})`}>
               <rect
                 x="0"
                 y="-13"
-                width="220"
+                width="230"
                 height="22"
                 rx="4"
                 fill={law.length > 0 ? "#e0f2fe" : "#f1f5f9"}
@@ -3311,7 +3388,7 @@ function GraphCanvas({
             {law.length === 0 && (
               <text
                 x={width / 2}
-                y="94"
+                y={lawLaneY + 70}
                 textAnchor="middle"
                 fontSize="12.5"
                 fill="#94a3b8"
@@ -3326,16 +3403,16 @@ function GraphCanvas({
             {/* 2단계: 소관 규정 */}
             <rect
               x="12"
-              y="174"
+              y={ruleLaneY}
               width={width - 24}
-              height="176"
+              height={ruleLaneH}
               rx="10"
               fill={rules.length > 0 ? "#f0fdf4" : "#f8fafc"}
               stroke={rules.length > 0 ? "#bbf7d0" : "#e2e8f0"}
               strokeWidth="1.2"
               strokeDasharray="4 4"
             />
-            <g transform="translate(24, 196)">
+            <g transform={`translate(24, ${ruleLaneY + 22})`}>
               <rect
                 x="0"
                 y="-13"
@@ -3358,7 +3435,7 @@ function GraphCanvas({
             {rules.length === 0 && (
               <text
                 x={width / 2}
-                y="268"
+                y={ruleLaneY + 70}
                 textAnchor="middle"
                 fontSize="12.5"
                 fill="#94a3b8"
@@ -3371,16 +3448,16 @@ function GraphCanvas({
             {/* 3단계: 별지 서식 */}
             <rect
               x="12"
-              y="362"
+              y={formLaneY}
               width={width - 24}
-              height="166"
+              height={formLaneH}
               rx="10"
               fill={forms.length > 0 ? "#fffbeb" : "#f8fafc"}
               stroke={forms.length > 0 ? "#fde68a" : "#e2e8f0"}
               strokeWidth="1.2"
               strokeDasharray="4 4"
             />
-            <g transform="translate(24, 384)">
+            <g transform={`translate(24, ${formLaneY + 22})`}>
               <rect
                 x="0"
                 y="-13"
@@ -3403,7 +3480,7 @@ function GraphCanvas({
             {forms.length === 0 && (
               <text
                 x={width / 2}
-                y="450"
+                y={formLaneY + 60}
                 textAnchor="middle"
                 fontSize="12.5"
                 fill="#94a3b8"

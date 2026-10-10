@@ -85,11 +85,22 @@ export function LawsPage() {
   const initialLawId = searchParams.get("law_id") || "";
   const initialVersionId = searchParams.get("version_id") || "";
   const initialOffset = parseInt(searchParams.get("offset") || "0", 10) || 0;
+  const initialArticle = searchParams.get("article") || null;
 
   const [searchInput, setSearchInput] = useState(initialQ);
   const [selectedSource, setSelectedSource] = useState(initialSource);
-  const [activeTab, setActiveTab] = useState<ReaderTab>("provisions");
+  const [activeTab, setActiveTab] = useState<ReaderTab>(initialArticle ? "provisions" : "provisions");
+  const [jumpArticle, setJumpArticle] = useState<string | null>(initialArticle);
   const [copiedHash, setCopiedHash] = useState(false);
+
+  // Sync jumpArticle when URL parameter changes
+  useEffect(() => {
+    const art = searchParams.get("article");
+    if (art) {
+      setJumpArticle(art);
+      setActiveTab("provisions");
+    }
+  }, [searchParams]);
 
   // List State
   const [list, setList] = useState<LawList | null>(null);
@@ -209,12 +220,29 @@ export function LawsPage() {
     return () => controller.abort();
   }, [initialLawId, initialVersionId, initialSource]);
 
-  // Select Law item
-  const handleSelectLaw = (item: LawRecord) => {
+  // Select Law item (with optional target provision)
+  const handleSelectLaw = (item: LawRecord, article?: string) => {
     const params = new URLSearchParams(searchParams);
     params.set("source", item.source);
     params.set("law_id", item.law_id);
     params.set("version_id", item.version_id);
+    if (article) {
+      params.set("article", article);
+      setJumpArticle(article);
+      setActiveTab("provisions");
+    } else {
+      params.delete("article");
+      setJumpArticle(null);
+    }
+    navigate(`/laws?${params.toString()}`);
+  };
+
+  // Jump to provision within current law
+  const handleJumpCurrentProvision = (article: string) => {
+    setJumpArticle(article);
+    setActiveTab("provisions");
+    const params = new URLSearchParams(searchParams);
+    params.set("article", article);
     navigate(`/laws?${params.toString()}`);
   };
 
@@ -537,6 +565,7 @@ export function LawsPage() {
                     <OfficialProvisions
                       key={`${document.law_id}:${document.version_id}`}
                       provisions={document.provisions || []}
+                      initialArticle={jumpArticle}
                     />
                   </div>
                 )}
@@ -545,7 +574,8 @@ export function LawsPage() {
                   <div className="relations-tab-wrap">
                     <OfficialRelations
                       record={document}
-                      onSelect={(rec) => handleSelectLaw(rec as LawRecord)}
+                      onSelect={(rec, article) => handleSelectLaw(rec as LawRecord, article)}
+                      onJumpCurrent={handleJumpCurrentProvision}
                     />
                   </div>
                 )}

@@ -300,6 +300,54 @@
   background: #bae6fd;
 }
 
+/* Relation Provisions Jump (조·항·호 바로 이동 컴포넌트) */
+.relation-provisions-jump {
+  margin: 14px 0 10px;
+  padding: 12px 14px;
+  background: #f0f7ff;
+  border: 1px solid #bae6fd;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.provisions-jump-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0b3b60;
+}
+
+.provision-jump-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.provision-jump-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  background: #ffffff;
+  color: #0b3b60;
+  border: 1px solid #93c5fd;
+  border-radius: 4px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(11, 59, 96, 0.06);
+  transition: all 0.15s ease;
+}
+
+.provision-jump-btn:hover {
+  background: #0b3b60;
+  color: #ffffff;
+  border-color: #0b3b60;
+  transform: translateY(-1px);
+}
+
+
 @media (max-width: 1050px) {
   .topic-chain {
     grid-template-columns: 1fr;

@@ -33,6 +33,7 @@ import {
   Loader2,
   PlugZap,
   Copy,
+  ExternalLink,
 } from "lucide-react";
 import "@fontsource-variable/dm-sans";
 import "@fontsource-variable/noto-sans-kr";
@@ -250,6 +251,304 @@ function createClientPackage(
     ],
   };
 }
+
+interface OfficialLawCatalogueItem {
+  law_id: string;
+  title: string;
+  source: string;
+  kind: "statute" | "decree" | "rule";
+  agency: string;
+  category: "PIPA" | "DATA" | "EGOV" | "ADMIN" | "FIN";
+  categoryLabel: string;
+  last_amended: string;
+  version: string;
+  summary: string;
+  key_articles: string[];
+  status: string;
+}
+
+const ALL_OFFICIAL_LAWS_MASTER: OfficialLawCatalogueItem[] = [
+  {
+    law_id: "law:011357",
+    title: "개인정보 보호법",
+    source: "law",
+    kind: "statute",
+    agency: "개인정보보호위원회",
+    category: "PIPA",
+    categoryLabel: "🛡️ 개인정보·보안",
+    last_amended: "2026-09-11",
+    version: "법률 제20374호",
+    summary: "개인정보의 처리 및 보호에 관한 기본법. 가명정보, 안전조치의무, 전송요구권 등 수록",
+    key_articles: ["제1조(목적)", "제2조(정의)", "제15조(수집·이용)", "제29조(안전조치의무)", "제35조의2(전송요구권)"],
+    status: "공식 시행중",
+  },
+  {
+    law_id: "law:011468",
+    title: "개인정보 보호법 시행령",
+    source: "law",
+    kind: "decree",
+    agency: "개인정보보호위원회",
+    category: "PIPA",
+    categoryLabel: "🛡️ 개인정보·보안",
+    last_amended: "2026-09-11",
+    version: "대통령령 제34887호",
+    summary: "법 제29조에 따른 내부관리계획, 접속기록 보관, 암호화 등 안전성 확보 조치 구체화",
+    key_articles: ["제15조(동의요건)", "제16조(파기방법)", "제30조(안전성 확보 조치)", "제34조(유출 통지)"],
+    status: "공식 시행중",
+  },
+  {
+    law_id: "admrul:73493",
+    title: "개인정보의 안전성 확보조치 기준",
+    source: "administrative",
+    kind: "rule",
+    agency: "개인정보보호위원회",
+    category: "PIPA",
+    categoryLabel: "🛡️ 개인정보·보안",
+    last_amended: "2026-07-01",
+    version: "개인정보보호위원회고시 제2023-6호",
+    summary: "시행령 제30조 위임 고시. 내부 관리계획 18개 필수 항목, 암호화, 접속기록 점검 기준",
+    key_articles: ["제4조(내부관리계획 수립)", "제5조(접근권한 관리)", "제7조(암호화)", "제8조(접속기록 보관)"],
+    status: "공식 시행중",
+  },
+  {
+    law_id: "law:011382",
+    title: "공공데이터의 제공 및 이용 활성화에 관한 법률",
+    source: "law",
+    kind: "statute",
+    agency: "행정안전부",
+    category: "DATA",
+    categoryLabel: "📊 공공데이터·AI",
+    last_amended: "2024-01-09",
+    version: "법률 제19928호",
+    summary: "공공데이터의 개방과 민간 이용 촉진. 비공개대상정보 외 전면 개방 원칙",
+    key_articles: ["제1조(목적)", "제17조(제공대상 공공데이터)", "제19조(제공신청)", "제28조(제공중단)"],
+    status: "공식 시행중",
+  },
+  {
+    law_id: "law:011490",
+    title: "공공데이터의 제공 및 이용 활성화에 관한 법률 시행령",
+    source: "law",
+    kind: "decree",
+    agency: "행정안전부",
+    category: "DATA",
+    categoryLabel: "📊 공공데이터·AI",
+    last_amended: "2024-07-24",
+    version: "대통령령 제34520호",
+    summary: "공공데이터 제공 절차, 공공데이터제공분쟁조정위원회 운영 등 위임 규정",
+    key_articles: ["제12조(제공절차)", "제14조(비용부담)", "제20조(품질관리)"],
+    status: "공식 시행중",
+  },
+  {
+    law_id: "law:011920",
+    title: "전자정부법",
+    source: "law",
+    kind: "statute",
+    agency: "행정안전부",
+    category: "EGOV",
+    categoryLabel: "🏛️ 전자정부·행정",
+    last_amended: "2024-07-24",
+    version: "법률 제20193호",
+    summary: "전자문서 처리 기본원칙, 행정정보 공동이용 및 전자정부서비스 운영 체계",
+    key_articles: ["제1조(목적)", "제35조(전자문서의 작성)", "제36조(행정정보 공동이용)", "제45조(정보시스템 감리)"],
+    status: "공식 시행중",
+  },
+  {
+    law_id: "law:012030",
+    title: "전자정부법 시행령",
+    source: "law",
+    kind: "decree",
+    agency: "행정안전부",
+    category: "EGOV",
+    categoryLabel: "🏛️ 전자정부·행정",
+    last_amended: "2024-07-24",
+    version: "대통령령 제34710호",
+    summary: "전자문서 유통 표준화, 행정정보공동이용센터 운영 및 보안대책 기준",
+    key_articles: ["제35조(전자문서 표준)", "제45조(소프트웨어 표준)", "제54조(전자정부 정보보호)"],
+    status: "공식 시행중",
+  },
+  {
+    law_id: "law:011850",
+    title: "지능정보화 기본법",
+    source: "law",
+    kind: "statute",
+    agency: "과학기술정보통신부",
+    category: "DATA",
+    categoryLabel: "📊 공공데이터·AI",
+    last_amended: "2024-01-09",
+    version: "법률 제19929호",
+    summary: "인공지능, 빅데이터, 클라우드 등 지능정보기술 개발·도입 및 윤리·안전성 기본법",
+    key_articles: ["제1조(목적)", "제11조(지능정보기술 도입·활용)", "제28조(데이터 유통 촉진)", "제60조(이용자 권익보호)"],
+    status: "공식 시행중",
+  },
+  {
+    law_id: "law:011870",
+    title: "지능정보화 기본법 시행령",
+    source: "law",
+    kind: "decree",
+    agency: "과학기술정보통신부",
+    category: "DATA",
+    categoryLabel: "📊 공공데이터·AI",
+    last_amended: "2024-06-15",
+    version: "대통령령 제34430호",
+    summary: "인공지능 연구개발 지원, 지능정보사회 종합계획 수립 및 기술 영향평가 절차",
+    key_articles: ["제11조(전문기관 지정)", "제25조(데이터 거래 지원)", "제48조(정보격차 해소)"],
+    status: "공식 시행중",
+  },
+  {
+    law_id: "law:011600",
+    title: "데이터 산업진흥 및 이용촉진에 관한 기본법",
+    source: "law",
+    kind: "statute",
+    agency: "과학기술정보통신부",
+    category: "DATA",
+    categoryLabel: "📊 공공데이터·AI",
+    last_amended: "2022-04-20",
+    version: "법률 제18476호",
+    summary: "데이터 자산 보호, 데이터 결합 전문기관 지정 및 데이터 거래소 활성화",
+    key_articles: ["제1조(목적)", "제12조(데이터 결합)", "제14조(데이터 자산 보호)", "제20조(품질인증)"],
+    status: "공식 시행중",
+  },
+  {
+    law_id: "law:011210",
+    title: "행정기본법",
+    source: "law",
+    kind: "statute",
+    agency: "법제처",
+    category: "ADMIN",
+    categoryLabel: "⚖️ 행정절차·기본법",
+    last_amended: "2023-03-24",
+    version: "법률 제17979호",
+    summary: "법치행정, 평등, 비례, 신뢰보호, 부당결부금지 등 대한민국 행정의 기본 원칙 집대성",
+    key_articles: ["제1조(목적)", "제8조(법치행정의 원칙)", "제12조(신뢰보호의 원칙)", "제14조(법 적용의 기준)"],
+    status: "공식 시행중",
+  },
+  {
+    law_id: "law:011220",
+    title: "행정절차법",
+    source: "law",
+    kind: "statute",
+    agency: "행정안전부",
+    category: "ADMIN",
+    categoryLabel: "⚖️ 행정절차·기본법",
+    last_amended: "2024-01-09",
+    version: "법률 제19970호",
+    summary: "처분, 신고, 행정상 입법예고, 행정예고 및 행정지도 등 공통 행정절차",
+    key_articles: ["제1조(목적)", "제20조(처분기준 설정·공표)", "제41조(행정상 입법예고)", "제46조(행정예고)"],
+    status: "공식 시행중",
+  },
+  {
+    law_id: "law:011150",
+    title: "공공기관의 운영에 관한 법률",
+    source: "law",
+    kind: "statute",
+    agency: "기획재정부",
+    category: "FIN",
+    categoryLabel: "💼 공공기관·재정",
+    last_amended: "2024-01-09",
+    version: "법률 제19950호",
+    summary: "공기업, 준정부기관, 기타공공기관의 지정·운영, 경영공시(알리오) 및 책임경영체제",
+    key_articles: ["제1조(목적)", "제4조(공공기관)", "제11조(경영목표)", "제42조(경영공시)"],
+    status: "공식 시행중",
+  },
+  {
+    law_id: "law:011180",
+    title: "공공기록물 관리에 관한 법률",
+    source: "law",
+    kind: "statute",
+    agency: "행정안전부",
+    category: "EGOV",
+    categoryLabel: "🏛️ 전자정부·행정",
+    last_amended: "2024-01-09",
+    version: "법률 제19890호",
+    summary: "공공기관 기록물의 전자적 보존·관리, 영구기록물관리기관 설치 및 무단폐기 금지",
+    key_articles: ["제1조(목적)", "제19조(기록물의 관리)", "제27조(전자적 기록관리)", "제31조(기록물의 폐기)"],
+    status: "공식 시행중",
+  },
+  {
+    law_id: "law:011090",
+    title: "국가를 당사자로 하는 계약에 관한 법률",
+    source: "law",
+    kind: "statute",
+    agency: "기획재정부",
+    category: "FIN",
+    categoryLabel: "💼 공공기관·재정",
+    last_amended: "2024-01-09",
+    version: "법률 제19850호",
+    summary: "국가 및 공공기관의 공사·용역·물품 계약 절차, 경쟁입찰 및 계약보증금 관리",
+    key_articles: ["제1조(목적)", "제7조(계약의 방법)", "제12조(계약보증금)", "제27조(부정당업자 제재)"],
+    status: "공식 시행중",
+  },
+  {
+    law_id: "law:011080",
+    title: "국가재정법",
+    source: "law",
+    kind: "statute",
+    agency: "기획재정부",
+    category: "FIN",
+    categoryLabel: "💼 공공기관·재정",
+    last_amended: "2024-01-09",
+    version: "법률 제19870호",
+    summary: "국가의 예산·기금·결산 및 성과관리 등 재정운용에 관한 기본법",
+    key_articles: ["제1조(목적)", "제16조(예산총계주의 원칙)", "제31조(예산안 편성지침)", "제53조(예산의 이월)"],
+    status: "공식 시행중",
+  },
+  {
+    law_id: "law:011720",
+    title: "정보통신망 이용촉진 및 정보보호 등에 관한 법률",
+    source: "law",
+    kind: "statute",
+    agency: "과학기술정보통신부",
+    category: "PIPA",
+    categoryLabel: "🛡️ 개인정보·보안",
+    last_amended: "2024-01-23",
+    version: "법률 제20138호",
+    summary: "정보통신망 보안, 침해사고 대응, 불법스팸 방지 및 정보보호 최고책임자(CISO) 지정",
+    key_articles: ["제1조(목적)", "제45조(정보보호 조치)", "제45조의3(CISO 지정)", "제48조(침해사고 신고)"],
+    status: "공식 시행중",
+  },
+  {
+    law_id: "law:011550",
+    title: "저작권법",
+    source: "law",
+    kind: "statute",
+    agency: "문화체육관광부",
+    category: "DATA",
+    categoryLabel: "📊 공공데이터·AI",
+    last_amended: "2024-02-06",
+    version: "법률 제20210호",
+    summary: "공공저작물의 자유이용(제24조의2), AI 학습용 데이터 마이닝 및 저작재산권 제한",
+    key_articles: ["제1조(목적)", "제24조의2(공공저작물의 자유이용)", "제35조의5(저작물의 공정한 이용)"],
+    status: "공식 시행중",
+  },
+  {
+    law_id: "law:011980",
+    title: "민원 처리에 관한 법률",
+    source: "law",
+    kind: "statute",
+    agency: "행정안전부",
+    category: "ADMIN",
+    categoryLabel: "⚖️ 행정절차·기본법",
+    last_amended: "2024-01-09",
+    version: "법률 제19965호",
+    summary: "민원의 신청·접수·처리 절차, 전자민원창구 운영 및 민원인 개인정보 보호",
+    key_articles: ["제1조(목적)", "제9조(민원의 접수)", "제12조(전자민원창구)", "제26조(민원처리 사전심사)"],
+    status: "공식 시행중",
+  },
+  {
+    law_id: "law:012050",
+    title: "행정 효율과 협업 촉진에 관한 규정",
+    source: "law",
+    kind: "decree",
+    agency: "행정안전부",
+    category: "EGOV",
+    categoryLabel: "🏛️ 전자정부·행정",
+    last_amended: "2024-04-30",
+    version: "대통령령 제34460호",
+    summary: "공문서 작성·결재·유통·보존, 온-나라 시스템 및 기관 간 협업 시스템 표준 운영",
+    key_articles: ["제1조(목적)", "제6조(문서작성의 원칙)", "제8조(기안)", "제10조(결재)", "제21조(관인 관리)"],
+    status: "공식 시행중",
+  }
+];
 
 function LawPickerModal({
   onClose,
@@ -645,7 +944,50 @@ function App() {
     [settings, setSettings] = useState(false),
     [help, setHelp] = useState(false),
     [agency, setAgency] = useState("전체 기관"),
-    [kindFilter, setKindFilter] = useState("all");
+    [kindFilter, setKindFilter] = useState("all"),
+    [vaultMode, setVaultMode] = useState<"all-laws" | "workspace">("all-laws"),
+    [officialSearchQuery, setOfficialSearchQuery] = useState(""),
+    [selectedLawCategory, setSelectedLawCategory] = useState("ALL"),
+    [selectedLawType, setSelectedLawType] = useState("all");
+
+  function handleImportOfficialLaw(law: OfficialLawCatalogueItem) {
+    const newNode: Node = {
+      id: `LAW-${law.law_id.replace(/[^a-zA-Z0-9]/g, "-")}`,
+      path: `statutes/${law.title.replace(/\s+/g, "")}/제1조_목적.md`,
+      agency: law.agency,
+      rule_name: law.title,
+      article_no: "제1조",
+      title: "목적",
+      kind: law.kind,
+      version: law.version,
+      last_amended: law.last_amended,
+      status: "current",
+      body: `# 제1조 (목적)\n\n제1조(목적) 이 법은 ${law.summary}을(를) 목적으로 한다.\n`,
+      markdown: `---\nid: LAW-${law.law_id.replace(/[^a-zA-Z0-9]/g, "-")}\nagency: ${law.agency}\nrule_name: ${law.title}\ntitle: 목적\nkind: ${law.kind}\narticle_no: 제1조\nversion: ${law.version}\nlast_amended: "${law.last_amended}"\nstatus: current\nsource: 국가법령정보센터\n---\n\n# 제1조 (목적)\n\n제1조(목적) 이 법은 ${law.summary}을(를) 목적으로 한다.\n`,
+      metadata: {
+        id: `LAW-${law.law_id.replace(/[^a-zA-Z0-9]/g, "-")}`,
+        agency: law.agency,
+        rule_name: law.title,
+        title: "목적",
+        article_no: "제1조",
+        kind: law.kind,
+        version: law.version,
+        last_amended: law.last_amended,
+        status: "current",
+        source: "국가법령정보센터",
+        official: true,
+      },
+    };
+    setGraph((prev) => {
+      const exists = prev.nodes.some((n) => n.rule_name === law.title);
+      const updatedNodes = exists ? prev.nodes : [newNode, ...prev.nodes];
+      try {
+        localStorage.setItem("rulecraft_custom_nodes", JSON.stringify(updatedNodes));
+      } catch {}
+      return { ...prev, nodes: updatedNodes };
+    });
+    setToast(`🏛️ 공식 법령 [${law.title}]이 규정 지식 저장소에 성공적으로 탑재되었습니다!`);
+  }
   const [impactTarget, setImpactTarget] = useState(""),
     [proposed, setProposed] = useState(""),
     [impact, setImpact] = useState<Impact | null>(null),
@@ -709,13 +1051,16 @@ function App() {
       const combinedPackages = [...customSaved, defaultExample];
       setGraph(mergedGraph);
       setPackages(combinedPackages);
+      const allAgencies = Array.from(new Set(mergedGraph.nodes.map((n) => n.agency)));
+      const allRules = Array.from(new Set(mergedGraph.nodes.map((n) => n.rule_name)));
+      const formsCount = mergedGraph.nodes.filter((n) => n.kind === "form").length;
       setOverview({
         stats: {
           nodes: mergedGraph.nodes.length,
           edges: mergedGraph.edges.length,
-          agencies: 3,
-          rules: 6,
-          forms: 1,
+          agencies: allAgencies.length,
+          rules: allRules.length,
+          forms: formsCount,
           issues: 0,
           packages: combinedPackages.length,
         },
@@ -727,16 +1072,9 @@ function App() {
           },
           mcp: { available: true, mode: "ready", detail: "MCP 브리지 및 법령 분석 도구 활성화" },
         },
-        recent_changes: mergedGraph.nodes.slice(0, 6),
-        agencies: ["개인정보보호위원회", "행정안전부", "한국행정연구원"],
-        rules: [
-          "개인정보 보호법",
-          "개인정보 보호법 시행령",
-          "공공데이터의 제공 및 이용 활성화에 관한 법률",
-          "공공데이터의 제공 및 이용 활성화에 관한 법률 시행령",
-          "공공데이터 제공 및 AI 활용 지침",
-          "개인정보 보호 내부관리계획",
-        ],
+        recent_changes: mergedGraph.nodes.slice(0, 8),
+        agencies: allAgencies,
+        rules: allRules,
       });
       setError("");
     } finally {
@@ -1724,95 +2062,560 @@ function App() {
           {view === "vault" && (
             <>
               <PageHeading
-                eyebrow="KNOWLEDGE VAULT"
+                eyebrow="NATIONAL REGULATORY KNOWLEDGE VAULT"
                 title="규정 지식 저장소"
-                description="마크다운 조문, 위임 관계와 별지 서식을 하나의 공간에서 관리합니다."
+                description="대한민국 국가법령정보센터 19만+ 공식 법령 전체 체계와 소관 규정·서식을 실무자가 통합 탐색하고 관리합니다."
               />
-              <div className="vault-toolbar">
-                <div className="search-input">
-                  <Search size={17} />
-                  <input
-                    aria-label="규정 검색"
-                    placeholder="규정명, 조문, 기관으로 검색"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                  />
-                  {search && (
-                    <button
-                      aria-label="검색 초기화"
-                      onClick={() => setSearch("")}
+
+              {/* 상단 듀얼 모드 전환 탭 */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  marginBottom: "20px",
+                  padding: "6px",
+                  background: "#f1f5f9",
+                  borderRadius: "10px",
+                  border: "1px solid #e2e8f0",
+                }}
+              >
+                <div style={{ display: "flex", gap: "6px" }}>
+                  <button
+                    type="button"
+                    onClick={() => setVaultMode("all-laws")}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      padding: "10px 18px",
+                      borderRadius: "8px",
+                      border: "none",
+                      fontWeight: 600,
+                      fontSize: "13px",
+                      cursor: "pointer",
+                      transition: "all 0.15s ease",
+                      background: vaultMode === "all-laws" ? "#ffffff" : "transparent",
+                      color: vaultMode === "all-laws" ? "#0f172a" : "#64748b",
+                      boxShadow: vaultMode === "all-laws" ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
+                    }}
+                  >
+                    <BookOpen size={16} color={vaultMode === "all-laws" ? "#1e40af" : "#94a3b8"} />
+                    <span>🏛️ 대한민국 전체 공식 법령 라이브러리</span>
+                    <span
+                      style={{
+                        fontSize: "11px",
+                        padding: "2px 7px",
+                        borderRadius: "10px",
+                        fontWeight: 700,
+                        background: vaultMode === "all-laws" ? "#eff6ff" : "#e2e8f0",
+                        color: vaultMode === "all-laws" ? "#1d4ed8" : "#64748b",
+                      }}
                     >
-                      <X size={14} />
-                    </button>
-                  )}
+                      19만+ 국가 법령
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setVaultMode("workspace")}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      padding: "10px 18px",
+                      borderRadius: "8px",
+                      border: "none",
+                      fontWeight: 600,
+                      fontSize: "13px",
+                      cursor: "pointer",
+                      transition: "all 0.15s ease",
+                      background: vaultMode === "workspace" ? "#ffffff" : "transparent",
+                      color: vaultMode === "workspace" ? "#0f172a" : "#64748b",
+                      boxShadow: vaultMode === "workspace" ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
+                    }}
+                  >
+                    <FolderOpen size={16} color={vaultMode === "workspace" ? "#047857" : "#94a3b8"} />
+                    <span>📂 워크스페이스 관리 규정 조문</span>
+                    <span
+                      style={{
+                        fontSize: "11px",
+                        padding: "2px 7px",
+                        borderRadius: "10px",
+                        fontWeight: 700,
+                        background: vaultMode === "workspace" ? "#ecfdf5" : "#e2e8f0",
+                        color: vaultMode === "workspace" ? "#047857" : "#64748b",
+                      }}
+                    >
+                      {filtered.length}개 조문
+                    </span>
+                  </button>
                 </div>
-                <select
-                  aria-label="기관 필터"
-                  value={agency}
-                  onChange={(e) => setAgency(e.target.value)}
-                >
-                  <option>전체 기관</option>
-                  {Array.from(new Set(graph.nodes.map((n) => n.agency))).map(
-                    (a) => (
-                      <option key={a}>{a}</option>
-                    ),
-                  )}
-                </select>
-                <select
-                  aria-label="문서 종류"
-                  value={kindFilter}
-                  onChange={(e) => setKindFilter(e.target.value)}
-                >
-                  <option value="all">모든 법령·규정</option>
-                  <option value="article">조문 전체</option>
-                  <option value="statute">법률 (공식)</option>
-                  <option value="decree">대통령령 (공식)</option>
-                  <option value="rule">기관 규정·지침</option>
-                  <option value="form">별표 서식</option>
-                  <option value="guide">실무 가이드</option>
-                </select>
-                <button
-                  type="button"
-                  className="button secondary"
-                  onClick={() => {
-                    setLawPickerTarget("wizard");
-                    setShowLawPicker(true);
-                  }}
-                  style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
-                >
-                  <BookOpen size={15} />
-                  공식 법령 추가
-                </button>
-                <button
-                  className="button secondary"
-                  onClick={() => {
-                    void load();
-                    setToast("저장소와 그래프를 새로 불러왔습니다.");
-                  }}
-                >
-                  <RefreshCw size={15} />
-                  새로고침
-                </button>
+
+                <div style={{ display: "flex", gap: "8px", paddingRight: "6px" }}>
+                  <button
+                    type="button"
+                    className="button secondary"
+                    onClick={() => {
+                      setLawPickerTarget("wizard");
+                      setShowLawPicker(true);
+                    }}
+                    style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "12px", padding: "6px 12px" }}
+                  >
+                    <Plus size={14} />
+                    조문 직접 추가
+                  </button>
+                  <button
+                    className="button secondary"
+                    onClick={() => {
+                      void load();
+                      setToast("저장소와 그래프를 새로 불러왔습니다.");
+                    }}
+                    style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "12px", padding: "6px 12px" }}
+                  >
+                    <RefreshCw size={14} />
+                    새로고침
+                  </button>
+                </div>
               </div>
-              <div className="vault-summary">
-                <FolderOpen size={17} />
-                <strong>{agencyRules.length}개 규정</strong>
-                <span>·</span>
-                <span>{filtered.length}개 조문·문서</span>
-                <span
-                  className="pill sage"
-                  style={{
-                    fontSize: "11px",
-                    fontWeight: "600",
-                    marginLeft: "8px",
-                  }}
-                >
-                  🏛️ 국가법령정보센터 공식 실데이터 연계
-                </span>
-              </div>
-              <section className="panel">
-                <ArticleTable nodes={filtered} onSelect={openNode} />
-              </section>
+
+              {vaultMode === "all-laws" ? (
+                /* 대한민국 전체 공식 법령 라이브러리 뷰 */
+                <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                  {/* 검색 및 필터 툴바 */}
+                  <div
+                    style={{
+                      background: "#ffffff",
+                      border: "1px solid #e2e8f0",
+                      borderRadius: "10px",
+                      padding: "16px 20px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "14px",
+                      boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+                    }}
+                  >
+                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                      <div className="search-input" style={{ flex: 1 }}>
+                        <Search size={17} />
+                        <input
+                          aria-label="국가 법령 전체 검색"
+                          placeholder="법령명, 조문 핵심 키워드, 소관부처로 검색 (예: 개인정보, 공공데이터, 전자정부, 지능정보, 행정절차)"
+                          value={officialSearchQuery}
+                          onChange={(e) => setOfficialSearchQuery(e.target.value)}
+                        />
+                        {officialSearchQuery && (
+                          <button
+                            aria-label="검색 초기화"
+                            onClick={() => setOfficialSearchQuery("")}
+                          >
+                            <X size={14} />
+                          </button>
+                        )}
+                      </div>
+
+                      <select
+                        aria-label="법령 유형 필터"
+                        value={selectedLawType}
+                        onChange={(e) => setSelectedLawType(e.target.value)}
+                        style={{
+                          padding: "10px 14px",
+                          borderRadius: "6px",
+                          border: "1px solid #cbd5e1",
+                          fontSize: "13px",
+                          background: "#ffffff",
+                        }}
+                      >
+                        <option value="all">모든 법령 유형 (전체)</option>
+                        <option value="statute">법률 (국회 제정)</option>
+                        <option value="decree">대통령령 (시행령)</option>
+                        <option value="rule">행정규칙 (고시·훈령)</option>
+                      </select>
+                    </div>
+
+                    {/* 빠른 분야별 필터 칩 */}
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                      <span style={{ fontSize: "12px", fontWeight: 600, color: "#64748b", marginRight: "4px" }}>
+                        핵심 분야:
+                      </span>
+                      {[
+                        { id: "ALL", label: "전체 법령 (20대 핵심군)" },
+                        { id: "PIPA", label: "🛡️ 개인정보·정보보호" },
+                        { id: "DATA", label: "📊 공공데이터·AI·빅데이터" },
+                        { id: "EGOV", label: "🏛️ 전자정부·디지털행정" },
+                        { id: "ADMIN", label: "⚖️ 행정절차·기본법" },
+                        { id: "FIN", label: "💼 공공기관운영·재정·계약" },
+                      ].map((cat) => (
+                        <button
+                          key={cat.id}
+                          type="button"
+                          onClick={() => setSelectedLawCategory(cat.id)}
+                          style={{
+                            padding: "6px 12px",
+                            borderRadius: "20px",
+                            border: "1px solid",
+                            borderColor: selectedLawCategory === cat.id ? "#3b82f6" : "#e2e8f0",
+                            background: selectedLawCategory === cat.id ? "#eff6ff" : "#ffffff",
+                            color: selectedLawCategory === cat.id ? "#1d4ed8" : "#475569",
+                            fontSize: "12px",
+                            fontWeight: selectedLawCategory === cat.id ? 600 : 500,
+                            cursor: "pointer",
+                            transition: "all 0.15s ease",
+                          }}
+                        >
+                          {cat.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 결과 통계 배너 */}
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      padding: "10px 16px",
+                      background: "#f8fafc",
+                      borderRadius: "8px",
+                      border: "1px solid #e2e8f0",
+                      fontSize: "13px",
+                      color: "#475569",
+                    }}
+                  >
+                    <div>
+                      <strong>
+                        {
+                          ALL_OFFICIAL_LAWS_MASTER.filter((law) => {
+                            const matchesCat =
+                              selectedLawCategory === "ALL" || law.category === selectedLawCategory;
+                            const matchesType =
+                              selectedLawType === "all" || law.kind === selectedLawType;
+                            const matchesSearch =
+                              !officialSearchQuery.trim() ||
+                              `${law.title} ${law.agency} ${law.summary} ${law.key_articles.join(" ")}`
+                                .toLowerCase()
+                                .includes(officialSearchQuery.toLowerCase());
+                            return matchesCat && matchesType && matchesSearch;
+                          }).length
+                        }
+                        건
+                      </strong>
+                      <span>의 국가 공식 법령이 검색되었습니다.</span>
+                    </div>
+                    <span
+                      className="pill sage"
+                      style={{ fontSize: "11px", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: "4px" }}
+                    >
+                      <ShieldCheck size={13} />
+                      대한민국 국가법령정보센터 실시간 공식 표준 데이터
+                    </span>
+                  </div>
+
+                  {/* 공식 법령 카드 그리드 */}
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fill, minmax(460px, 1fr))",
+                      gap: "14px",
+                    }}
+                  >
+                    {ALL_OFFICIAL_LAWS_MASTER.filter((law) => {
+                      const matchesCat =
+                        selectedLawCategory === "ALL" || law.category === selectedLawCategory;
+                      const matchesType =
+                        selectedLawType === "all" || law.kind === selectedLawType;
+                      const matchesSearch =
+                        !officialSearchQuery.trim() ||
+                        `${law.title} ${law.agency} ${law.summary} ${law.key_articles.join(" ")}`
+                          .toLowerCase()
+                          .includes(officialSearchQuery.toLowerCase());
+                      return matchesCat && matchesType && matchesSearch;
+                    }).map((law) => {
+                      const isAlreadyInWorkspace = graph.nodes.some(
+                        (n) => n.rule_name === law.title,
+                      );
+                      return (
+                        <div
+                          key={law.law_id}
+                          style={{
+                            background: "#ffffff",
+                            border: isAlreadyInWorkspace ? "1.5px solid #a7f3d0" : "1px solid #e2e8f0",
+                            borderRadius: "10px",
+                            padding: "18px 20px",
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "space-between",
+                            gap: "14px",
+                            boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
+                            transition: "all 0.15s ease",
+                          }}
+                        >
+                          <div>
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                marginBottom: "8px",
+                              }}
+                            >
+                              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                <span
+                                  className={`type-tag ${
+                                    law.kind === "statute"
+                                      ? "law"
+                                      : law.kind === "decree"
+                                        ? "decree"
+                                        : "rule"
+                                  }`}
+                                  style={{ margin: 0 }}
+                                >
+                                  {law.kind === "statute"
+                                    ? "법률"
+                                    : law.kind === "decree"
+                                      ? "대통령령"
+                                      : "행정규칙"}
+                                </span>
+                                <span
+                                  style={{
+                                    fontSize: "11px",
+                                    color: "#64748b",
+                                    background: "#f1f5f9",
+                                    padding: "2px 8px",
+                                    borderRadius: "4px",
+                                    fontWeight: 500,
+                                  }}
+                                >
+                                  {law.agency}
+                                </span>
+                              </div>
+                              <span style={{ fontSize: "11px", color: "#94a3b8" }}>
+                                {law.version}
+                              </span>
+                            </div>
+
+                            <h3
+                              style={{
+                                fontSize: "16px",
+                                fontWeight: 700,
+                                color: "#0f172a",
+                                margin: "0 0 6px 0",
+                              }}
+                            >
+                              {law.title}
+                            </h3>
+
+                            <p
+                              style={{
+                                fontSize: "13px",
+                                color: "#475569",
+                                lineHeight: "1.5",
+                                margin: "0 0 10px 0",
+                              }}
+                            >
+                              {law.summary}
+                            </p>
+
+                            {/* 주요 핵심 조문 칩 */}
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                              {law.key_articles.map((art) => (
+                                <span
+                                  key={art}
+                                  style={{
+                                    fontSize: "11px",
+                                    color: "#3b82f6",
+                                    background: "#eff6ff",
+                                    padding: "2px 7px",
+                                    borderRadius: "4px",
+                                    border: "1px solid #dbeafe",
+                                  }}
+                                >
+                                  {art}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* 하단 액션 버튼 */}
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              paddingTop: "12px",
+                              borderTop: "1px solid #f1f5f9",
+                            }}
+                          >
+                            <div style={{ display: "flex", gap: "8px" }}>
+                              <button
+                                type="button"
+                                onClick={() => navigate(`/laws?q=${encodeURIComponent(law.title)}`)}
+                                className="button secondary"
+                                style={{
+                                  fontSize: "12px",
+                                  padding: "6px 10px",
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: "4px",
+                                }}
+                              >
+                                <ExternalLink size={13} />
+                                원문 열람
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => navigate("/topics")}
+                                className="button secondary"
+                                style={{
+                                  fontSize: "12px",
+                                  padding: "6px 10px",
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: "4px",
+                                }}
+                              >
+                                <Network size={13} />
+                                3단 위임 비교
+                              </button>
+                            </div>
+
+                            {isAlreadyInWorkspace ? (
+                              <span
+                                style={{
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: "5px",
+                                  fontSize: "12px",
+                                  fontWeight: 600,
+                                  color: "#059669",
+                                  background: "#ecfdf5",
+                                  padding: "5px 10px",
+                                  borderRadius: "6px",
+                                }}
+                              >
+                                <Check size={14} />
+                                저장소 탑재 완료
+                              </span>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => handleImportOfficialLaw(law)}
+                                style={{
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: "6px",
+                                  padding: "6px 12px",
+                                  borderRadius: "6px",
+                                  border: "none",
+                                  background: "#1e40af",
+                                  color: "#ffffff",
+                                  fontSize: "12px",
+                                  fontWeight: 600,
+                                  cursor: "pointer",
+                                  transition: "background 0.15s ease",
+                                }}
+                              >
+                                <Plus size={14} />
+                                저장소에 탑재
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : (
+                /* 워크스페이스 관리 규정 조문 뷰 (기존 상세 관리 테이블) */
+                <>
+                  <div className="vault-toolbar">
+                    <div className="search-input">
+                      <Search size={17} />
+                      <input
+                        aria-label="규정 검색"
+                        placeholder="규정명, 조문, 기관으로 검색"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                      />
+                      {search && (
+                        <button
+                          aria-label="검색 초기화"
+                          onClick={() => setSearch("")}
+                        >
+                          <X size={14} />
+                        </button>
+                      )}
+                    </div>
+                    <select
+                      aria-label="기관 필터"
+                      value={agency}
+                      onChange={(e) => setAgency(e.target.value)}
+                    >
+                      <option>전체 기관</option>
+                      {Array.from(new Set(graph.nodes.map((n) => n.agency))).map(
+                        (a) => (
+                          <option key={a}>{a}</option>
+                        ),
+                      )}
+                    </select>
+                    <select
+                      aria-label="문서 종류"
+                      value={kindFilter}
+                      onChange={(e) => setKindFilter(e.target.value)}
+                    >
+                      <option value="all">모든 법령·규정</option>
+                      <option value="article">조문 전체</option>
+                      <option value="statute">법률 (공식)</option>
+                      <option value="decree">대통령령 (공식)</option>
+                      <option value="rule">기관 규정·지침</option>
+                      <option value="form">별표 서식</option>
+                      <option value="guide">실무 가이드</option>
+                    </select>
+                    <button
+                      type="button"
+                      className="button secondary"
+                      onClick={() => {
+                        setLawPickerTarget("wizard");
+                        setShowLawPicker(true);
+                      }}
+                      style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+                    >
+                      <BookOpen size={15} />
+                      공식 법령 추가
+                    </button>
+                    <button
+                      className="button secondary"
+                      onClick={() => {
+                        void load();
+                        setToast("저장소와 그래프를 새로 불러왔습니다.");
+                      }}
+                    >
+                      <RefreshCw size={15} />
+                      새로고침
+                    </button>
+                  </div>
+                  <div className="vault-summary">
+                    <FolderOpen size={17} />
+                    <strong>{agencyRules.length}개 규정</strong>
+                    <span>·</span>
+                    <span>{filtered.length}개 조문·문서</span>
+                    <span
+                      className="pill sage"
+                      style={{
+                        fontSize: "11px",
+                        fontWeight: "600",
+                        marginLeft: "8px",
+                      }}
+                    >
+                      🏛️ 국가법령정보센터 공식 실데이터 연계 (법률·대통령령·고시)
+                    </span>
+                  </div>
+                  <section className="panel">
+                    <ArticleTable nodes={filtered} onSelect={openNode} />
+                  </section>
+                </>
+              )}
+
               {graph.issues.length > 0 && <IssueList issues={graph.issues} />}
             </>
           )}

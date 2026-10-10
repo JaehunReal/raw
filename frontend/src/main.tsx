@@ -2667,13 +2667,13 @@ function App() {
                         <strong>전체 {graph.nodes.length}개</strong> 규정
                       </span>
                       <span className="stat-pill law">
-                        🏛️ 상위법 {graph.nodes.filter((n) => n.agency === "국가법령").length}건
+                        🏛️ 상위법 {graph.nodes.filter((n) => n.kind === "statute" || n.kind === "decree" || n.agency === "국가법령" || (n.agency !== "한국행정연구원" && n.kind !== "form" && n.kind !== "guide")).length}건
                       </span>
                       <span className="stat-pill rule">
-                        📜 소관규정 {graph.nodes.filter((n) => n.agency !== "국가법령" && n.kind !== "form").length}건
+                        📜 소관규정 {graph.nodes.filter((n) => (n.agency === "한국행정연구원" || n.kind === "rule") && n.kind !== "form" && n.kind !== "guide").length}건
                       </span>
                       <span className="stat-pill form">
-                        📋 별지서식 {graph.nodes.filter((n) => n.kind === "form").length}건
+                        📋 별지서식 {graph.nodes.filter((n) => n.kind === "form" || n.kind === "guide").length}건
                       </span>
                       <span className="stat-pill edge">
                         🔗 관계 {graph.edges.length}건
@@ -2695,7 +2695,7 @@ function App() {
                     </span>
                     <span>
                       <i className="rule" />
-                      기관 규정 (지침·훈령)
+                      기관 소관 실무 규정 (지침·세칙)
                     </span>
                     <span>
                       <i className="form" />
@@ -2713,24 +2713,33 @@ function App() {
                     (() => {
                       const focusNode = graph.nodes.find((n) => n.id === focus);
                       if (!focusNode) return null;
+                      const isLawNode =
+                        focusNode.kind === "statute" ||
+                        focusNode.kind === "decree" ||
+                        focusNode.agency === "국가법령" ||
+                        (focusNode.agency !== "한국행정연구원" &&
+                          focusNode.kind !== "form" &&
+                          focusNode.kind !== "guide");
+                      const isFormItem =
+                        focusNode.kind === "form" || focusNode.kind === "guide";
                       const focusEdges = graph.edges.filter(
-                        (e) => e.source === focus || e.target === focus
+                        (e) => e.source === focus || e.target === focus,
                       );
                       return (
                         <div className="panel inspector-card">
                           <div className="inspector-head">
                             <span
                               className={`pill ${
-                                focusNode.agency === "국가법령"
+                                isLawNode
                                   ? "blue"
-                                  : focusNode.kind === "form"
+                                  : isFormItem
                                   ? "sand"
                                   : "sage"
                               }`}
                             >
-                              {focusNode.agency === "국가법령"
+                              {isLawNode
                                 ? "상위법령"
-                                : focusNode.kind === "form"
+                                : isFormItem
                                 ? "별지서식"
                                 : "기관규정"}
                             </span>
@@ -4073,13 +4082,13 @@ function GraphCanvas({
       .filter((n) => connected.has(n.id))
       .sort((a, b) => {
         const score = (n: Node) =>
-          n.agency === "국가법령"
+          n.kind === "statute" || n.kind === "decree" || n.agency === "국가법령"
             ? 0
             : n.id === core?.id
               ? 1
               : n.kind === "form"
-                ? 2
-                : 3;
+                ? 3
+                : 2;
         return score(a) - score(b);
       })
       .slice(0, 6);
@@ -4089,31 +4098,33 @@ function GraphCanvas({
         nodes.some((n) => n.id === e.target),
     );
   }
-  const width = mini ? 360 : 920;
-  const law = nodes.filter(
-      (n) =>
-        n.kind === "statute" ||
-        n.kind === "decree" ||
-        n.agency === "국가법령" ||
-        n.agency === "개인정보보호위원회" ||
-        n.agency === "행정안전부",
-    ),
-    forms = nodes.filter((n) => n.kind === "form" || n.kind === "guide"),
-    rules = nodes.filter((n) => !law.includes(n) && !forms.includes(n));
 
-  const maxPerRow = mini ? 3 : 5;
+  const isLawNode = (n: Node) =>
+    n.kind === "statute" ||
+    n.kind === "decree" ||
+    n.agency === "국가법령" ||
+    (n.agency !== "한국행정연구원" && n.kind !== "form" && n.kind !== "guide");
+  const isFormNode = (n: Node) => n.kind === "form" || n.kind === "guide";
+  const isLocalRule = (n: Node) => !isLawNode(n) && !isFormNode(n);
+
+  const width = mini ? 340 : 960;
+  const law = nodes.filter(isLawNode);
+  const forms = nodes.filter(isFormNode);
+  const rules = nodes.filter(isLocalRule);
+
+  const maxPerRow = mini ? 3 : 7;
   const lawRows = Math.max(1, Math.ceil(law.length / maxPerRow));
   const ruleRows = Math.max(1, Math.ceil(rules.length / maxPerRow));
   const formRows = Math.max(1, Math.ceil(forms.length / maxPerRow));
 
-  const lawLaneY = 10;
-  const lawLaneH = mini ? 52 : Math.max(110, lawRows * 62 + 38);
-  const ruleLaneY = lawLaneY + lawLaneH + 12;
-  const ruleLaneH = mini ? 66 : Math.max(110, ruleRows * 62 + 38);
-  const formLaneY = ruleLaneY + ruleLaneH + 12;
-  const formLaneH = mini ? 52 : Math.max(95, formRows * 62 + 38);
+  const lawLaneY = 8;
+  const lawLaneH = mini ? 46 : Math.max(75, lawRows * 36 + 28);
+  const ruleLaneY = lawLaneY + lawLaneH + 10;
+  const ruleLaneH = mini ? 56 : Math.max(75, ruleRows * 36 + 28);
+  const formLaneY = ruleLaneY + ruleLaneH + 10;
+  const formLaneH = mini ? 46 : Math.max(65, formRows * 36 + 28);
 
-  const height = mini ? 196 : formLaneY + formLaneH + 18;
+  const height = mini ? 176 : formLaneY + formLaneH + 14;
 
   const positions = new Map<string, { x: number; y: number }>();
   if (mini && focus) {
@@ -4125,9 +4136,9 @@ function GraphCanvas({
   }
 
   const rowConfigs = [
-    { items: law, startY: mini ? 32 : lawLaneY + 44 },
-    { items: rules, startY: mini ? 94 : ruleLaneY + 44 },
-    { items: forms, startY: mini ? 156 : formLaneY + 44 },
+    { items: law, startY: mini ? 26 : lawLaneY + 34 },
+    { items: rules, startY: mini ? 80 : ruleLaneY + 34 },
+    { items: forms, startY: mini ? 136 : formLaneY + 34 },
   ];
   rowConfigs.forEach(({ items, startY }) =>
     items.forEach((n, i) => {
@@ -4136,7 +4147,7 @@ function GraphCanvas({
         count = Math.min(items.length - group * maxPerRow, maxPerRow);
       positions.set(n.id, {
         x: (width / (count + 1)) * (offset + 1),
-        y: startY + group * (mini ? 28 : 62),
+        y: startY + group * (mini ? 24 : 36),
       });
     }),
   );
@@ -4194,20 +4205,20 @@ function GraphCanvas({
               strokeWidth="1.2"
               strokeDasharray="4 4"
             />
-            <g transform={`translate(24, ${lawLaneY + 22})`}>
+            <g transform={`translate(20, ${lawLaneY + 16})`}>
               <rect
                 x="0"
-                y="-13"
-                width="230"
-                height="22"
-                rx="4"
+                y="-11"
+                width="210"
+                height="18"
+                rx="3"
                 fill={law.length > 0 ? "#e0f2fe" : "#f1f5f9"}
                 stroke={law.length > 0 ? "#7dd3fc" : "#cbd5e1"}
               />
               <text
-                x="8"
+                x="6"
                 y="2"
-                fontSize="11"
+                fontSize="9.5"
                 fontWeight="700"
                 fill={law.length > 0 ? "#0369a1" : "#64748b"}
               >
@@ -4217,9 +4228,9 @@ function GraphCanvas({
             {law.length === 0 && (
               <text
                 x={width / 2}
-                y={lawLaneY + 70}
+                y={lawLaneY + 40}
                 textAnchor="middle"
-                fontSize="12.5"
+                fontSize="11"
                 fill="#94a3b8"
                 fontWeight="500"
               >
@@ -4235,38 +4246,38 @@ function GraphCanvas({
               y={ruleLaneY}
               width={width - 24}
               height={ruleLaneH}
-              rx="10"
+              rx="8"
               fill={rules.length > 0 ? "#f0fdf4" : "#f8fafc"}
               stroke={rules.length > 0 ? "#bbf7d0" : "#e2e8f0"}
               strokeWidth="1.2"
               strokeDasharray="4 4"
             />
-            <g transform={`translate(24, ${ruleLaneY + 22})`}>
+            <g transform={`translate(20, ${ruleLaneY + 16})`}>
               <rect
                 x="0"
-                y="-13"
-                width="240"
-                height="22"
-                rx="4"
+                y="-11"
+                width="220"
+                height="18"
+                rx="3"
                 fill={rules.length > 0 ? "#dcfce7" : "#f1f5f9"}
                 stroke={rules.length > 0 ? "#86efac" : "#cbd5e1"}
               />
               <text
-                x="8"
+                x="6"
                 y="2"
-                fontSize="11"
+                fontSize="9.5"
                 fontWeight="700"
                 fill={rules.length > 0 ? "#15803d" : "#64748b"}
               >
-                📜 제2계층: 기관 소관 규정 (지침·훈령) {rules.length}건
+                📜 제2계층: 기관 소관 실무 규정 (지침·세칙) {rules.length}건
               </text>
             </g>
             {rules.length === 0 && (
               <text
                 x={width / 2}
-                y={ruleLaneY + 70}
+                y={ruleLaneY + 40}
                 textAnchor="middle"
-                fontSize="12.5"
+                fontSize="11"
                 fill="#94a3b8"
                 fontWeight="500"
               >
@@ -4280,26 +4291,26 @@ function GraphCanvas({
               y={formLaneY}
               width={width - 24}
               height={formLaneH}
-              rx="10"
+              rx="8"
               fill={forms.length > 0 ? "#fffbeb" : "#f8fafc"}
               stroke={forms.length > 0 ? "#fde68a" : "#e2e8f0"}
               strokeWidth="1.2"
               strokeDasharray="4 4"
             />
-            <g transform={`translate(24, ${formLaneY + 22})`}>
+            <g transform={`translate(20, ${formLaneY + 16})`}>
               <rect
                 x="0"
-                y="-13"
-                width="230"
-                height="22"
-                rx="4"
+                y="-11"
+                width="210"
+                height="18"
+                rx="3"
                 fill={forms.length > 0 ? "#fef3c7" : "#f1f5f9"}
                 stroke={forms.length > 0 ? "#fcd34d" : "#cbd5e1"}
               />
               <text
-                x="8"
+                x="6"
                 y="2"
-                fontSize="11"
+                fontSize="9.5"
                 fontWeight="700"
                 fill={forms.length > 0 ? "#b45309" : "#64748b"}
               >
@@ -4348,10 +4359,10 @@ function GraphCanvas({
           const p = positions.get(n.id);
           if (!p) return null;
           const isFocus = n.id === focus,
-            isLaw = n.agency === "국가법령",
-            isForm = n.kind === "form",
-            w = mini ? 82 : 138,
-            h = mini ? 28 : 46;
+            isLaw = isLawNode(n),
+            isForm = isFormNode(n),
+            w = mini ? 74 : 106,
+            h = mini ? 22 : 28;
           return (
             <g
               key={n.id}
@@ -4370,7 +4381,7 @@ function GraphCanvas({
                 y={-h / 2}
                 width={w}
                 height={h}
-                rx={mini ? 5 : 8}
+                rx={mini ? 4 : 6}
                 fill={
                   isFocus
                     ? "#0b3b60"
@@ -4385,33 +4396,33 @@ function GraphCanvas({
                         ? "#d97706"
                         : "#16a34a"
                 }
-                strokeWidth={isFocus ? (mini ? "1.8" : "2.2") : (mini ? "1" : "1.3")}
+                strokeWidth={isFocus ? (mini ? "1.6" : "2") : (mini ? "0.9" : "1.1")}
               />
               {/* Category Top Strip */}
               <path
-                d={`M${-w / 2 + (mini ? 5 : 8)},${-h / 2} h${w - (mini ? 10 : 16)} a${mini ? 5 : 8},${mini ? 5 : 8} 0 0 1 ${mini ? 5 : 8},${mini ? 5 : 8} v0 h${-w} v0 a${mini ? 5 : 8},${mini ? 5 : 8} 0 0 1 ${mini ? 5 : 8},${-(mini ? 5 : 8)} z`}
+                d={`M${-w / 2 + (mini ? 4 : 6)},${-h / 2} h${w - (mini ? 8 : 12)} a${mini ? 4 : 6},${mini ? 4 : 6} 0 0 1 ${mini ? 4 : 6},${mini ? 4 : 6} v0 h${-w} v0 a${mini ? 4 : 6},${mini ? 4 : 6} 0 0 1 ${mini ? 4 : 6},${-(mini ? 4 : 6)} z`}
                 fill={isFocus ? "#60a5fa" : isLaw ? "#0284c7" : isForm ? "#d97706" : "#16a34a"}
               />
               <text
                 textAnchor="middle"
-                y={mini ? -2 : -3}
-                fontSize={mini ? 7.5 : 10.5}
+                y={mini ? -2 : -2}
+                fontSize={mini ? 6.8 : 8.8}
                 fill={isFocus ? "#ffffff" : isLaw ? "#0369a1" : isForm ? "#b45309" : "#15803d"}
                 fontWeight="700"
               >
-                {n.rule_name.length > (mini ? 9 : 13)
-                  ? n.rule_name.slice(0, mini ? 8 : 12) + "…"
+                {n.rule_name.length > (mini ? 7 : 10)
+                  ? n.rule_name.slice(0, mini ? 6 : 9) + "…"
                   : n.rule_name}
               </text>
               <text
                 textAnchor="middle"
-                y={mini ? 8 : 12}
-                fontSize={mini ? 6.5 : 8.8}
+                y={mini ? 6.5 : 8.5}
+                fontSize={mini ? 5.8 : 7.2}
                 fill={isFocus ? "#e2e8f0" : "#475569"}
                 fontWeight="500"
               >
-                {isForm ? "별지" : displayArticle(n)} ·{" "}
-                {n.title.slice(0, mini ? 7 : 12)}
+                {isForm ? "서식" : displayArticle(n)} ·{" "}
+                {n.title.slice(0, mini ? 6 : 9)}
               </text>
               <title>
                 {n.rule_name} {n.title}

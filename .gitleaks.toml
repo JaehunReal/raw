@@ -1,0 +1,13 @@
+title = "gitleaks config"
+
+[allowlist]
+description = "Global allowlist for test fixtures"
+paths = [
+  '''tests/.*''',
+  '''\.gitleaksignore''',
+]
+regexes = [
+  '''__Secure-rulecraft_session''',
+  '''proxy-test-.*''',
+  '''mock-backend-.*''',
+]

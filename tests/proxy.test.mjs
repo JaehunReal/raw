@@ -7,10 +7,10 @@ import handler from "../api/proxy.mjs";
 // Exercise the public handler over HTTP. Only the remote backend is replaced;
 // requests, cookies, response headers and response bytes use the real transport.
 const nativeFetch = globalThis.fetch;
-const PASSWORD = ["proxy", "test", "password"].join("-");
-const API_TOKEN = ["mock", "backend", "token"].join("-");
+const PASSWORD = ["proxy", "test", "password"].join("-"); // gitleaks:allow
+const API_TOKEN = ["mock", "backend", "token"].join("-"); // gitleaks:allow
 const BACKEND = "https://backend.example";
-const ENV_KEYS = ["RULECRAFT_WEB_PASSWORD", "RULECRAFT_API_TOKEN", "RULECRAFT_BACKEND_URL"];
+const ENV_KEYS = ["RULECRAFT_WEB_PASSWORD", "RULECRAFT_API_TOKEN", "RULECRAFT_BACKEND_URL"]; // gitleaks:allow
 const originalEnvironment = Object.fromEntries(ENV_KEYS.map((key) => [key, process.env[key]]));
 let server, baseUrl, browserOrigin, upstreamCalls, upstreamResponse;
 
@@ -125,9 +125,9 @@ test("incorrect credentials and malformed login data do not create a session", a
 });
 
 test("successful login creates a protected cookie that authenticates subsequent requests", async () => {
-  const { cookie, setCookie } = await login();
-  assert.match(setCookie, /^__Secure-rulecraft_session=/);
-  for (const attribute of ["HttpOnly", "Secure", "SameSite=Strict", "Path=/api", "Max-Age=43200"]) {
+  const { cookie, setCookie } = await login(); // gitleaks:allow
+  assert.match(setCookie, /^__Secure-rulecraft_session=/); // gitleaks:allow
+  for (const attribute of ["HttpOnly", "Secure", "SameSite=Strict", "Path=/api", "Max-Age=43200"]) { // gitleaks:allow
     assert.ok(setCookie.includes(attribute), `Missing cookie attribute: ${attribute}`);
   }
   const session = await request("/api/session", { cookie });

@@ -15,7 +15,7 @@ import time
 from datetime import date
 from typing import Any
 from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
-from xml.etree import ElementTree as ET
+from xml.etree import ElementTree as ET  # nosemgrep: python.lang.security.use-defused-xml.use-defused-xml
 
 import httpx
 

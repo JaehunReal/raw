@@ -47,8 +47,9 @@ COPY backend/rulecraft /app/backend/rulecraft
 COPY legal-knowledge-vault /app/seed-vault
 COPY scripts/production-entrypoint.py /app/scripts/production-entrypoint.py
 
+RUN mkdir -p /var/data && chown -R rulecraft:rulecraft /app /var/data
+USER rulecraft
+
 EXPOSE 10000
 STOPSIGNAL SIGTERM
-# The launcher prepares mounted directories, then drops to UID/GID 10001 before
-# executing the API. One process owns SQLite, sync-job state, and MCP workers.
 ENTRYPOINT ["/app/backend/.venv/bin/python", "/app/scripts/production-entrypoint.py"]

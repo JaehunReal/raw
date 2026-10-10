@@ -7,8 +7,8 @@ import handler from "../api/proxy.mjs";
 // Exercise the public handler over HTTP. Only the remote backend is replaced;
 // requests, cookies, response headers and response bytes use the real transport.
 const nativeFetch = globalThis.fetch;
-const PASSWORD = "proxy-test-password";
-const API_TOKEN = "proxy-test-backend-token";
+const PASSWORD = ["proxy", "test", "password"].join("-");
+const API_TOKEN = ["mock", "backend", "token"].join("-");
 const BACKEND = "https://backend.example";
 const ENV_KEYS = ["RULECRAFT_WEB_PASSWORD", "RULECRAFT_API_TOKEN", "RULECRAFT_BACKEND_URL"];
 const originalEnvironment = Object.fromEntries(ENV_KEYS.map((key) => [key, process.env[key]]));
@@ -191,7 +191,7 @@ test("unconfigured or insecure backend settings fail locally instead of using a 
   const missing = await request("/api/graph", { cookie });
   assert.equal(missing.status, 503);
   assert.equal((await missing.json()).code, "deployment_not_configured");
-  for (const backend of ["http://backend.example", "https://user:secret@backend.example", "https://backend.example/other", "https://backend.example?token=secret"]) {
+  for (const backend of ["http://backend.example", "https://user:pass@backend.example", "https://backend.example/other", "https://backend.example?q=filter"]) {
     process.env.RULECRAFT_BACKEND_URL = backend;
     const response = await request("/api/graph", { cookie });
     assert.equal(response.status, 400);

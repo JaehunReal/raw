@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { Link, useRouter } from "../router";
 import "./layout.css";
+import { WorkHistory } from "../WorkHistory";
 
 interface LayoutProps {
   children: ReactNode;
@@ -77,12 +78,9 @@ export function Layout({ children, activeNav }: LayoutProps) {
       <div className="krds-gov-banner">
         <div className="krds-gov-banner-inner">
           <div className="krds-gov-banner-left">
-            <span className="krds-taegeuk" aria-hidden="true">
-              <span className="taegeuk-red" />
-              <span className="taegeuk-blue" />
-            </span>
+            <BookOpen size={16} aria-hidden="true" />
             <span className="krds-gov-text">
-              대한민국 공식 전자정부 법령데이터 개방 포털
+              RuleCraft · 공공데이터를 활용한 독립 법령 서비스
             </span>
           </div>
           <button
@@ -91,7 +89,7 @@ export function Layout({ children, activeNav }: LayoutProps) {
             onClick={() => setGovBannerOpen(!govBannerOpen)}
             aria-expanded={govBannerOpen}
           >
-            <span>공식 누리집 확인방법</span>
+            <span>운영 주체와 자료 출처</span>
             {govBannerOpen ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
           </button>
         </div>
@@ -100,15 +98,15 @@ export function Layout({ children, activeNav }: LayoutProps) {
           <div className="krds-gov-banner-dropdown">
             <div className="krds-gov-banner-dropdown-inner">
               <div className="gov-info-col">
-                <strong>공식 누리집 주소 확인</strong>
+                <strong>독립 서비스 안내</strong>
                 <p>
-                  법제처 국가법령정보 및 행정기관 서비스는 공공 도메인 및 암호화(HTTPS)를 통해 신뢰할 수 있는 정보를 제공합니다.
+                  RuleCraft는 정부·법제처가 운영하거나 인증한 공식 누리집이 아닙니다. 공식 원문은 국가법령정보센터에서 확인하세요.
                 </p>
               </div>
               <div className="gov-info-col">
                 <strong>공공데이터 개방 연계</strong>
                 <p>
-                  본 서비스의 모든 법령 원문과 개정 이력은 법제처 국가법령정보공동활용(Open Law) API로부터 실시간 동기화 및 검증됩니다.
+                  법제처 공공데이터로 수집한 원문과 별도 예제·작성 자료를 제공합니다. 수집 시각·버전·출처를 확인하고 예제 관계는 원문과 대조하세요.
                 </p>
               </div>
             </div>
@@ -122,9 +120,10 @@ export function Layout({ children, activeNav }: LayoutProps) {
           <div className="krds-util-left">
             <span className="util-org-badge">법제처 Open API 연계 포털</span>
             <span className="util-divider" />
-            <span className="util-clock">실시간 19만+ 법령·행정규칙·자치법규 보존</span>
+            <span className="util-clock">수집된 법령·행정규칙·자치법규 열람</span>
           </div>
           <div className="krds-util-right">
+            <WorkHistory />
             {/* 글자 크기 조절 컨트롤 (공공기관 웹 접근성 표준) */}
             <div className="font-size-controls" role="group" aria-label="글자 크기 조절">
               <span className="control-label">글자크기</span>
@@ -240,7 +239,7 @@ export function Layout({ children, activeNav }: LayoutProps) {
               <ShieldCheck size={16} />
               <div className="badge-text">
                 <strong>법제처 국가법령 연계</strong>
-                <span>191,708개 버전 무결성 검증</span>
+                <span>수집 버전·원문 출처 확인</span>
               </div>
             </div>
             <a

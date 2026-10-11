@@ -39,6 +39,7 @@ import "@fontsource-variable/dm-sans";
 import "@fontsource-variable/noto-sans-kr";
 import "./styles.css";
 import previewSnapshot from "./preview-snapshot.json";
+import { WorkHistory } from "./WorkHistory";
 import McpPlayground from "./McpPlayground";
 import NationalLawPanel from "./NationalLawPanel";
 import LoginGate from "./LoginGate";
@@ -936,18 +937,19 @@ function isDemoDocument(n: Node) {
   return n.status === "demo" || n.metadata?.demo === true;
 }
 function documentStatus(n: Node) {
-  if (n.kind === "statute") return "법률 (공식)";
-  if (n.kind === "decree") return "대통령령 (공식)";
+  if (n.kind === "statute") return "법률 자료";
+  if (n.kind === "decree") return "대통령령 자료";
   if (n.kind === "form") return "별표서식";
   if (n.kind === "guide") return "실무가이드";
   if (n.status === "current" || n.status === "enacted") return "현행 시행";
   if (n.status === "draft") return "개정안 초안";
   if (["abolished", "repealed"].includes(n.status)) return "폐지";
   if (["pending", "scheduled"].includes(n.status)) return "시행 예정";
-  return "공식 등록";
+  return "원문 대조 필요";
 }
 function App() {
   const { navigate } = useRouter();
+  const [graphSource, setGraphSource] = useState("조회 중");
   const [view, setView] = useState<View>("dashboard"),
     [graph, setGraph] = useState<Graph>({ nodes: [], edges: [], issues: [] }),
     [overview, setOverview] = useState<Overview | null>(null),
@@ -971,43 +973,9 @@ function App() {
     [selectedLawType, setSelectedLawType] = useState("all");
 
   function handleImportOfficialLaw(law: OfficialLawCatalogueItem) {
-    const newNode: Node = {
-      id: `LAW-${law.law_id.replace(/[^a-zA-Z0-9]/g, "-")}`,
-      path: `statutes/${law.title.replace(/\s+/g, "")}/제1조_목적.md`,
-      agency: law.agency,
-      rule_name: law.title,
-      article_no: "제1조",
-      title: "목적",
-      kind: law.kind,
-      version: law.version,
-      last_amended: law.last_amended,
-      status: "current",
-      body: `# 제1조 (목적)\n\n제1조(목적) 이 법은 ${law.summary}을(를) 목적으로 한다.\n`,
-      markdown: `---\nid: LAW-${law.law_id.replace(/[^a-zA-Z0-9]/g, "-")}\nagency: ${law.agency}\nrule_name: ${law.title}\ntitle: 목적\nkind: ${law.kind}\narticle_no: 제1조\nversion: ${law.version}\nlast_amended: "${law.last_amended}"\nstatus: current\nsource: 국가법령정보센터\n---\n\n# 제1조 (목적)\n\n제1조(목적) 이 법은 ${law.summary}을(를) 목적으로 한다.\n`,
-      metadata: {
-        id: `LAW-${law.law_id.replace(/[^a-zA-Z0-9]/g, "-")}`,
-        agency: law.agency,
-        rule_name: law.title,
-        title: "목적",
-        article_no: "제1조",
-        kind: law.kind,
-        version: law.version,
-        last_amended: law.last_amended,
-        status: "current",
-        source: "국가법령정보센터",
-        official: true,
-      },
-    };
-    setGraph((prev) => {
-      const exists = prev.nodes.some((n) => n.rule_name === law.title);
-      const updatedNodes = exists ? prev.nodes : [newNode, ...prev.nodes];
-      try {
-        localStorage.setItem("rulecraft_custom_nodes", JSON.stringify(updatedNodes));
-      } catch {}
-      return { ...prev, nodes: updatedNodes };
-    });
-    setToast(`🏛️ 공식 법령 [${law.title}]이 규정 지식 저장소에 성공적으로 탑재되었습니다!`);
+    navigate(`/laws?q=${encodeURIComponent(law.title)}`);
   }
+
   const [impactTarget, setImpactTarget] = useState(""),
     [proposed, setProposed] = useState(""),
     [impact, setImpact] = useState<Impact | null>(null),
@@ -1038,6 +1006,7 @@ function App() {
         request<{ packages: Package[] }>("/packages"),
       ]);
       setGraph(g);
+      setGraphSource("저장소 자료 · 원문 대조 필요");
       setOverview(o);
       const customSaved: Package[] = JSON.parse(
         localStorage.getItem("rulecraft_custom_packages") || "[]",
@@ -1045,7 +1014,7 @@ function App() {
       setPackages([...customSaved, ...p.packages]);
       setError("");
     } catch {
-      // Resilient fallback to snapshot so workspace never breaks
+      setGraphSource("예제 스냅샷 · 원문 및 위임 관계 미검증");
       const snapGraph = previewSnapshot.graph as unknown as Graph;
       const customSaved: Package[] = JSON.parse(
         localStorage.getItem("rulecraft_custom_packages") || "[]",
@@ -1091,9 +1060,9 @@ function App() {
           graph: {
             available: true,
             mode: "ready",
-            detail: `대한민국 공식 법령 및 실무 규정 ${mergedGraph.nodes.length}개 조문 (국가법령정보센터 실데이터 연계)`,
+            detail: `예제 스냅샷 ${mergedGraph.nodes.length}개 항목 · 원문 및 관계 미검증`,
           },
-          mcp: { available: true, mode: "ready", detail: "MCP 브리지 및 법령 분석 도구 활성화" },
+          mcp: { available: false, mode: "unavailable", detail: "서버 연결 미확인" },
         },
         recent_changes: mergedGraph.nodes.slice(0, 8),
         agencies: allAgencies,
@@ -1639,8 +1608,9 @@ function App() {
     <div className="app-shell">
       <header className="gov-official-bar">
         <div className="gov-official-bar-inner">
-          <span className="gov-flag">🇰🇷</span>
-          <span>대한민국 공식 전자정부 규정 관리 워크스페이스</span>
+          <span className="gov-flag">R</span>
+          <span>RuleCraft · 독립 규정 검토 워크스페이스</span>
+          <WorkHistory />
           <span className="gov-badge-official">실무 전용</span>
         </div>
       </header>
@@ -1789,7 +1759,7 @@ function App() {
             </button>
             <span className="sync-label">
               <span className="sync-dot ready" />
-              지식그래프 연결됨
+              {graphSource}
             </span>
             <span className="header-divider" />
             <button
@@ -2461,7 +2431,7 @@ function App() {
                         }
                         건
                       </strong>
-                      <span>의 국가 공식 법령이 검색되었습니다.</span>
+                      <span>의 법령 목록 자료입니다. 선택하면 공식 원문을 조회합니다.</span>
                     </div>
                     <span
                       className="pill sage"
@@ -2726,8 +2696,8 @@ function App() {
                     >
                       <option value="all">모든 법령·규정</option>
                       <option value="article">조문 전체</option>
-                      <option value="statute">법률 (공식)</option>
-                      <option value="decree">대통령령 (공식)</option>
+                      <option value="statute">법률 자료</option>
+                      <option value="decree">대통령령 자료</option>
                       <option value="rule">기관 규정·지침</option>
                       <option value="form">별표 서식</option>
                       <option value="guide">실무 가이드</option>
@@ -3030,6 +3000,8 @@ function App() {
                         </div>
 
                         <h3 className="inspector-title">{selectedLawNode.name}</h3>
+                        <p role="status">{graphSource}. 아래 연결은 법적 위임의 검증 결과가 아닙니다.</p>
+                        <button onClick={() => navigate(`/laws?q=${encodeURIComponent(selectedLawNode.name)}`)}>공식 원문·버전·인용 근거 확인</button>
                         <p className="inspector-subtitle">
                           {selectedLawNode.agency} 소관 · 조문{" "}
                           <strong>{selectedLawNode.articleCount}개</strong> 보유
@@ -3040,7 +3012,7 @@ function App() {
                             <span>소관 구분</span>
                             <code>
                               {selectedLawNode.tier === "higher_law"
-                                ? "국가 공식 법령"
+                                ? "법령 자료 · 원문 대조 필요"
                                 : "기관 실무 규정"}
                             </code>
                           </div>
@@ -3125,7 +3097,7 @@ function App() {
                                   {art.body.length > 75 ? "…" : ""}
                                 </p>
                                 <div className="article-item-footer">
-                                  <span>원문 열람·편집 ↗</span>
+                                  <span>저장된 내용 보기·편집 ↗</span>
                                 </div>
                               </div>
                             ))}

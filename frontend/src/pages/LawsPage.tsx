@@ -41,6 +41,7 @@ type LawRecord = {
 };
 
 type LawList = {
+  ranking?: { engine: string; laya: string };
   items: LawRecord[];
   total: number;
   limit: number;
@@ -315,7 +316,7 @@ export function LawsPage() {
               {listLoading ? (
                 "검색 중..."
               ) : list ? (
-                `검색 결과 ${list.total.toLocaleString("ko-KR")}건`
+                `검색 결과 ${list.total.toLocaleString("ko-KR")}건 · ${list.ranking?.engine === "laya" ? "Laya 관련성 정렬 (현재 페이지 상위 8건)" : "기본 검색 정렬"}`
               ) : (
                 "법령 목록"
               )}

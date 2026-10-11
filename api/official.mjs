@@ -1,4 +1,5 @@
 import pg from "pg";
+import { rankWithLaya } from "./laya-ranking.mjs";
 
 const SOURCES = ["law", "administrative", "ordinance"];
 // Cast date-only values in SQL so node-postgres cannot shift their calendar
@@ -172,7 +173,9 @@ export function createOfficialHandler({ environment = () => process.env, createP
         const reader = response.body.getReader(); let length=0; const chunks=[];
         while (true) {const {done,value}=await reader.read();if(done)break;length+=value.length;
           if(length>MAX_DOCUMENT_BYTES){await reader.cancel();throw new Error('oversize');} chunks.push(Buffer.from(value));}
-        return json(res,response.status,JSON.parse(Buffer.concat(chunks).toString('utf8')),head);
+        let body = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+        if (response.ok && parameters.route === 'laws' && !head) body = await rankWithLaya(body, parameters.q, env);
+        return json(res,response.status,body,head);
       } catch {return json(res,503,disconnected('unavailable','gateway_unavailable','맥의 법령 조회 서버에 연결하지 못했습니다.'),head);}
     }
     let configuration;
@@ -257,7 +260,8 @@ export function createOfficialHandler({ environment = () => process.env, createP
         : parameters.route === "laws"
         ? "public, s-maxage=60, stale-while-revalidate=300"
         : "public, s-maxage=3600, stale-while-revalidate=86400";
-      return json(res, status, payload, head, cacheHeader);
+      if (status === 200 && parameters.route === "laws" && !head) payload = await rankWithLaya(payload, parameters.q, env);
+      return json(res, status, payload, head, parameters.route === "laws" ? null : cacheHeader);
     } catch (error) {
       const incompatible = error instanceof SchemaError || ["42P01", "42703", "42883", "42804"].includes(error?.code);
       return json(res, 503, disconnected(incompatible ? "incompatible_schema" : "unavailable",

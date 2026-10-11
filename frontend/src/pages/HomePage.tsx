@@ -50,7 +50,7 @@ export function HomePage() {
         <div className="krds-hero-inner">
           <div className="krds-service-kicker">
             <span className="kicker-badge">국가법령 공공데이터 연계 포털</span>
-            <span>법제처 Open API 실시간 동기화</span>
+            <span>법제처 Open API 수집 자료</span>
           </div>
 
           <h1 className="krds-hero-heading">

@@ -1811,7 +1811,7 @@ function App() {
               <div className="page-heading">
                 <div>
                   <div className="eyebrow">
-                    <span className="small-line" /> OFFICIAL REGULATORY WORKSPACE
+                    <span className="small-line" /> REGULATORY REVIEW WORKSPACE
                   </div>
                   <h1>규정 관리 실무 워크스페이스</h1>
                   <p>대한민국 공식 법령(법률·대통령령·행정규칙)을 기반으로 소관 규정을 제·개정하고, 상위법령 위임 연계 분석 및 법제 7종 문서를 실무자가 직접 다룹니다.</p>
@@ -2000,7 +2000,7 @@ function App() {
                     cls: "blue",
                   },
                   {
-                    name: "인용 검증",
+                    name: "저장소 링크 점검",
                     value:
                       graph.issues.filter((i) => i.severity === "error")
                         .length === 0
@@ -2008,7 +2008,7 @@ function App() {
                         : graph.issues.length,
                     unit:
                       graph.issues.length === 0
-                        ? "모든 링크 유효"
+                        ? "파일 연결 기준"
                         : "개 검토 항목",
                     icon: ShieldCheck,
                     detail: "존재하는 조문과 링크 확인",
@@ -3824,7 +3824,7 @@ function App() {
                     : displayArticle(selected)}
                 </span>
                 <span>버전 {selected.version}</span>
-                <span>공식 시행일: {selected.last_amended || "—"}</span>
+                <span>자료에 기재된 시행일: {selected.last_amended || "—"}</span>
               </div>
               <textarea
                 aria-label="조문 마크다운 편집"
@@ -4223,7 +4223,7 @@ function ArticleTable({
                 {n.last_amended || "—"}
                 <small className="document-date-kind">
                   {n.kind === "statute" || n.kind === "decree"
-                    ? "공식 시행일"
+                    ? "자료에 기재된 시행일"
                     : "규정 시행일"}
                 </small>
               </td>

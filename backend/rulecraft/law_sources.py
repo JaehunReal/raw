@@ -6,6 +6,8 @@ the response structure, not legal applicability or completeness of a corpus.
 
 from __future__ import annotations
 
+from .article_numbers import ordinance_article_number
+
 import json
 import math
 import os
@@ -198,8 +200,12 @@ def _number(value: str | None) -> str | None:
     return str(int(match[1])) if match else value
 
 
-def _article_number(unit: ET.Element) -> str | None:
+def _article_number(unit: ET.Element, source: str | None = None) -> str | None:
     value = _value(unit, "조문번호", "조번호", "article_no")
+    if source == "ordinance":
+        decoded = ordinance_article_number(value)
+        if decoded:
+            return decoded
     if value:
         match = re.fullmatch(r"(?:제)?(\d+)(?:조)?(?:의(\d+))?", value.strip())
         if match:
@@ -274,7 +280,7 @@ def _provisions(root: ET.Element, warnings: list[str], source: str | None = None
         marker = _value(unit, "조문여부")
         if marker == "전문" or (source == "ordinance" and marker == "N"):
             continue
-        article_no = _article_number(unit)
+        article_no = _article_number(unit, source)
         if not article_no:
             warnings.append("unparsed_article_number")
             continue

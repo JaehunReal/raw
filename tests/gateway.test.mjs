@@ -22,3 +22,15 @@ test('Mac relay fails closed on an insecure upstream and rejects writes',async()
   await handler({method:'GET',url:'/api/official/status',query:{route:'status'}},res);assert.equal(res.statusCode,503);
   await handler({method:'POST',url:'/api/official/status'},res);assert.equal(res.statusCode,405);
 });
+
+test('relay corrects legacy ordinance numbers before returning the document', async () => {
+ const original=globalThis.fetch;
+ globalThis.fetch=async()=>new Response(JSON.stringify({document:{source:'ordinance',provisions:[{article_no:'제100조',text:'제1조(목적) 본문',metadata:{original_article_no:'000100'}}]}}));
+ try {
+  const handler=createOfficialHandler({environment:()=>({RULECRAFT_OFFICIAL_GATEWAY_URL:'https://example.com',RULECRAFT_GATEWAY_TOKEN:'test-secret'})});
+  let body;const res={setHeader(){},end(v){body=v;}};
+  await handler({method:'GET',url:'/api/official/document?source=ordinance&law_id=ordinance:1&version_id=1',query:{route:'document',source:'ordinance',law_id:'ordinance:1',version_id:'1'}},res);
+  assert.equal(res.statusCode,200);
+  assert.equal(JSON.parse(body).document.provisions[0].article_no,'제1조');
+ } finally {globalThis.fetch=original;}
+});

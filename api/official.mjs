@@ -1,4 +1,5 @@
 import pg from "pg";
+import { normalizeDocumentNumbers } from "./article-numbers.mjs";
 import { rankWithLaya } from "./laya-ranking.mjs";
 
 const SOURCES = ["law", "administrative", "ordinance"];
@@ -174,6 +175,7 @@ export function createOfficialHandler({ environment = () => process.env, createP
         while (true) {const {done,value}=await reader.read();if(done)break;length+=value.length;
           if(length>MAX_DOCUMENT_BYTES){await reader.cancel();throw new Error('oversize');} chunks.push(Buffer.from(value));}
         let body = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+        if (response.ok && parameters.route === 'document') body.document = normalizeDocumentNumbers(body.document);
         if (response.ok && parameters.route === 'laws' && !head) body = await rankWithLaya(body, parameters.q, env);
         return json(res,response.status,body,head);
       } catch {return json(res,503,disconnected('unavailable','gateway_unavailable','맥의 법령 조회 서버에 연결하지 못했습니다.'),head);}
@@ -260,6 +262,7 @@ export function createOfficialHandler({ environment = () => process.env, createP
         : parameters.route === "laws"
         ? "public, s-maxage=60, stale-while-revalidate=300"
         : "public, s-maxage=3600, stale-while-revalidate=86400";
+      if (status === 200 && parameters.route === "document") payload.document = normalizeDocumentNumbers(payload.document);
       if (status === 200 && parameters.route === "laws" && !head) payload = await rankWithLaya(payload, parameters.q, env);
       return json(res, status, payload, head, parameters.route === "laws" ? null : cacheHeader);
     } catch (error) {

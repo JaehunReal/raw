@@ -276,3 +276,14 @@ test("custom view identifiers remain quoted and the warm pool is reused", async 
   assert.ok(calls.some((call) => call.sql.includes('"official"."safe_documents"')));
   assert.ok(calls.every((call) => !/^(INSERT|UPDATE|DELETE|CREATE|ALTER|DROP)/.test(call.sql)));
 });
+
+test('database document normalizes encoded ordinance identifiers and preserves source', async () => {
+  respond = async (sql) => ({rows: sql.includes('SELECT source, law_id') && sql.includes('LIMIT 0') ? [] : [{...DOCUMENT,
+    source:'ordinance', law_id:'ordinance:1', version_id:'v1',
+    provisions_json:JSON.stringify([{article_no:'제100조',text:'제1조(목적) 본문',metadata:{original_article_no:'000100'}}])}]});
+  const response=await request('/api/official/document?source=ordinance&law_id=ordinance:1&version_id=v1');
+  assert.equal(response.status,200);
+  const {document}=await response.json();
+  assert.equal(document.provisions[0].article_no,'제1조');
+  assert.equal(document.raw_sha256,SHA);
+});

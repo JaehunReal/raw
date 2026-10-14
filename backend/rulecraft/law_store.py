@@ -9,6 +9,8 @@ coverage, so temporal verification is reported separately.
 
 from __future__ import annotations
 
+from .article_numbers import normalize_provisions
+
 from contextlib import contextmanager
 from copy import deepcopy
 from datetime import date, datetime, timezone
@@ -620,7 +622,7 @@ class LawStore:
         if not summary:
             evidence_verified = self._raw_integrity(row)
             metadata = json.loads(row["metadata_json"])
-            document.update({"text": row["text"], "provisions": json.loads(row["provisions_json"]),
+            document.update({"text": row["text"], "provisions": normalize_provisions(row["source"], json.loads(row["provisions_json"])),
                              "metadata": metadata,
                              "evidence_verified": evidence_verified,
                              "raw_integrity_verified": evidence_verified,

@@ -1,3 +1,4 @@
+import { lawFamilyBase, documentType, familyRecords } from './lawFamily';
 import LegalText from './LegalText';
 import './legal-reader.css';
 import ExternalCitation from './ExternalCitation';
@@ -31,14 +32,6 @@ type ThreeTierFamily = {
   loading: boolean;
 };
 
-function parseBaseLawName(title: string): string {
-  if (!title) return '';
-  return title
-    .replace(/\s*(시행령|시행규칙|규칙|지침)$/, '')
-    .replace(/^「|」$/g, '')
-    .trim();
-}
-
 function extractArticleTitle(p: Provision): string {
   if (p.title) return p.title.replace(/[()]/g, '').trim();
   const m = p.text.match(/^제\s*\d+\s*조(?:의\s*\d+)?\s*\(([^)]+)\)/);
@@ -53,48 +46,9 @@ function findMatches(
   familyType: 'decree' | 'rule' | 'act'
 ): Provision[] {
   if (!provisions || !provisions.length) return [];
-  const cleanTargetNo = targetArticle.replace(/\s+/g, '');
-  const cleanTargetTitle = targetTitle.replace(/[()]/g, '').trim();
-
-  // 1. Direct reference in text
-  const matches = provisions.filter((p) => {
-    const t = p.text;
-    const mentionsLawArt =
-      t.includes('법 ' + targetArticle) ||
-      t.includes('법' + targetArticle) ||
-      t.includes('법 제' + targetArticle.replace(/^제/, '')) ||
-      t.includes('법제' + targetArticle.replace(/^제/, ''));
-
-    const mentionsDecreeArt =
-      t.includes('영 ' + targetArticle) ||
-      t.includes('영' + targetArticle) ||
-      t.includes('영 제' + targetArticle.replace(/^제/, '')) ||
-      t.includes('영제' + targetArticle.replace(/^제/, ''));
-
-    const sameArtAndTitle =
-      p.article_no.replace(/\s+/g, '') === cleanTargetNo &&
-      cleanTargetTitle &&
-      extractArticleTitle(p) === cleanTargetTitle;
-
-    return mentionsLawArt || mentionsDecreeArt || sameArtAndTitle;
-  });
-
-  if (matches.length > 0) return matches;
-
-  // 2. Fallback: match by title if meaningful
-  if (cleanTargetTitle && cleanTargetTitle.length >= 2 && cleanTargetTitle !== '목적' && cleanTargetTitle !== '정의') {
-    const titleMatches = provisions.filter((p) => {
-      const pTitle = extractArticleTitle(p);
-      return pTitle && (pTitle.includes(cleanTargetTitle) || cleanTargetTitle.includes(pTitle));
-    });
-    if (titleMatches.length > 0) return titleMatches;
-  }
-
-  // 3. Fallback: match by same article_no (e.g. 제1조(목적))
-  const sameArt = provisions.filter((p) => p.article_no.replace(/\s+/g, '') === cleanTargetNo);
-  if (sameArt.length > 0) return sameArt;
-
-  return [];
+  const escaped = targetArticle.replace(/\s+/g, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const reference = new RegExp(`(?:^|[\\s(])법\\s*${escaped}(?![0-9]|의\\s*[0-9])`);
+  return provisions.filter(p => reference.test(p.text));
 }
 
 export default function OfficialProvisions({
@@ -136,11 +90,12 @@ export default function OfficialProvisions({
 
   // Load 3-Tier Law Family (법·시행령·시행규칙)
   useEffect(() => {
+    setFamily(null);
     if (!currentLaw) {
       setFamily(null);
       return;
     }
-    const baseName = parseBaseLawName(currentLaw.title);
+    const baseName = lawFamilyBase(currentLaw) || '';
     if (!baseName) return;
 
     const controller = new AbortController();
@@ -155,20 +110,7 @@ export default function OfficialProvisions({
         const listData = await listRes.json();
         const items: LawRecord[] = listData.items || [];
 
-        // Match Act, Decree, Rule
-        const actMeta = items.find(
-          (x) =>
-            x.title === baseName ||
-            (x.title.startsWith(baseName) &&
-              !x.title.includes('시행령') &&
-              !x.title.includes('시행규칙'))
-        );
-        const decreeMeta = items.find(
-          (x) => x.title.includes('시행령') && x.title.includes(baseName)
-        );
-        const ruleMeta = items.find(
-          (x) => x.title.includes('시행규칙') && x.title.includes(baseName)
-        );
+        const {act: actMeta, decree: decreeMeta, rule: ruleMeta} = familyRecords(items, baseName!);
 
         const currentId = `${currentLaw?.source}:${currentLaw?.law_id}:${currentLaw?.version_id}`;
 
@@ -222,6 +164,8 @@ export default function OfficialProvisions({
   if (!units.length)
     return <p>이 원문은 조·항·호 구조가 확인되지 않아 전체 원문으로 제공합니다.</p>;
 
+  const eligibleFamily = lawFamilyBase(currentLaw);
+
   const isCurrentAct =
     family?.act &&
     `${currentLaw?.source}:${currentLaw?.law_id}` ===
@@ -245,8 +189,15 @@ export default function OfficialProvisions({
         다른 법령의 명시적 인용은 버전을 선택해 대상 조문을 확인할 수 있습니다.
       </p>
 
+      {currentLaw && !eligibleFamily && (
+        <div className="three-tier-quickbar">
+          <strong>{documentType(currentLaw)}</strong>
+          <span>{currentLaw.title}</span>
+          <p>상위 근거는 아래 원문의 법령 인용과 ‘인용 및 시행 근거’에서 확인하세요. 조례·규칙을 법률·시행령·시행규칙으로 분류하지 않습니다.</p>
+        </div>
+      )}
       {/* 3단 체계 퀵 네비게이션 바 */}
-      {family && (family.act || family.decree || family.rule) && (
+      {eligibleFamily && family?.baseName === eligibleFamily && (family.act || family.decree || family.rule) && (
         <div className="three-tier-quickbar">
           <div className="quickbar-label">
             <span>⚖️</span>
@@ -275,7 +226,7 @@ export default function OfficialProvisions({
                 {isCurrentDecree && <span className="btn-tag">열람 중</span>}
               </button>
             ) : (
-              <span className="quickbar-disabled">📜 시행령 (없음)</span>
+              <span className="quickbar-disabled">📜 시행령 (조회되지 않음)</span>
             )}
             {family.rule ? (
               <button
@@ -287,7 +238,7 @@ export default function OfficialProvisions({
                 {isCurrentRule && <span className="btn-tag">열람 중</span>}
               </button>
             ) : (
-              <span className="quickbar-disabled">📋 시행규칙 (없음)</span>
+              <span className="quickbar-disabled">📋 시행규칙 (조회되지 않음)</span>
             )}
           </div>
         </div>
@@ -403,7 +354,7 @@ export default function OfficialProvisions({
               ))}
 
               {/* 그 조항 아랫단에 3단으로 보여주는 3단 비교 카드 (조문 단위 n.depth === 0) */}
-              {n.depth === 0 && family && (
+              {n.depth === 0 && isCurrentAct && eligibleFamily && family?.baseName === eligibleFamily && (
                 <ThreeTierArticleCard
                   articleUnit={n}
                   family={family}
@@ -580,7 +531,7 @@ function ThreeTierArticleCard({
               ) : family.decree ? (
                 <div className="three-tier-empty">(직접 위임 조항 없음)</div>
               ) : (
-                <div className="three-tier-empty">(시행령 규정 없음)</div>
+                <div className="three-tier-empty">(명시적 인용 조문 미확인)</div>
               )}
             </div>
             {family.decree && (
@@ -638,7 +589,7 @@ function ThreeTierArticleCard({
               ) : family.rule ? (
                 <div className="three-tier-empty">(직접 위임 조항 없음)</div>
               ) : (
-                <div className="three-tier-empty">(시행규칙 규정 없음)</div>
+                <div className="three-tier-empty">(명시적 인용 조문 미확인)</div>
               )}
             </div>
             {family.rule && (

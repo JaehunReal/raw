@@ -8,6 +8,7 @@ import os
 from typing import Any, Literal
 
 from mcp.server.fastmcp import FastMCP
+from mcp.types import ToolAnnotations
 
 from . import adapters
 from .delta import analyze
@@ -24,12 +25,17 @@ mcp = FastMCP("RuleCraft", instructions=(
 ))
 
 
+# 네 도구 모두 규정집·원문을 수정하지 않는다(원본 읽기 전용). Vision만 외부 모델을 호출한다.
+READ_ONLY = ToolAnnotations(readOnlyHint=True, destructiveHint=False, idempotentHint=True, openWorldHint=False)
+READ_ONLY_EXTERNAL = ToolAnnotations(readOnlyHint=True, destructiveHint=False, idempotentHint=True, openWorldHint=True)
+
+
 def _store() -> GraphStore:
     root = Path(__file__).resolve().parents[2]
     return GraphStore(Path(os.getenv("RULECRAFT_VAULT", str(root / "legal-knowledge-vault"))))
 
 
-@mcp.tool()
+@mcp.tool(annotations=READ_ONLY)
 def query_markdown_graph(agency_name: str, rule_name: str, article_no: int | str,
                          traverse_direction: Literal["UPWARD_PARENT", "DOWNWARD_DELEGATION", "BACKLINKS", "ALL"] = "ALL",
                          source_scope: Literal["local", "official"] = "local",
@@ -48,7 +54,7 @@ def query_markdown_graph(agency_name: str, rule_name: str, article_no: int | str
     return _store().query(agency_name, rule_name, anchor, traverse_direction)
 
 
-@mcp.tool()
+@mcp.tool(annotations=READ_ONLY)
 def analyze_git_delta_impact(target_file_path: str, proposed_diff: str) -> dict[str, Any]:
     """Markdown 텍스트 또는 Unified Diff의 변경 파급도와 인용 정비 후보를 분석합니다."""
     if len(proposed_diff) > 200_000:
@@ -63,7 +69,7 @@ def analyze_git_delta_impact(target_file_path: str, proposed_diff: str) -> dict[
     return add_text_impact(store, node, result) if node else result
 
 
-@mcp.tool()
+@mcp.tool(annotations=READ_ONLY_EXTERNAL)
 def parse_form_with_vision(image_data_base64: str,
                           output_format: Literal["markdown_table", "interactive_form"] = "markdown_table") -> dict[str, Any]:
     """설정된 Ollama LLaVA 모델로 PNG/JPEG/WebP 서식을 Markdown으로 읽습니다. 미연결 시 unavailable입니다."""
@@ -75,7 +81,7 @@ def parse_form_with_vision(image_data_base64: str,
         return {"status": "invalid_input", "code": "invalid_image", "error": str(error), "markdown": None}
 
 
-@mcp.tool()
+@mcp.tool(annotations=READ_ONLY)
 def generate_statutory_diff(current_markdown: str, revised_markdown: str, amendment_reason: str = "") -> dict[str, Any]:
     """현행/개정안/개정이유의 3단 신구조문대비표를 Markdown으로 렌더링합니다."""
     if len(current_markdown) + len(revised_markdown) > 400_000:

@@ -43,6 +43,9 @@ class StandardMcpProtocolTests(unittest.IsolatedAsyncioTestCase):
                         "query_markdown_graph", "analyze_git_delta_impact",
                         "parse_form_with_vision", "generate_statutory_diff",
                     })
+                    for tool in tools.tools:
+                        self.assertTrue(tool.annotations.readOnlyHint, tool.name)
+                        self.assertFalse(tool.annotations.destructiveHint, tool.name)
                     graph_result = await session.call_tool("query_markdown_graph", {
                         "agency_name": "테스트기관", "rule_name": "공공데이터지침",
                         "article_no": 7, "traverse_direction": "UPWARD_PARENT",

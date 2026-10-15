@@ -40,3 +40,9 @@ Claude Code, Antigravity, Codex는 작업 전 이 파일과 Git 상태를 확인
 - 번호·제목 유사성만으로 조문을 연결하는 추정을 제거하고 법률 조문에서 명시적 ‘법 제○조’ 인용 후보만 비교한다. 시행령·규칙을 법률 본문 칸에 넣던 조문 카드도 방지했다. 후보 확인만으로 위임 관계가 확정되는 것은 아니다.
 - 테스트: law-family 회귀 2개 통과. 기존 AttachmentsPage.tsx의 미커밋 `ㅐ` 문자는 보존했다. 해당 파일의 HEAD 버전을 사용한 별도 임시 빌드로 이번 변경을 검증한다.
 - 실제 조례 본문의 개정 필요성 판단은 이번 UI 분류 수정에 포함하지 않는다.
+
+## 2026-10-15 — Claude Code: MCP 도구 읽기 전용 표시
+- backend/rulecraft/mcp_server.py: 네 도구에 MCP ToolAnnotations(readOnlyHint=True, destructiveHint=False, idempotentHint=True)를 추가했다. 외부 Vision 모델을 호출하는 parse_form_with_vision만 openWorldHint=True로 표시했다. 도구 동작·입출력은 변경하지 않았다.
+- tests/test_mcp.py: 실제 stdio 클라이언트의 도구 목록에서 네 도구 모두 읽기 전용·비파괴 표시인지 확인하는 단언을 추가했다.
+- 검증: MCP·브리지·워크플로·법령 어댑터 테스트 20개 통과. 저장소 밖 폴더에서 docs/mcp.md 설정(uv run rulecraft-mcp)으로 공식 SDK 클라이언트 접속, 제7조 상위 근거 3개 노드, 개정안 영향 후보 7개, 경로 이탈 unsafe_path 차단, Vision unavailable 반환, 호출 전후 규정집 해시 동일을 확인했다.
+- 미완료: 이 세션은 GitHub 읽기 전용이라 커밋·푸시하지 않았다. 패치 파일로 전달하며 반영·배포는 담당자가 수행한다.

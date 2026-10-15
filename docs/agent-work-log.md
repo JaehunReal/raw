@@ -46,3 +46,9 @@ Claude Code, Antigravity, Codex는 작업 전 이 파일과 Git 상태를 확인
 - tests/test_mcp.py: 실제 stdio 클라이언트의 도구 목록에서 네 도구 모두 읽기 전용·비파괴 표시인지 확인하는 단언을 추가했다.
 - 검증: MCP·브리지·워크플로·법령 어댑터 테스트 20개 통과. 저장소 밖 폴더에서 docs/mcp.md 설정(uv run rulecraft-mcp)으로 공식 SDK 클라이언트 접속, 제7조 상위 근거 3개 노드, 개정안 영향 후보 7개, 경로 이탈 unsafe_path 차단, Vision unavailable 반환, 호출 전후 규정집 해시 동일을 확인했다.
 - 미완료: 이 세션은 GitHub 읽기 전용이라 커밋·푸시하지 않았다. 패치 파일로 전달하며 반영·배포는 담당자가 수행한다.
+
+## 2026-10-15 — Claude Code: 모델별 초안 생성 검증 스크립트
+- scripts/check-llm-models.py: OpenAI 호환 모델 여러 개로 실제 PackageWorkflow를 실행하고 호출 성공·판정·문서 수·소요 시간·차단 사유를 표와 JSON으로 기록한다. 규정집은 임시 복사본을 사용하고 원본 해시 불변을 확인한다. 키는 환경 변수로만 읽고 출력·기록하지 않는다.
+- docs/adapters.md: 사용법을 추가했다.
+- 검증: 로컬 대체 서버로 정상 모델(draft, 문서 7개), 없는 인용을 만드는 모델(blocked, missing_target), 존재하지 않는 모델(호출 실패, drafting_unavailable) 세 경우와 원본 불변을 확인했다.
+- 미완료: 실제 공통기반 지원 모델 구동은 수행하지 않았다(이 작업 환경에서 모델 저장소 접근 불가). 담당자 PC에서 실행 후 결과를 기록해야 한다.
